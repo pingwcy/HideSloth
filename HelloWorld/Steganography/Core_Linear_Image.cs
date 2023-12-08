@@ -1,0 +1,230 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing.Imaging;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace HideSloth.Steganography
+{
+    public static class Core_Linear_Image
+    {
+        public static int DecodePixel(Color pixel)
+        {
+            int red = pixel.R & 3;
+            int green = pixel.G & 7;
+            int blue = pixel.B & 7;
+            int value = blue | green << 3 | red << 6;
+            return value;
+        }
+
+        private static Point LinearIndexToPoint(int index, int width, int height)
+        {
+            if (index < 0)
+            {
+                index *= -1;
+            }
+            return new Point(index % width, (int)Math.Floor((double)(index / width)));
+        }
+        public static Color EncodePixel(Color pixel, int value)
+        {
+            int blueValue = value & 7;
+            int greenValue = value >> 3 & 7;
+            int redValue = value >> 6 & 3;
+
+            int red = pixel.R & 0xFC | redValue;
+            int green = pixel.G & 0xF8 | greenValue;
+            int blue = pixel.B & 0xF8 | blueValue;
+
+            return Color.FromArgb(red, green, blue);
+        }
+
+        public static byte[] DecodeFileFromImage(Bitmap img)
+        {
+            // 锁定位图的整个区域
+            Rectangle rect = new Rectangle(0, 0, img.Width, img.Height);
+            BitmapData bmpData = img.LockBits(rect, ImageLockMode.ReadOnly, img.PixelFormat);
+
+            // 获取位图数据的首地址
+            IntPtr ptr = bmpData.Scan0;
+
+            // 定义数组以保存位图的所有像素数据
+            int bytes = Math.Abs(bmpData.Stride) * img.Height;
+            byte[] rgbValues = new byte[bytes];
+
+            // 将像素数据复制到数组
+            System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes);
+
+            int maxLinear = img.Width * img.Height;
+            int c = 0;
+            string fileLengthStr = "";
+            char currentChar;
+
+            do
+            {
+                Point point = LinearIndexToPoint(c, img.Width, img.Height);
+                int decodedValue = DecodePixelFromArray(rgbValues, point, img.Width, bmpData.Stride);
+                currentChar = (char)decodedValue;
+
+                // 调试输出每个解码值
+                //Console.WriteLine($"Decoded char at {c}: '{currentChar}' (DecodedValue: {decodedValue})");
+
+                if (currentChar == '#')
+                    break;
+
+                fileLengthStr += currentChar;
+                c++;
+            } while (c < maxLinear); // 确保循环不超过图像像素总数
+
+            int fileLength = Convert.ToInt32(fileLengthStr) ;
+            byte[] fileData = new byte[fileLength];
+
+            // 读取并解码文件数据
+            for (int i = 0; i < fileLength; i++)
+            {
+                Point point = LinearIndexToPoint(c+1, img.Width, img.Height);
+                fileData[i] = (byte)DecodePixelFromArray(rgbValues, point, img.Width, bmpData.Stride);
+                c++;
+            }
+
+            // 解锁位图
+            img.UnlockBits(bmpData);
+
+            return fileData;
+        }
+
+        private static int DecodePixelFromArray(byte[] rgbValues, Point point, int width, int stride)
+        {
+            int index = point.Y * stride + point.X * 3; // 每个像素4字节
+
+            int blue = rgbValues[index];
+            int green = rgbValues[index + 1];
+            int red = rgbValues[index + 2];
+
+            int redValue = red & 3;
+            int greenValue = green & 7;
+            int blueValue = blue & 7;
+
+            int value = blueValue | greenValue << 3 | redValue << 6;
+            return value;
+        }
+        public static Bitmap EncodeFileLinear(Bitmap img, byte[] file)
+        {
+            // 锁定位图的整个区域
+            Rectangle rect = new Rectangle(0, 0, img.Width, img.Height);
+            BitmapData bmpData = img.LockBits(rect, ImageLockMode.ReadWrite, img.PixelFormat);
+
+            // 获取位图数据的首地址
+            IntPtr ptr = bmpData.Scan0;
+
+            // 定义数组以保存位图的所有像素数据
+            int bytes = Math.Abs(bmpData.Stride) * img.Height;
+            byte[] rgbValues = new byte[bytes];
+
+            // 将像素数据复制到数组
+            System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes);
+
+            int c = 0;
+            int maxLinear = img.Width * img.Height;
+
+            if (file.Length < maxLinear)
+            {
+                string fileLength = file.Length.ToString();
+                for (int i = 0; i < fileLength.Length; i++)
+                {
+                    Point point = LinearIndexToPoint(c, img.Width, img.Height);
+                    char letter = fileLength[i];
+                    int value = Convert.ToInt32(letter);
+                    EncodePixelToArray(rgbValues, point, value, img.Width, bmpData.Stride);
+                    c++;
+                }
+                Point point1 = LinearIndexToPoint(c, img.Width, img.Height);
+                int value1 = Convert.ToInt32('#');
+                EncodePixelToArray(rgbValues, point1, value1, img.Width, bmpData.Stride);
+                c++;
+
+                // Write file
+                for (int i = 0; i < file.Length; i++)
+                {
+                    Point point = LinearIndexToPoint(c, img.Width, img.Height);
+                    EncodePixelToArray(rgbValues, point, file[i], img.Width, bmpData.Stride);
+                    c++;
+                }
+            }
+            System.Runtime.InteropServices.Marshal.Copy(rgbValues, 0, ptr, bytes);
+
+            // 解锁位图
+            img.UnlockBits(bmpData);
+
+            return img;
+        }
+
+        private static void EncodePixelToArray(byte[] rgbValues, Point point, int value, int width, int stride)
+        {
+            int index = point.Y * stride + point.X * 3; // 每个像素4字节
+
+            int blueValue = value & 7;
+            int greenValue = value >> 3 & 7;
+            int redValue = value >> 6 & 3;
+
+            rgbValues[index] = (byte)(rgbValues[index] & 0xF8 | blueValue);
+            rgbValues[index + 1] = (byte)(rgbValues[index + 1] & 0xF8 | greenValue);
+            rgbValues[index + 2] = (byte)(rgbValues[index + 2] & 0xFC | redValue);
+        }
+
+
+
+        public static Bitmap EncodeMsgLinearImage(string text, Bitmap img)
+        {
+            int maxLinear = img.Width * img.Height;
+            int c = 0;
+            if (text.Length < maxLinear)
+            {
+                for (int i = 0; i < text.Length; i++)
+                {
+                    Point point = LinearIndexToPoint(i, img.Width, img.Height);
+                    Color pixel = img.GetPixel(point.X, point.Y);
+                    char letter = text[i];
+                    int value = Convert.ToInt32(letter);
+                    Color n = EncodePixel(pixel, value);
+                    img.SetPixel(point.X, point.Y, n);
+                    c = i;
+                }
+                //Null value placed at the end to indicate end of text - or using 255 for better hiding
+                c++;
+                Point pointEnd = LinearIndexToPoint(c, img.Width, img.Height);
+                Color pixelEnd = img.GetPixel(pointEnd.X, pointEnd.Y);
+                img.SetPixel(pointEnd.X, pointEnd.Y, EncodePixel(pixelEnd, 0));
+            }
+            return img;
+        }
+        public static string DecodeMsgLinearImage(Bitmap img)
+        {
+            string text = string.Empty;
+            int value = 0;
+            int i = 0;
+            do
+            {
+                Point point = LinearIndexToPoint(i, img.Width, img.Height);
+                Color pixel = img.GetPixel(point.X, point.Y);
+                value = DecodePixel(pixel);
+                i++;
+                if (value != 255)
+                    text += Convert.ToChar(value);
+            } while (value != 255);
+#pragma warning disable CS0168 // 声明了变量，但从未使用过
+            try
+            {
+                return text;
+            }
+            catch (Exception e)
+            {
+#pragma warning disable CS8603 // 可能返回 null 引用。
+                return null;
+#pragma warning restore CS8603 // 可能返回 null 引用。
+            }
+#pragma warning restore CS0168 // 声明了变量，但从未使用过
+        }
+
+    }
+}
