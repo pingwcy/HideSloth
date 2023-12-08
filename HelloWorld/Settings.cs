@@ -64,7 +64,7 @@ namespace HideSloth
             Check_CustHash.Checked = GlobalVariables.CustHash;
             Text_PBKDF2Iter.Text = GlobalVariables.iteration.ToString();
             ComboBox_Hash.SelectedItem = GlobalVariables.Hash;
-
+            combo_entension.SelectedItem = GlobalVariables.outputformat;
         }
 
         private void Radio_LSB_PB_CheckedChanged(object sender, EventArgs e)
@@ -89,7 +89,7 @@ namespace HideSloth
                 form1.Container_Button = false;
                 form1.ContainerLabel_Nousage = false;
                 form1.ContainerLabel2_Nousage = false;
-                
+
 
             }
 
@@ -117,9 +117,8 @@ namespace HideSloth
                 form1.PasswordBOX = false;
                 //Form1.Textbox_Password.Enabled = false;
             }
-
-
-
+            GlobalVariables.outputformat = combo_entension.SelectedItem.ToString();
+            
             GlobalVariables.iteration = Int32.Parse(Text_PBKDF2Iter.Text);
 #pragma warning disable CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
 #pragma warning disable CS8601 // 引用类型赋值可能为 null。
@@ -179,6 +178,11 @@ namespace HideSloth
             Radio_Linear_PB.Enabled = true;
             Radio_LSB_PB.Enabled = true;
             Radio_disableenc.Enabled = true;
+
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
 
         }
     }

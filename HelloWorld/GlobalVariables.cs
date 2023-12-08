@@ -39,5 +39,7 @@ namespace HideSloth
         public static string defaultname = "";
 
         public static bool rerange_decode = false;
+
+        public static string outputformat = ".png";//bulk process
     }
 }

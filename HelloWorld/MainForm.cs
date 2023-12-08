@@ -267,11 +267,11 @@ namespace HideSloth
                                 }
                                 if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
                                 {
-                                    result.Save(GlobalVariables.outputnameandroute, System.Drawing.Imaging.ImageFormat.Png);
+                                    result.Save(GlobalVariables.outputnameandroute, Support_Converter.SaveFormatImage(Path.GetExtension(GlobalVariables.outputnameandroute)));
                                 }
                                 if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
                                 {
-                                    result.Save(Path.Combine(GlobalVariables.multipal_route, Path.GetFileName(single_container)), System.Drawing.Imaging.ImageFormat.Png);
+                                    result.Save(Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container))+GlobalVariables.outputformat), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                 }
 
                                 result.Dispose();
@@ -292,11 +292,11 @@ namespace HideSloth
                                 }
                                 if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
                                 {
-                                    result.Save(GlobalVariables.outputnameandroute, System.Drawing.Imaging.ImageFormat.Png);
+                                    result.Save(GlobalVariables.outputnameandroute, Support_Converter.SaveFormatImage(Path.GetExtension(GlobalVariables.outputnameandroute)));
                                 }
                                 if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
                                 {
-                                    result.Save(Path.Combine(GlobalVariables.multipal_route, Path.GetFileName(single_container)), System.Drawing.Imaging.ImageFormat.Png);
+                                    result.Save(Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                 }
 
                                 result.Dispose();
@@ -419,11 +419,11 @@ namespace HideSloth
                                 }
                                 if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
                                 {
-                                    result.Save(GlobalVariables.outputnameandroute, System.Drawing.Imaging.ImageFormat.Png);
+                                    result.Save(GlobalVariables.outputnameandroute, Support_Converter.SaveFormatImage(Path.GetExtension(GlobalVariables.outputnameandroute)));
                                 }
                                 if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
                                 {
-                                    result.Save(Path.Combine(GlobalVariables.multipal_route, Path.GetFileName(single_container)), System.Drawing.Imaging.ImageFormat.Png);
+                                    result.Save(Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                 }
 
                                 UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- Saved Successful\n", false));
@@ -448,11 +448,11 @@ namespace HideSloth
                                 }
                                 if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
                                 {
-                                    result.Save(GlobalVariables.outputnameandroute, System.Drawing.Imaging.ImageFormat.Png);
+                                    result.Save(GlobalVariables.outputnameandroute, Support_Converter.SaveFormatImage(Path.GetExtension(GlobalVariables.outputnameandroute)));
                                 }
                                 if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
                                 {
-                                    result.Save(Path.Combine(GlobalVariables.multipal_route, Path.GetFileName(single_container)), System.Drawing.Imaging.ImageFormat.Png);
+                                    result.Save(Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                 }
 
                                 UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- Saved Successful\n", false));
@@ -582,11 +582,11 @@ namespace HideSloth
                                 }
                                 if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
                                 {
-                                    result.Save(GlobalVariables.outputnameandroute, System.Drawing.Imaging.ImageFormat.Png);
+                                    result.Save(GlobalVariables.outputnameandroute, Support_Converter.SaveFormatImage(Path.GetExtension(GlobalVariables.outputnameandroute)));
                                 }
                                 if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
                                 {
-                                    result.Save(Path.Combine(GlobalVariables.multipal_route, Path.GetFileName(single_container)), System.Drawing.Imaging.ImageFormat.Png);
+                                    result.Save(Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                 }
                                 loaded.Dispose();
 
@@ -611,11 +611,11 @@ namespace HideSloth
                                 }
                                 if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
                                 {
-                                    result.Save(GlobalVariables.outputnameandroute, System.Drawing.Imaging.ImageFormat.Png);
+                                    result.Save(GlobalVariables.outputnameandroute, Support_Converter.SaveFormatImage(Path.GetExtension(GlobalVariables.outputnameandroute)));
                                 }
                                 if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
                                 {
-                                    result.Save(Path.Combine(GlobalVariables.multipal_route, Path.GetFileName(single_container)), System.Drawing.Imaging.ImageFormat.Png);
+                                    result.Save(Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                 }
                                 UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- Saved Successful\n", false));
                                 UpdateUI(() => richTextBoxLog.ScrollToCaret());
@@ -722,11 +722,11 @@ namespace HideSloth
                                 }
                                 if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
                                 {
-                                    result.Save(GlobalVariables.outputnameandroute, System.Drawing.Imaging.ImageFormat.Png);
+                                    result.Save(GlobalVariables.outputnameandroute, Support_Converter.SaveFormatImage(Path.GetExtension(GlobalVariables.outputnameandroute)));
                                 }
                                 if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
                                 {
-                                    result.Save(Path.Combine(GlobalVariables.multipal_route, Path.GetFileName(single_container)), System.Drawing.Imaging.ImageFormat.Png);
+                                    result.Save(Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                 }
                                 UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- Saved Successful\n", false));
                                 UpdateUI(() => richTextBoxLog.ScrollToCaret());
@@ -749,11 +749,11 @@ namespace HideSloth
                                 }
                                 if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
                                 {
-                                    result.Save(GlobalVariables.outputnameandroute, System.Drawing.Imaging.ImageFormat.Png);
+                                    result.Save(GlobalVariables.outputnameandroute, Support_Converter.SaveFormatImage(Path.GetExtension(GlobalVariables.outputnameandroute)));
                                 }
                                 if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
                                 {
-                                    result.Save(Path.Combine(GlobalVariables.multipal_route, Path.GetFileName(single_container)), System.Drawing.Imaging.ImageFormat.Png);
+                                    result.Save(Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                 }
                                 UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- Saved Successful\n", false));
                                 UpdateUI(() => richTextBoxLog.ScrollToCaret());
@@ -935,6 +935,7 @@ namespace HideSloth
                     if (check_multi.Checked)
                     {
                         string[] selectedFiles = openFileDialog.FileNames;
+                        GlobalVariables.route_containers.Clear();
                         foreach (string i in selectedFiles)
                         {
                             GlobalVariables.route_containers.Add(i);
@@ -991,30 +992,60 @@ namespace HideSloth
             string outputcapacity = "";
             string containfile = Label_RouteofContainer.Text;
             bool containsSlash = containfile.Contains(@"\");
-            if (containsSlash == true)
+            if (containsSlash == true || GlobalVariables.multipal_route != null)
             {
                 try
                 {
-                    Image image = Image.FromFile(Label_RouteofContainer.Text);
-                    double size = 0.0;
-                    // 获取分辨率
-                    if (GlobalVariables.Algor == "LSB")
+                    if (check_multi.Checked && GlobalVariables.route_containers != null)
                     {
-                        size = Math.Round(image.Width * image.Height * 3 / 8 * 0.89 / 1024 / 1.34);
-                    }
-                    else if (GlobalVariables.Algor == "Linear")
-                    {
-                        size = Math.Round(image.Width * image.Height / 1024 * 0.97);
-                    }
+                        List<double> imagesizes = new List<double>();
+                        foreach (string single in GlobalVariables.route_containers)
+                        {
+                            Image img = Image.FromFile(single);
+                            double singlesize = 0.0;
+                            // 获取分辨率
+                            if (GlobalVariables.Algor == "LSB")
+                            {
+                                singlesize = Math.Round(img.Width * img.Height * 3 / 8 * 0.89 / 1024 / 1.34);
+                                imagesizes.Add(singlesize);
+                            }
+                            else if (GlobalVariables.Algor == "Linear")
+                            {
+                                singlesize = Math.Round(img.Width * img.Height / 1024 * 0.97);
+                                imagesizes.Add(singlesize);
 
-                    image.Dispose();
-                    outputcapacity = "The container's capacity is: " + (size) + " KB;";
+                            }
+
+                            img.Dispose();
+
+                        }
+                        outputcapacity = "The smallest container's capacity is: " + (imagesizes.Min().ToString()) + " KB;";
+                        imagesizes.Clear();
+
+                    }
+                    else if (check_multi.Checked != true)
+                    {
+                        Image image = Image.FromFile(Label_RouteofContainer.Text);
+                        double size = 0.0;
+                        // 获取分辨率
+                        if (GlobalVariables.Algor == "LSB")
+                        {
+                            size = Math.Round(image.Width * image.Height * 3 / 8 * 0.89 / 1024 / 1.34);
+                        }
+                        else if (GlobalVariables.Algor == "Linear")
+                        {
+                            size = Math.Round(image.Width * image.Height / 1024 * 0.97);
+                        }
+
+                        image.Dispose();
+                        outputcapacity = "The container's capacity is: " + (size) + " KB;";
+                    }
                 }
                 catch (Exception ex)
                 {
                     //progressBar1.Value = 0;
 
-                    MessageBox.Show(ex.Message, "Error");
+                    ShowMessageOnUIThread(ex.Message, "Error");
 
                 }
             }
@@ -1061,6 +1092,10 @@ namespace HideSloth
                 if (saveFileDialog.FileName != "")
                 {
                     GlobalVariables.outputnameandroute = saveFileDialog.FileName;
+                    if (Path.GetExtension(GlobalVariables.outputnameandroute)!=".png" && Path.GetExtension(GlobalVariables.outputnameandroute) != ".bmp")
+                    {
+                        ShowMessageOnUIThread("You entered a format out of png or bmp, you can save it anyway, but it may cause data damage if you open them with other application.", "Warning");
+                    }    
                     richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Output Name and Route of Loaded Container Selected: " + GlobalVariables.outputnameandroute + "\n");
 
                 }

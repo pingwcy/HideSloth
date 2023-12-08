@@ -43,9 +43,13 @@
             groupBox2 = new GroupBox();
             Radio_Encryptor = new RadioButton();
             Radio_Normal = new RadioButton();
+            groupBox3 = new GroupBox();
+            combo_entension = new ComboBox();
+            label1 = new Label();
             groupBox5.SuspendLayout();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
+            groupBox3.SuspendLayout();
             SuspendLayout();
             // 
             // groupBox5
@@ -84,7 +88,7 @@
             // 
             // button1
             // 
-            button1.Location = new Point(91, 280);
+            button1.Location = new Point(91, 367);
             button1.Name = "button1";
             button1.Size = new Size(165, 42);
             button1.TabIndex = 37;
@@ -94,7 +98,7 @@
             // 
             // button2
             // 
-            button2.Location = new Point(358, 280);
+            button2.Location = new Point(348, 367);
             button2.Name = "button2";
             button2.Size = new Size(165, 42);
             button2.TabIndex = 38;
@@ -214,11 +218,43 @@
             Radio_Normal.UseVisualStyleBackColor = true;
             Radio_Normal.CheckedChanged += Radio_Normal_CheckedChanged;
             // 
+            // groupBox3
+            // 
+            groupBox3.Controls.Add(combo_entension);
+            groupBox3.Controls.Add(label1);
+            groupBox3.Location = new Point(12, 270);
+            groupBox3.Name = "groupBox3";
+            groupBox3.Size = new Size(274, 76);
+            groupBox3.TabIndex = 41;
+            groupBox3.TabStop = false;
+            groupBox3.Text = "Loaded Containers in Bulk Process";
+            // 
+            // combo_entension
+            // 
+            combo_entension.DropDownStyle = ComboBoxStyle.DropDownList;
+            combo_entension.FormattingEnabled = true;
+            combo_entension.Items.AddRange(new object[] { ".png", ".bmp" });
+            combo_entension.Location = new Point(161, 34);
+            combo_entension.Name = "combo_entension";
+            combo_entension.Size = new Size(83, 25);
+            combo_entension.TabIndex = 1;
+            combo_entension.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(6, 37);
+            label1.Name = "label1";
+            label1.Size = new Size(146, 17);
+            label1.TabIndex = 0;
+            label1.Text = "Output Extension Name";
+            // 
             // Settings
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(590, 334);
+            ClientSize = new Size(590, 421);
+            Controls.Add(groupBox3);
             Controls.Add(groupBox2);
             Controls.Add(groupBox1);
             Controls.Add(button2);
@@ -233,6 +269,8 @@
             groupBox1.PerformLayout();
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
+            groupBox3.ResumeLayout(false);
+            groupBox3.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -253,5 +291,8 @@
         private GroupBox groupBox2;
         private RadioButton Radio_Normal;
         private RadioButton Radio_Encryptor;
+        private GroupBox groupBox3;
+        private ComboBox combo_entension;
+        private Label label1;
     }
 }

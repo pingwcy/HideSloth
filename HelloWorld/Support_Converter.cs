@@ -7,6 +7,8 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Security.Cryptography;
+using static System.Windows.Forms.DataFormats;
+using System.Xml;
 
 namespace HideSloth
 {
@@ -41,7 +43,23 @@ namespace HideSloth
                     throw new ArgumentException("Invalid Input");
             }
         }
+        public static ImageFormat SaveFormatImage(string formatstring)
+        {
+            ImageFormat format;
 
+            switch (formatstring)
+            {
+                case ".bmp":
+                    format = ImageFormat.Bmp;
+                    return format;
+                case ".png":
+                    format = ImageFormat.Png;
+                    return format;
+                default:
+                    throw new InvalidOperationException("Unsupported format");
+            }
+
+        }
     }
 
 }
