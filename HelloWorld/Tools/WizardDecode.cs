@@ -9,8 +9,44 @@ using System.Threading.Tasks;
 
 namespace HideSloth.Tools
 {
+
     public class WizardDecode
     {
+        public static List<string> ALLfilePath = new List<string>();
+
+        public static void GetFilePath(string directory, List<string> filePaths, int depth)
+        {
+            if (depth == 0)
+            {
+                return;
+            }
+
+            try
+            {
+                // 获取当前目录下的所有文件
+                string[] files = Directory.GetFiles(directory);
+                filePaths.AddRange(files);
+
+                // 获取所有子目录
+                string[] subDirs = Directory.GetDirectories(directory);
+                foreach (string dir in subDirs)
+                {
+                    // 递归调用
+                    GetFilePath(dir, filePaths, depth - 1);
+                }
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                Console.WriteLine("没有权限访问目录: " + directory);
+                Console.WriteLine(e.Message);
+            }
+            catch (DirectoryNotFoundException e)
+            {
+                Console.WriteLine("目录不存在: " + directory);
+                Console.WriteLine(e.Message);
+            }
+        }
+
 
         public static bool Decryptor(string pwd, string routeofencrypted, string routeofoutput, Action<string> updateStatus, CancellationToken token)
         {
@@ -74,15 +110,25 @@ namespace HideSloth.Tools
             }
         }
 
-        public static bool StegoExtractLarge(string pwd, string route_loaded, string outputname, Action<string> updateStatus, CancellationToken token)
+        public static bool StegoExtractLarge(string pwd, string route_loaded, string outputname, int searchdepth, Action<string> updateStatus, CancellationToken token)
         {
             //string targetFilePath = Path.Combine(destinationDirectory, originalFileName);
             if (GlobalVariables.rerange_decode)
             {
+                List<string> targetfloder = [];
+                if (Form_DecodeWizard.issub)
+                {
+                    GetFilePath(route_loaded, ALLfilePath, searchdepth);
+                    targetfloder = ALLfilePath;
+                }
+                else
+                {
+                    targetfloder = Directory.GetFiles(route_loaded).OrderBy(path => Path.GetFileName(path)).ToArray().ToList();
+                }
                 Dictionary<int, string> fileParts = new Dictionary<int, string>();
+                
 
-
-                foreach (string file in Directory.GetFiles(route_loaded).OrderBy(path => Path.GetFileName(path)).ToArray())
+                foreach (string file in targetfloder)
                 {
                     if (IsImageFile(file))
                     {
@@ -109,6 +155,17 @@ namespace HideSloth.Tools
                             {
                                 encrypted_result = LSB_Image.extract(unloading);
                                 decrypted_content = AesGcmDecryptor.Decrypt(Convert.FromBase64String(encrypted_result), pwd);
+                                updateStatus?.Invoke("Readed the sequence information of  File: " + file);
+                                int sequenceNumber = BitConverter.ToInt32(decrypted_content, 0);
+
+                                // 查找第一个分隔符的位置
+                                int delimiterIndex = Array.IndexOf(decrypted_content, (byte)'|', sizeof(int));
+                                if (delimiterIndex == -1) throw new InvalidOperationException("未找到分隔符。");
+
+                                // 读取文件名
+                                string originalFileName = ReadStringUntilDelimiter(decrypted_content, delimiterIndex + 1, (byte)'|');
+
+                                fileParts.Add(sequenceNumber, file);
 
                             }
                             else if (GlobalVariables.Algor == "Linear")
@@ -161,6 +218,7 @@ namespace HideSloth.Tools
                             {
                                 encrypted_result = LSB_Image.extract(unloading);
                                 decrypted_content = AesGcmDecryptor.Decrypt(Convert.FromBase64String(encrypted_result), pwd);
+                                updateStatus?.Invoke("Readed and Extracted from File: " + part.Value);
 
                             }
                             else if (GlobalVariables.Algor == "Linear")
@@ -222,7 +280,20 @@ namespace HideSloth.Tools
 
             else
             {
-                foreach (var part in Directory.GetFiles(route_loaded).OrderBy(path => Path.GetFileName(path)).ToArray())
+                List<string> targetfloder = [];
+                if (Form_DecodeWizard.issub)
+                {
+                    GetFilePath(route_loaded, ALLfilePath, searchdepth);
+                    targetfloder = ALLfilePath;
+                }
+                else
+                {
+                    targetfloder = Directory.GetFiles(route_loaded).OrderBy(path => Path.GetFileName(path)).ToArray().ToList();
+                }
+                Dictionary<int, string> fileParts = new Dictionary<int, string>();
+
+
+                foreach (string part in targetfloder)
                 {
                     if (IsImageFile(part))
                     {
@@ -235,6 +306,7 @@ namespace HideSloth.Tools
                             {
                                 encrypted_result = LSB_Image.extract(unloading);
                                 decrypted_content = AesGcmDecryptor.Decrypt(Convert.FromBase64String(encrypted_result), pwd);
+                                updateStatus?.Invoke("Readed and Extracted from File: " + part);
 
                             }
                             else if (GlobalVariables.Algor == "Linear")

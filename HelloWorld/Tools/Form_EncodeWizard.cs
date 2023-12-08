@@ -1,16 +1,5 @@
-﻿using HideSloth.Tools;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Data;
 using static HideSloth.Tools.WizardEncode;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using HideSloth;
 namespace HideSloth.Tools
 {
     public partial class Form_EncodeWizard : Form
@@ -29,6 +18,13 @@ namespace HideSloth.Tools
         private List<string> fileNamesList;
         List<int> AssgCapacityList = new List<int>();
         CancellationTokenSource cts = new CancellationTokenSource();
+        public static bool copynonimage = false;
+        public static bool keepstrcuture = false;
+        public static bool searchdeep = false;
+        public List<string> otherfile;
+        public List<string> wholestrcuture;
+        public int maxfloder;
+        public List<string> ALLfilePaths = new List<string>();
 
         private double CalculateTotalSizeFromList(List<ImageInfo> imageList)
         {
@@ -54,6 +50,7 @@ namespace HideSloth.Tools
             list_capacity.Columns.Add("File Name", -2, HorizontalAlignment.Left);
             list_capacity.Columns.Add("Capacity", -2, HorizontalAlignment.Left);
         }
+        /*
         private void LoadImagesToListView(string folderPath)
         {
             List<ImageInfo> imageList = WizardEncode.CheckCapacity(folderPath);
@@ -64,7 +61,7 @@ namespace HideSloth.Tools
                 list_capacity.Items.Add(item);
             }
         }
-
+        */
         public void AppendTextToRichTextBox(string text)
         {
             // 检查是否需要跨线程调用
@@ -249,7 +246,20 @@ namespace HideSloth.Tools
                         SwitchTab(3);
                         button_next.Enabled = false;
                         button_pre.Enabled = false;
-                        var list = await Task.Run(() => CheckCapacity(containers));
+
+                        if (check_searchdeepcontainer.Checked)
+                        {
+                            searchdeep = true;
+                            maxfloder = (int)numericUpDown1.Value;
+                            //Now we need to know the folder structure
+                            //MessageBox.Show("执行了深度搜索");
+                            // 获取文件路径
+                            GetFilePaths(containers, ALLfilePaths, maxfloder);
+
+                        }
+
+                        var list = await Task.Run(() => CheckCapacity(containers, ALLfilePaths));
+                        otherfile = await Task.Run(() => WizardEncode.otherfiles(containers, ALLfilePaths));
                         fileNamesList = list.Select(image => image.FileName).ToList();
 
                         foreach (var image in list)
@@ -309,7 +319,7 @@ namespace HideSloth.Tools
             {
                 if (Radio_normalw.Checked && Radio_onetomany.Checked)
                 {
-                        SwitchTab(8);          
+                    SwitchTab(8);
                 }
             }
             else if (tabControl1.SelectedIndex == 8)
@@ -344,13 +354,21 @@ namespace HideSloth.Tools
                     button_next.Enabled = false;
                     SwitchTab(4);
                     //Task here
+                    if (check_copynonimage.Checked)
+                    {
+                        copynonimage = true;
+                    }
+                    if (check_searchdeepcontainer.Checked && radio_outputkeepstructure.Checked)
+                    {
+                        keepstrcuture = true;
+                    }
 
                     try
                     {
                         ifok = await Task.Run(() =>
                         {
                             // 假设Encryptor方法接受一个回调函数
-                            return WizardEncode.StegoLarge(pwd, AssgCapacityList, containers, largonesecret, routeofoutput, fileNamesList,
+                            return WizardEncode.StegoLarge(pwd, AssgCapacityList, containers, largonesecret, routeofoutput, fileNamesList, otherfile, ALLfilePaths,
                                 (message) => AppendTextToRichTextBox(message), cts.Token);
                         });
                     }
@@ -595,7 +613,7 @@ namespace HideSloth.Tools
 
         private void button_cancel_Click(object sender, EventArgs e)
         {
-            if (tabControl1.SelectedIndex==4)
+            if (tabControl1.SelectedIndex == 4)
             {
                 cts.Cancel();
                 Thread.Sleep(100);
@@ -618,11 +636,26 @@ namespace HideSloth.Tools
                     }
                 }
 
-                    this.Dispose();
+                this.Dispose();
             }
             else
             {
                 this.Dispose();
+            }
+        }
+
+        private void check_deepcontainer_CheckedChanged(object sender, EventArgs e)
+        {
+            if (check_searchdeepcontainer.Checked)
+            {
+                numericUpDown1.Enabled = true;
+                radio_outputkeepstructure.Enabled = true;
+            }
+            else if (check_searchdeepcontainer.Checked == false)
+            {
+                numericUpDown1.Enabled = false;
+                radio_outputkeepstructure.Enabled = false;
+
             }
         }
     }

@@ -43,6 +43,8 @@
             text_lagrone = new TextBox();
             label2 = new Label();
             tabPage3 = new TabPage();
+            numericUpDown1 = new NumericUpDown();
+            check_searchdeepcontainer = new CheckBox();
             button2 = new Button();
             text_containers = new TextBox();
             label3 = new Label();
@@ -65,6 +67,9 @@
             richTextBox1 = new RichTextBox();
             label6 = new Label();
             tabPage9 = new TabPage();
+            radio_outputkeepstructure = new RadioButton();
+            radio_alltoonefolder = new RadioButton();
+            check_copynonimage = new CheckBox();
             button4 = new Button();
             text_outputroute = new TextBox();
             label9 = new Label();
@@ -83,6 +88,7 @@
             groupBox1.SuspendLayout();
             tabPage2.SuspendLayout();
             tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
             tabPage4.SuspendLayout();
             tabPage5.SuspendLayout();
             tabPage6.SuspendLayout();
@@ -118,11 +124,11 @@
             tabPage1.Controls.Add(label1);
             tabPage1.Controls.Add(groupBox2);
             tabPage1.Controls.Add(groupBox1);
-            tabPage1.Location = new Point(4, 5);
+            tabPage1.Location = new Point(4, 19);
             tabPage1.Margin = new Padding(0);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(549, 389);
+            tabPage1.Size = new Size(549, 375);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "t1";
             // 
@@ -259,6 +265,8 @@
             // tabPage3
             // 
             tabPage3.BackColor = SystemColors.Control;
+            tabPage3.Controls.Add(numericUpDown1);
+            tabPage3.Controls.Add(check_searchdeepcontainer);
             tabPage3.Controls.Add(button2);
             tabPage3.Controls.Add(text_containers);
             tabPage3.Controls.Add(label3);
@@ -268,6 +276,27 @@
             tabPage3.Size = new Size(549, 389);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "t3";
+            // 
+            // numericUpDown1
+            // 
+            numericUpDown1.Enabled = false;
+            numericUpDown1.Location = new Point(319, 156);
+            numericUpDown1.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numericUpDown1.Name = "numericUpDown1";
+            numericUpDown1.Size = new Size(120, 23);
+            numericUpDown1.TabIndex = 5;
+            numericUpDown1.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            // 
+            // check_searchdeepcontainer
+            // 
+            check_searchdeepcontainer.AutoSize = true;
+            check_searchdeepcontainer.Location = new Point(23, 157);
+            check_searchdeepcontainer.Name = "check_searchdeepcontainer";
+            check_searchdeepcontainer.Size = new Size(290, 21);
+            check_searchdeepcontainer.TabIndex = 3;
+            check_searchdeepcontainer.Text = "Serach Subfolders with the Max Folder depth";
+            check_searchdeepcontainer.UseVisualStyleBackColor = true;
+            check_searchdeepcontainer.CheckedChanged += check_deepcontainer_CheckedChanged;
             // 
             // button2
             // 
@@ -302,10 +331,10 @@
             tabPage4.Controls.Add(progressBar2);
             tabPage4.Controls.Add(list_capacity);
             tabPage4.Controls.Add(label4);
-            tabPage4.Location = new Point(4, 5);
+            tabPage4.Location = new Point(4, 19);
             tabPage4.Name = "tabPage4";
             tabPage4.Padding = new Padding(3);
-            tabPage4.Size = new Size(549, 389);
+            tabPage4.Size = new Size(549, 375);
             tabPage4.TabIndex = 3;
             tabPage4.Text = "t4";
             // 
@@ -476,6 +505,9 @@
             // tabPage9
             // 
             tabPage9.BackColor = SystemColors.Control;
+            tabPage9.Controls.Add(radio_outputkeepstructure);
+            tabPage9.Controls.Add(radio_alltoonefolder);
+            tabPage9.Controls.Add(check_copynonimage);
             tabPage9.Controls.Add(button4);
             tabPage9.Controls.Add(text_outputroute);
             tabPage9.Controls.Add(label9);
@@ -485,6 +517,39 @@
             tabPage9.Size = new Size(549, 389);
             tabPage9.TabIndex = 8;
             tabPage9.Text = "t9";
+            // 
+            // radio_outputkeepstructure
+            // 
+            radio_outputkeepstructure.AutoSize = true;
+            radio_outputkeepstructure.Enabled = false;
+            radio_outputkeepstructure.Location = new Point(23, 183);
+            radio_outputkeepstructure.Name = "radio_outputkeepstructure";
+            radio_outputkeepstructure.Size = new Size(324, 21);
+            radio_outputkeepstructure.TabIndex = 7;
+            radio_outputkeepstructure.Text = "Output Loaded Containers with Directory Structure ";
+            radio_outputkeepstructure.UseVisualStyleBackColor = true;
+            // 
+            // radio_alltoonefolder
+            // 
+            radio_alltoonefolder.AutoSize = true;
+            radio_alltoonefolder.Checked = true;
+            radio_alltoonefolder.Location = new Point(23, 145);
+            radio_alltoonefolder.Name = "radio_alltoonefolder";
+            radio_alltoonefolder.Size = new Size(260, 21);
+            radio_alltoonefolder.TabIndex = 6;
+            radio_alltoonefolder.TabStop = true;
+            radio_alltoonefolder.Text = "Output All Loaded Images to one folder";
+            radio_alltoonefolder.UseVisualStyleBackColor = true;
+            // 
+            // check_copynonimage
+            // 
+            check_copynonimage.AutoSize = true;
+            check_copynonimage.Location = new Point(23, 252);
+            check_copynonimage.Name = "check_copynonimage";
+            check_copynonimage.Size = new Size(261, 21);
+            check_copynonimage.TabIndex = 4;
+            check_copynonimage.Text = "Copy non containers to output directory";
+            check_copynonimage.UseVisualStyleBackColor = true;
             // 
             // button4
             // 
@@ -595,7 +660,7 @@
             // 
             // panel1
             // 
-            panel1.Location = new Point(145, 5);
+            panel1.Location = new Point(146, 2);
             panel1.Name = "panel1";
             panel1.Size = new Size(610, 23);
             panel1.TabIndex = 6;
@@ -626,6 +691,7 @@
             tabPage2.PerformLayout();
             tabPage3.ResumeLayout(false);
             tabPage3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
             tabPage4.ResumeLayout(false);
             tabPage4.PerformLayout();
             tabPage5.ResumeLayout(false);
@@ -695,5 +761,10 @@
         private ListView list_capacity;
         private ProgressBar progressBar2;
         private Panel panel1;
+        private CheckBox check_searchdeepcontainer;
+        private CheckBox check_copynonimage;
+        private NumericUpDown numericUpDown1;
+        private RadioButton radio_outputkeepstructure;
+        private RadioButton radio_alltoonefolder;
     }
 }

@@ -17,9 +17,10 @@ namespace HideSloth.Tools
         private MainForm form1;
         private Settings form2;
         CancellationTokenSource cts = new CancellationTokenSource();
-
+        public static bool issub = false;
         private string loadedcontainers, outputroute, outputname, pwd;
         private bool ifok = false;
+        public static int searchdepth = 1;
         public void AppendTextToRichTextBox(string text)
         {
             // 检查是否需要跨线程调用
@@ -176,12 +177,17 @@ namespace HideSloth.Tools
                     {
                         GlobalVariables.rerange_decode = true;
                     }
+                    if (check_all.Checked)
+                    {
+                        issub = true;
+                        searchdepth = (int)numericUpDown1.Value;
+                    }
                     try
                     {
                         ifok = await Task.Run(() =>
                         {
                             // 假设Encryptor方法接受一个回调函数
-                            return WizardDecode.StegoExtractLarge(pwd, loadedcontainers, outputname,
+                            return WizardDecode.StegoExtractLarge(pwd, loadedcontainers, outputname, searchdepth,
                                 (message) => AppendTextToRichTextBox(message),cts.Token);
                         });
                         progressBar1.Style = ProgressBarStyle.Blocks;

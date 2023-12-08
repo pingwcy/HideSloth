@@ -39,6 +39,8 @@
             radio_modenormal = new RadioButton();
             label1 = new Label();
             tabPage2 = new TabPage();
+            numericUpDown1 = new NumericUpDown();
+            check_all = new CheckBox();
             check_rerange = new CheckBox();
             button1 = new Button();
             text_loaded = new TextBox();
@@ -72,6 +74,7 @@
             groupBox2.SuspendLayout();
             groupBox1.SuspendLayout();
             tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
             tabPage3.SuspendLayout();
             tabPage4.SuspendLayout();
             tabPage5.SuspendLayout();
@@ -111,10 +114,10 @@
             tabPage1.Controls.Add(groupBox2);
             tabPage1.Controls.Add(groupBox1);
             tabPage1.Controls.Add(label1);
-            tabPage1.Location = new Point(4, 5);
+            tabPage1.Location = new Point(4, 19);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(549, 389);
+            tabPage1.Size = new Size(549, 375);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "tabPage1";
             // 
@@ -200,6 +203,8 @@
             // tabPage2
             // 
             tabPage2.BackColor = SystemColors.Control;
+            tabPage2.Controls.Add(numericUpDown1);
+            tabPage2.Controls.Add(check_all);
             tabPage2.Controls.Add(check_rerange);
             tabPage2.Controls.Add(button1);
             tabPage2.Controls.Add(text_loaded);
@@ -211,10 +216,29 @@
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
             // 
+            // numericUpDown1
+            // 
+            numericUpDown1.Location = new Point(294, 171);
+            numericUpDown1.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numericUpDown1.Name = "numericUpDown1";
+            numericUpDown1.Size = new Size(120, 23);
+            numericUpDown1.TabIndex = 5;
+            numericUpDown1.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            // 
+            // check_all
+            // 
+            check_all.AutoSize = true;
+            check_all.Location = new Point(23, 173);
+            check_all.Name = "check_all";
+            check_all.Size = new Size(265, 21);
+            check_all.TabIndex = 4;
+            check_all.Text = "Include SubFloders with Maximum Depth";
+            check_all.UseVisualStyleBackColor = true;
+            // 
             // check_rerange
             // 
             check_rerange.AutoSize = true;
-            check_rerange.Location = new Point(333, 126);
+            check_rerange.Location = new Point(23, 137);
             check_rerange.Name = "check_rerange";
             check_rerange.Size = new Size(144, 21);
             check_rerange.TabIndex = 3;
@@ -254,10 +278,10 @@
             tabPage3.Controls.Add(button2);
             tabPage3.Controls.Add(text_outroute);
             tabPage3.Controls.Add(label3);
-            tabPage3.Location = new Point(4, 5);
+            tabPage3.Location = new Point(4, 19);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(549, 389);
+            tabPage3.Size = new Size(549, 375);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "tabPage3";
             // 
@@ -294,10 +318,10 @@
             tabPage4.Controls.Add(button3);
             tabPage4.Controls.Add(text_outname);
             tabPage4.Controls.Add(label4);
-            tabPage4.Location = new Point(4, 5);
+            tabPage4.Location = new Point(4, 19);
             tabPage4.Name = "tabPage4";
             tabPage4.Padding = new Padding(3);
-            tabPage4.Size = new Size(549, 389);
+            tabPage4.Size = new Size(549, 375);
             tabPage4.TabIndex = 3;
             tabPage4.Text = "tabPage4";
             // 
@@ -334,10 +358,10 @@
             tabPage5.BackColor = SystemColors.Control;
             tabPage5.Controls.Add(text_pwd);
             tabPage5.Controls.Add(label5);
-            tabPage5.Location = new Point(4, 5);
+            tabPage5.Location = new Point(4, 19);
             tabPage5.Name = "tabPage5";
             tabPage5.Padding = new Padding(3);
-            tabPage5.Size = new Size(549, 389);
+            tabPage5.Size = new Size(549, 375);
             tabPage5.TabIndex = 4;
             tabPage5.Text = "tabPage5";
             // 
@@ -364,10 +388,10 @@
             tabPage6.Controls.Add(progressBar1);
             tabPage6.Controls.Add(richTextBox1);
             tabPage6.Controls.Add(label6);
-            tabPage6.Location = new Point(4, 5);
+            tabPage6.Location = new Point(4, 19);
             tabPage6.Name = "tabPage6";
             tabPage6.Padding = new Padding(3);
-            tabPage6.Size = new Size(549, 389);
+            tabPage6.Size = new Size(549, 375);
             tabPage6.TabIndex = 5;
             tabPage6.Text = "tabPage6";
             // 
@@ -402,10 +426,10 @@
             tabPage7.BackColor = SystemColors.Control;
             tabPage7.Controls.Add(richTextBox2);
             tabPage7.Controls.Add(label7);
-            tabPage7.Location = new Point(4, 5);
+            tabPage7.Location = new Point(4, 19);
             tabPage7.Name = "tabPage7";
             tabPage7.Padding = new Padding(3);
-            tabPage7.Size = new Size(549, 389);
+            tabPage7.Size = new Size(549, 375);
             tabPage7.TabIndex = 6;
             tabPage7.Text = "tabPage7";
             // 
@@ -470,7 +494,7 @@
             // 
             // panel1
             // 
-            panel1.Location = new Point(166, 5);
+            panel1.Location = new Point(176, 5);
             panel1.Name = "panel1";
             panel1.Size = new Size(557, 20);
             panel1.TabIndex = 6;
@@ -501,6 +525,7 @@
             groupBox1.PerformLayout();
             tabPage2.ResumeLayout(false);
             tabPage2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
             tabPage3.ResumeLayout(false);
             tabPage3.PerformLayout();
             tabPage4.ResumeLayout(false);
@@ -554,5 +579,7 @@
         private Label label7;
         private CheckBox check_rerange;
         private Panel panel1;
+        private NumericUpDown numericUpDown1;
+        private CheckBox check_all;
     }
 }

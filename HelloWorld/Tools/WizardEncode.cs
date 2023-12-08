@@ -1,6 +1,7 @@
 ﻿using HideSloth.Crypto;
 using HideSloth.Steganography;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -13,10 +14,123 @@ namespace HideSloth.Tools
 {
     public class WizardEncode
     {
+        public List<string> otherfileslists;
 
-
-        public static bool StegoLarge(string pwd, List<int> bufflist, string containers_route, string route_secret, string output_route, List<string> container_list, Action<string> updateStatus, CancellationToken token)
+        public static void GetFilePaths(string directory, List<string> filePaths, int depth)
         {
+            if (depth == 0)
+            {
+                return;
+            }
+
+            try
+            {
+                // 获取当前目录下的所有文件
+                string[] files = Directory.GetFiles(directory);
+                filePaths.AddRange(files);
+
+                // 获取所有子目录
+                string[] subDirs = Directory.GetDirectories(directory);
+                foreach (string dir in subDirs)
+                {
+                    // 递归调用
+                    GetFilePaths(dir, filePaths, depth - 1);
+                }
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                Console.WriteLine("没有权限访问目录: " + directory);
+                Console.WriteLine(e.Message);
+            }
+            catch (DirectoryNotFoundException e)
+            {
+                Console.WriteLine("目录不存在: " + directory);
+                Console.WriteLine(e.Message);
+            }
+        }
+
+
+
+
+        /*
+        public static void GetDirectories(string sourceDir, List<string> directories, int depth)
+        {
+            if (depth == 0)
+            {
+                return;
+            }
+
+            try
+            {
+                // 添加当前目录
+                directories.Add(sourceDir);
+
+                // 获取所有子目录
+                string[] subDirs = Directory.GetDirectories(sourceDir);
+                foreach (string dir in subDirs)
+                {
+                    // 递归调用
+                    GetDirectories(dir, directories, depth - 1);
+                }
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                Console.WriteLine("没有权限访问目录: " + sourceDir);
+                Console.WriteLine(e.Message);
+            }
+            catch (DirectoryNotFoundException e)
+            {
+                Console.WriteLine("目录不存在: " + sourceDir);
+                Console.WriteLine(e.Message);
+            }
+        }
+        */
+        public static void CopyDirectoryStructure(string sourceDir, string destinationDir, List<string> createdDirectories, int maxDepth, int currentDepth = 0)
+        {
+            if (currentDepth > maxDepth)
+            {
+                return;
+            }
+
+            // 获取所有子目录
+            foreach (string dirPath in Directory.GetDirectories(sourceDir))
+            {
+                // 计算目标目录路径
+                string destDirPath = dirPath.Replace(sourceDir, destinationDir);
+
+                // 创建目标目录
+                Directory.CreateDirectory(destDirPath);
+
+                // 添加到列表中
+                createdDirectories.Add(destDirPath);
+
+                // 递归复制子目录
+                CopyDirectoryStructure(dirPath, destDirPath, createdDirectories, maxDepth, currentDepth + 1);
+            }
+        }
+
+
+        public static bool StegoLarge(string pwd, List<int> bufflist, string containers_route, string route_secret, string output_route, List<string> container_list, List<string> otherfilelist, List<string>  ALLfilePaths, Action<string> updateStatus, CancellationToken token)
+        {
+            string individualroutecontainer = "";
+            List<string> realrouteofcontainers = [];
+            //Judge do we need  copy the dir structrure
+            if (Form_EncodeWizard.keepstrcuture == true)
+            {
+                foreach (string singlecandidate in ALLfilePaths)
+                {
+                    individualroutecontainer = RemoveFirstFolderFromPath(GetRelativePath(containers_route, singlecandidate));
+                    if (Path.GetDirectoryName(individualroutecontainer)!= "")
+                    {
+                        string aa = (output_route +@"\\" +Path.GetDirectoryName(individualroutecontainer));
+                        Directory.CreateDirectory(aa);
+
+                    }
+                }
+
+            }
+
+
             int cycle = 0;
             using (FileStream fs = new FileStream(route_secret, FileMode.Open, FileAccess.Read))
             using (BinaryReader reader = new BinaryReader(fs))
@@ -44,11 +158,12 @@ namespace HideSloth.Tools
                         // 如果没有更多数据，跳出循环
                         break;
                     }
-                    if (IsImageFile(Path.Combine(containers_route, container_list[cycle])))
-                       {
 
-                        try
-                        {
+                    if (IsImageFile(Path.Combine(containers_route, container_list[cycle])))
+                    {
+
+                        ///try
+                        //{
                             //cycle number
                             byte[] intBytes0 = BitConverter.GetBytes(cycle);
                             //if (BitConverter.IsLittleEndian)
@@ -75,28 +190,40 @@ namespace HideSloth.Tools
                             {
                                 Bitmap result = LSB_Image.embed(Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData)), loaded);
 
-                                result.Save(Path.Combine(output_route, container_list[cycle]), System.Drawing.Imaging.ImageFormat.Png);
+                                result.Save(Path.Combine(output_route, Path.GetFileNameWithoutExtension(container_list[cycle])+GlobalVariables.outputformat), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                 loaded.Dispose();
 
                                 result.Dispose();
+                                updateStatus?.Invoke($"Saved: {Path.Combine(output_route, container_list[cycle])}" + ",Number: " + (cycle + 1).ToString() + ".");
+
                             }
                             else if (GlobalVariables.Algor == "Linear")
                             {
                                 Bitmap result = Core_Linear_Image.EncodeFileLinear(loaded, BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData));
 
-                                result.Save(Path.Combine(output_route, container_list[cycle]), System.Drawing.Imaging.ImageFormat.Png);
+                            string dirrela = "";
+                            if (Path.GetDirectoryName(container_list[cycle])!="")
+                            {
+                                dirrela = Path.GetDirectoryName(container_list[cycle]) + @"\\";
+
+                            }
+                            string onlyname = Path.GetFileNameWithoutExtension(container_list[cycle]);
+
+
+                            result.Save((output_route+@"\\"+ dirrela + Path.GetFileNameWithoutExtension(container_list[cycle]) +GlobalVariables.outputformat), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                 loaded.Dispose();
 
                                 result.Dispose();
                                 updateStatus?.Invoke($"Saved: {Path.Combine(output_route, container_list[cycle])}"+",Number: "+(cycle+1).ToString()+".");
                             }
                             
-                        }
+                        //}
+                        /*
                         catch (Exception ex)
                         {
                             return false;
                         }
-                        
+                        */
                         //
 
                         // 如果读取的数据小于缓冲区大小，表示已到达文件末尾
@@ -107,6 +234,62 @@ namespace HideSloth.Tools
                         cycle++;
 
                     }
+
+                    
+                }
+                //copy non image files
+                updateStatus?.Invoke($"Now we will start copy non image file, please wait");
+
+                if (Form_EncodeWizard.copynonimage == true && Form_EncodeWizard.keepstrcuture == false)
+                {
+                    foreach (string filePath in otherfilelist)
+                    {
+                        if (IsImageFile(filePath) != true)
+                        {
+                            // 从文件路径中提取文件名
+                            string fileName = Path.GetFileName(filePath);
+
+                            // 构造目标文件的完整路径
+                            string destFile = Path.Combine(output_route, fileName);
+                            // updateStatus?.Invoke(fileName+"    "+destFile);
+
+                            // 复制文件
+                            File.Copy(filePath, destFile, overwrite: true);
+                            updateStatus?.Invoke($"Copied: "+ filePath+"\n");
+
+                        }
+                    }
+                    updateStatus?.Invoke($"Copy Finnished");
+
+                }
+                else if (Form_EncodeWizard.copynonimage == true && Form_EncodeWizard.keepstrcuture == true)
+                {
+                    foreach (string filePath in ALLfilePaths)
+                    {
+                        if (IsImageFile(filePath) != true)
+                        {
+                            // 从文件路径中提取文件名
+
+                            string relativeroute = RemoveFirstFolderFromPath(GetRelativePath(containers_route,filePath));
+                            if (relativeroute!="")
+                            {
+                                relativeroute = @"\\" + relativeroute;
+                            }
+                            string fileoutputroute = output_route+ relativeroute;
+
+                            // 构造目标文件的完整路径
+                            //string destFile = Path.Combine(output_route, fileName);
+                            // updateStatus?.Invoke(fileName+"    "+destFile);
+
+                            // 复制文件
+                            File.Copy(filePath, Path.GetFullPath(fileoutputroute), overwrite: false);
+                            updateStatus?.Invoke($"Copied: " + filePath + "\n");
+
+                        }
+                    }
+                    updateStatus?.Invoke($"Copy Finnished");
+
+
                 }
 
                 return true;
@@ -128,34 +311,124 @@ namespace HideSloth.Tools
             return true;
         }
 
-        public static List<ImageInfo> CheckCapacity(string folderPath)
+        public static List<string> otherfiles(string folderPath, List<string> ALLfilePaths)
+        {
+            List<string> otherfilelist = new List<string>();
+
+            if (Form_EncodeWizard.searchdeep)
+            {
+                foreach (string fileName in ALLfilePaths)
+                {
+                    if (IsImageFile(fileName) != true)
+                    {
+                        otherfilelist.Add(fileName);
+                    }
+                }
+
+            }
+            else
+            {
+                string[] fileEntries = Directory.GetFiles(folderPath).OrderBy(path => Path.GetFileName(path)).ToArray();
+                foreach (string fileName in fileEntries)
+                {
+                    if (IsImageFile(fileName) != true)
+                    {
+                        otherfilelist.Add(fileName);
+                    }
+                }
+            }
+            return otherfilelist;
+
+        }
+        static string RemoveFirstFolderFromPath(string path)
+        {
+            int indexOfFirstBackslash = path.IndexOf('\\');
+            if (indexOfFirstBackslash != -1)
+            {
+                return path.Substring(indexOfFirstBackslash + 1);
+            }
+            return path;
+        }
+
+        public static string GetRelativePath(string basePath, string absolutePath)
+        {
+            var baseUri = new Uri(basePath);
+            var absoluteUri = new Uri(absolutePath);
+
+            if (!baseUri.IsAbsoluteUri || !absoluteUri.IsAbsoluteUri)
+            {
+                throw new InvalidOperationException("路径必须是绝对路径");
+            }
+
+            var relativeUri = baseUri.MakeRelativeUri(absoluteUri);
+
+            // Uri 的 ToString 方法会将路径分隔符转换为正斜杠（/），可能需要将它们转换回反斜杠（\）
+            return Uri.UnescapeDataString(relativeUri.ToString()).Replace('/', '\\');
+        }
+
+        public static List<ImageInfo> CheckCapacity(string folderPath, List<string> Allfile)
         {
             List<ImageInfo> list = new List<ImageInfo>();
-            string[] fileEntries = Directory.GetFiles(folderPath).OrderBy(path => Path.GetFileName(path)).ToArray();
-            foreach (string fileName in fileEntries)
+
+            if (Form_EncodeWizard.searchdeep)
             {
-                if (IsImageFile(fileName))
+                foreach (string fileName in Allfile)
                 {
-                    using (Image img = Image.FromFile(fileName))
+                    if (IsImageFile(fileName))
                     {
-                        string dimensions = "";
-                        if (GlobalVariables.Algor == "Linear")
+                        using (Image img = Image.FromFile(fileName))
                         {
-                            dimensions = Math.Round(img.Width * img.Height / 1024 * 0.97).ToString()+" KB";
+                            string dimensions = "";
+                            if (GlobalVariables.Algor == "Linear")
+                            {
+                                dimensions = Math.Round(img.Width * img.Height / 1024 * 0.97).ToString() + " KB";
 
+                            }
+                            if (GlobalVariables.Algor == "LSB")
+                            {
+                                dimensions = Math.Round(img.Width * img.Height * 3 / 8 * 0.89 / 1024 / 1.34).ToString() + " KB";
+                                //MessageBox.Show("No code!!!!");
+
+                            }
+
+                            list.Add(new ImageInfo
+                            {
+                                FileName = RemoveFirstFolderFromPath(GetRelativePath(folderPath, fileName)),
+                                Dimensions = dimensions
+                            });
                         }
-                        if (GlobalVariables.Algor == "LSB")
-                        {
-                            //dimensions = Math.Round(img.Width * img.Height / 1024 * 0.97).ToString() + " KB";
-                            MessageBox.Show("No code!!!!");
+                    }
+                }
 
+            }
+            else
+            {
+                string[] fileEntries = Directory.GetFiles(folderPath).OrderBy(path => Path.GetFileName(path)).ToArray();
+                foreach (string fileName in fileEntries)
+                {
+                    if (IsImageFile(fileName))
+                    {
+                        using (Image img = Image.FromFile(fileName))
+                        {
+                            string dimensions = "";
+                            if (GlobalVariables.Algor == "Linear")
+                            {
+                                dimensions = Math.Round(img.Width * img.Height / 1024 * 0.97).ToString() + " KB";
+
+                            }
+                            if (GlobalVariables.Algor == "LSB")
+                            {
+                                dimensions = Math.Round(img.Width * img.Height * 3 / 8 * 0.89 / 1024 / 1.34).ToString() + " KB";
+                                //MessageBox.Show("No code!!!!");
+
+                            }
+
+                            list.Add(new ImageInfo
+                            {
+                                FileName = Path.GetFileName(fileName),
+                                Dimensions = dimensions
+                            });
                         }
-
-                        list.Add(new ImageInfo
-                        {
-                            FileName = Path.GetFileName(fileName),
-                            Dimensions = dimensions
-                        });
                     }
                 }
             }
