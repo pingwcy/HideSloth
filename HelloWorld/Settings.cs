@@ -68,6 +68,7 @@ namespace HideSloth
             check_meta.Checked = GlobalVariables.copymeta;
             check_keepformat.Checked = GlobalVariables.keepformat;
             check_copymetaother.Checked = GlobalVariables.copyotherfilemeta;
+            numericUpDown1.Value = GlobalVariables.smallstandard;
         }
 
         private void Radio_LSB_PB_CheckedChanged(object sender, EventArgs e)
@@ -131,6 +132,7 @@ namespace HideSloth
             GlobalVariables.copymeta = check_meta.Checked;
             GlobalVariables.copyotherfilemeta = check_copymetaother.Checked;
             GlobalVariables.keepformat = check_keepformat.Checked;
+            GlobalVariables.smallstandard = (int) numericUpDown1.Value;
             form1.UpdateStatusStrip();
             this.Close();
         }

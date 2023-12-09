@@ -110,7 +110,7 @@ namespace HideSloth.Tools
         }
 
 
-        public static bool StegoLarge(string pwd, List<int> bufflist, string containers_route, string route_secret, string output_route, List<string> container_list, List<string> otherfilelist, List<string> ALLfilePaths, Action<string> updateStatus, CancellationToken token)
+        public static bool StegoLarge(string pwd, List<int> bufflist, string containers_route, string route_secret, string output_route, List<string> container_list, List<string> otherfilelist, List<string> ALLfilePaths, List<string> smallimagelist, Action<string> updateStatus, CancellationToken token)
         {
             string individualroutecontainer = "";
             List<string> realrouteofcontainers = [];
@@ -321,7 +321,7 @@ namespace HideSloth.Tools
 
                         }
                     }
-                    updateStatus?.Invoke($"Copy Finnished");
+                   // updateStatus?.Invoke($"Copy Finnished");
 
                 }
                 else if (Form_EncodeWizard.copynonimage == true && Form_EncodeWizard.keepstrcuture == true)
@@ -356,10 +356,40 @@ namespace HideSloth.Tools
 
                         }
                     }
-                    updateStatus?.Invoke($"Copy Finnished");
 
 
                 }
+                //here is some small images we can not use
+                if (smallimagelist.Count != 0)
+                {
+                    foreach (string smallroute in smallimagelist)
+                    {
+                        string filePath = Path.GetFullPath(containers_route +@"\\"+ smallroute);
+                        string relativeroute = RemoveFirstFolderFromPath(GetRelativePath(containers_route, filePath));
+                        if (relativeroute != "")
+                        {
+                            relativeroute = @"\\" + relativeroute;
+                        }
+                        string fileoutputroute = output_route + relativeroute;
+
+                        // 构造目标文件的完整路径
+                        //string destFile = Path.Combine(output_route, fileName);
+                        // updateStatus?.Invoke(fileName+"    "+destFile);
+
+                        // 复制文件
+                        File.Copy(filePath, Path.GetFullPath(fileoutputroute), overwrite: false);
+                        if (GlobalVariables.copyotherfilemeta)
+                        {
+                            File.SetCreationTime(Path.GetFullPath(fileoutputroute), File.GetCreationTime(filePath));
+                            File.SetLastAccessTime(Path.GetFullPath(fileoutputroute), File.GetLastAccessTime(filePath));
+                            File.SetLastWriteTime(Path.GetFullPath(fileoutputroute), File.GetLastWriteTime(filePath));
+
+                        }
+                        updateStatus?.Invoke($"Copied: " + filePath + "\n");
+
+                    }
+                }
+                updateStatus?.Invoke($"Copy Finnished");
 
                 return true;
             }
@@ -435,10 +465,10 @@ namespace HideSloth.Tools
             return Uri.UnescapeDataString(relativeUri.ToString()).Replace('/', '\\');
         }
 
-        public static List<ImageInfo> CheckCapacity(string folderPath, List<string> Allfile)
+        public static List<ImageInfo> CheckCapacity(string folderPath, List<string> Allfile, out List<string> smallimages)
         {
             List<ImageInfo> list = new List<ImageInfo>();
-
+            smallimages = [];
             if (Form_EncodeWizard.searchdeep)
             {
                 foreach (string fileName in Allfile)
@@ -459,12 +489,18 @@ namespace HideSloth.Tools
                                 //MessageBox.Show("No code!!!!");
 
                             }
-
-                            list.Add(new ImageInfo
+                            if (Int32.Parse(dimensions.Substring(0, dimensions.Length - 3)) <= GlobalVariables.smallstandard)
                             {
-                                FileName = RemoveFirstFolderFromPath(GetRelativePath(folderPath, fileName)),
-                                Dimensions = dimensions
-                            });
+                                smallimages.Add(RemoveFirstFolderFromPath(GetRelativePath(folderPath, fileName)));
+                            }
+                            else
+                            {
+                                list.Add(new ImageInfo
+                                {
+                                    FileName = RemoveFirstFolderFromPath(GetRelativePath(folderPath, fileName)),
+                                    Dimensions = dimensions
+                                });
+                            }
                         }
                     }
                 }
@@ -492,11 +528,18 @@ namespace HideSloth.Tools
 
                             }
 
-                            list.Add(new ImageInfo
+                            if (Int32.Parse(dimensions.Substring(0, dimensions.Length - 3)) <= 1)
                             {
-                                FileName = Path.GetFileName(fileName),
-                                Dimensions = dimensions
-                            });
+                                smallimages.Add(RemoveFirstFolderFromPath(GetRelativePath(folderPath, fileName)));
+                            }
+                            else
+                            {
+                                list.Add(new ImageInfo
+                                {
+                                    FileName = RemoveFirstFolderFromPath(GetRelativePath(folderPath, fileName)),
+                                    Dimensions = dimensions
+                                });
+                            }
                         }
                     }
                 }

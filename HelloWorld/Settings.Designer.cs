@@ -49,10 +49,16 @@
             check_meta = new CheckBox();
             combo_entension = new ComboBox();
             label1 = new Label();
+            groupBox4 = new GroupBox();
+            label3 = new Label();
+            numericUpDown1 = new NumericUpDown();
+            label2 = new Label();
             groupBox5.SuspendLayout();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox3.SuspendLayout();
+            groupBox4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
             SuspendLayout();
             // 
             // groupBox5
@@ -83,15 +89,15 @@
             Radio_LSB_PB.AutoSize = true;
             Radio_LSB_PB.Location = new Point(26, 22);
             Radio_LSB_PB.Name = "Radio_LSB_PB";
-            Radio_LSB_PB.Size = new Size(181, 21);
+            Radio_LSB_PB.Size = new Size(184, 21);
             Radio_LSB_PB.TabIndex = 0;
-            Radio_LSB_PB.Text = "PNG/BMP - Traditiona LSB";
+            Radio_LSB_PB.Text = "PNG/BMP - Traditional LSB";
             Radio_LSB_PB.UseVisualStyleBackColor = true;
             Radio_LSB_PB.CheckedChanged += Radio_LSB_PB_CheckedChanged;
             // 
             // button1
             // 
-            button1.Location = new Point(91, 385);
+            button1.Location = new Point(91, 473);
             button1.Name = "button1";
             button1.Size = new Size(165, 42);
             button1.TabIndex = 37;
@@ -101,7 +107,7 @@
             // 
             // button2
             // 
-            button2.Location = new Point(348, 385);
+            button2.Location = new Point(348, 473);
             button2.Name = "button2";
             button2.Size = new Size(165, 42);
             button2.TabIndex = 38;
@@ -286,11 +292,52 @@
             label1.TabIndex = 0;
             label1.Text = "Output Container Format";
             // 
+            // groupBox4
+            // 
+            groupBox4.Controls.Add(label3);
+            groupBox4.Controls.Add(numericUpDown1);
+            groupBox4.Controls.Add(label2);
+            groupBox4.Location = new Point(12, 393);
+            groupBox4.Name = "groupBox4";
+            groupBox4.Size = new Size(555, 64);
+            groupBox4.TabIndex = 42;
+            groupBox4.TabStop = false;
+            groupBox4.Text = "Properties of Operation";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(440, 30);
+            label3.Name = "label3";
+            label3.Size = new Size(24, 17);
+            label3.TabIndex = 2;
+            label3.Text = "KB";
+            // 
+            // numericUpDown1
+            // 
+            numericUpDown1.Location = new Point(314, 28);
+            numericUpDown1.Maximum = new decimal(new int[] { 1024, 0, 0, 0 });
+            numericUpDown1.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numericUpDown1.Name = "numericUpDown1";
+            numericUpDown1.Size = new Size(120, 23);
+            numericUpDown1.TabIndex = 1;
+            numericUpDown1.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(26, 30);
+            label2.Name = "label2";
+            label2.Size = new Size(279, 17);
+            label2.TabIndex = 0;
+            label2.Text = "Ignore Images with Capacity Not Higher Than ";
+            // 
             // Settings
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(590, 439);
+            ClientSize = new Size(590, 527);
+            Controls.Add(groupBox4);
             Controls.Add(groupBox3);
             Controls.Add(groupBox2);
             Controls.Add(groupBox1);
@@ -308,6 +355,9 @@
             groupBox2.PerformLayout();
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
+            groupBox4.ResumeLayout(false);
+            groupBox4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
             ResumeLayout(false);
         }
 
@@ -334,5 +384,9 @@
         private CheckBox check_meta;
         private CheckBox check_keepformat;
         private CheckBox check_copymetaother;
+        private GroupBox groupBox4;
+        private Label label3;
+        private NumericUpDown numericUpDown1;
+        private Label label2;
     }
 }

@@ -45,5 +45,6 @@ namespace HideSloth
         public static bool copymeta = false;//for loaded container
         public static bool keepformat = false;
         public static bool copyotherfilemeta = false;//for other files and directories
+        public static int smallstandard = 1;
     }
 }

@@ -25,7 +25,7 @@ namespace HideSloth.Tools
         public List<string> wholestrcuture;
         public int maxfloder;
         public List<string> ALLfilePaths = new List<string>();
-
+        public List<string> smallimage;
         private double CalculateTotalSizeFromList(List<ImageInfo> imageList)
         {
             double totalSize = 0;
@@ -262,7 +262,7 @@ namespace HideSloth.Tools
                         {
                             searchdeep = false;
                         }
-                        var list = await Task.Run(() => CheckCapacity(containers, ALLfilePaths));
+                        var list = await Task.Run(() => CheckCapacity(containers, ALLfilePaths, out smallimage));
                         otherfile = await Task.Run(() => WizardEncode.otherfiles(containers, ALLfilePaths));
                         fileNamesList = list.Select(image => image.FileName).ToList();
 
@@ -381,7 +381,7 @@ namespace HideSloth.Tools
                         ifok = await Task.Run(() =>
                         {
                             // 假设Encryptor方法接受一个回调函数
-                            return WizardEncode.StegoLarge(pwd, AssgCapacityList, containers, largonesecret, routeofoutput, fileNamesList, otherfile, ALLfilePaths,
+                            return WizardEncode.StegoLarge(pwd, AssgCapacityList, containers, largonesecret, routeofoutput, fileNamesList, otherfile, ALLfilePaths,smallimage,
                                 (message) => AppendTextToRichTextBox(message), cts.Token);
                         });
                     }
