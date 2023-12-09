@@ -165,19 +165,26 @@ namespace HideSloth.Tools
 
                         return false;
                     }
-                    buffer = reader.ReadBytes(Convert.ToInt32(bufflist[cycle]));
+                    if (fs.Position >= fs.Length)
+                    {
+                        // 已到达文件末尾
+                        break;
+                    }
 
+                    buffer = reader.ReadBytes(Convert.ToInt32(bufflist[cycle]));
+                    /*
                     if (buffer.Length == 0)
                     {
                         // 如果没有更多数据，跳出循环
                         break;
                     }
-
+                    */
+                    
                     if (IsImageFile(Path.Combine(containers_route, container_list[cycle])))
                     {
 
-                        ///try
-                        //{
+                        try
+                        {
                         //cycle number
                         byte[] intBytes0 = BitConverter.GetBytes(cycle);
                         //if (BitConverter.IsLittleEndian)
@@ -271,20 +278,28 @@ namespace HideSloth.Tools
                             updateStatus?.Invoke($"Saved: {Path.Combine(output_route, container_list[cycle])}" + ",Number: " + (cycle + 1).ToString() + ".");
                         }
 
-                        //}
-                        /*
+                        }
+                        
                         catch (Exception ex)
                         {
                             return false;
                         }
-                        */
+                        
                         //
 
                         // 如果读取的数据小于缓冲区大小，表示已到达文件末尾
+                        /*
                         if (buffer.Length < bufflist[cycle])
                         {
                             break;
                         }
+                        */
+                        if (buffer.Length < bufflist[cycle] || fs.Position >= fs.Length)
+                        {
+                            break;
+                        }
+
+
                         cycle++;
 
                     }

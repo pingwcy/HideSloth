@@ -261,78 +261,51 @@ namespace HideSloth
                             UpdateUI(() => richTextBoxLog.ScrollToCaret());
                             string newroutename = "";
 
+                            Bitmap result = null;
+
                             if (GlobalVariables.Algor == "LSB")
                             {
-                                Bitmap result = LSB_Image.embed(Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData)), loaded);
-                                UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Success to embed, Please select a route and name to save loaded container.\n"));
-                                UpdateUI(() => richTextBoxLog.ScrollToCaret());
-                                if (check_multi.Checked == false)
-                                {
-                                    this.Invoke(new Action(() => Outputfile_pngbmp()));
-                                }
-                                if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
-                                {
-                                    newroutename = GlobalVariables.outputnameandroute;
-                                    result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-
-                                }
-                                if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
-                                {
-                                    if (GlobalVariables.keepformat)
-                                    {
-                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
-                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-
-                                    }
-                                    else
-                                    {
-                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
-                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-                                    }
-                                }
-
-                                result.Dispose();
-                                UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- Loaded container saved\n", false));
-                                UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                                result = LSB_Image.embed(Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData)), loaded);
 
                             }
                             else if (GlobalVariables.Algor == "Linear")
                             {
-                                Bitmap result = Core_Linear_Image.EncodeFileLinear(loaded, BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData));
-                                UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Success to embed, Please select a route and name to save loaded container.\n"));
-                                UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                                result = Core_Linear_Image.EncodeFileLinear(loaded, BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData));
+                            }
+                            UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Success to embed, Please select a route and name to save loaded container.\n"));
+                            UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
-                                if (check_multi.Checked == false)
-                                {
-                                    this.Invoke(new Action(() => Outputfile_pngbmp()));
-                                }
-                                if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
-                                {
-                                    newroutename = GlobalVariables.outputnameandroute;
-                                    result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-                                    
-                                }
-                                if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
-                                {
-                                    if (GlobalVariables.keepformat)
-                                    {
-                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
-                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-
-                                    }
-                                    else
-                                    {
-                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
-                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-                                    }
-                                }
-
-                                result.Dispose();
-
-                                UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- Loaded container saved\n", false));
-                                UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                            if (check_multi.Checked == false)
+                            {
+                                this.Invoke(new Action(() => Outputfile_pngbmp()));
+                            }
+                            if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
+                            {
+                                newroutename = GlobalVariables.outputnameandroute;
+                                result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
 
                             }
+                            if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
+                            {
+                                if (GlobalVariables.keepformat)
+                                {
+                                    newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
+                                    result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+
+                                }
+                                else
+                                {
+                                    newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
+                                    result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                }
+                            }
+
+                            result.Dispose();
+
+                            UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- Loaded container saved\n", false));
+                            UpdateUI(() => richTextBoxLog.ScrollToCaret());
+
+
                             if (GlobalVariables.copymeta)
                             {
                                 File.SetCreationTime(newroutename, File.GetCreationTime(single_container));
@@ -366,29 +339,23 @@ namespace HideSloth
 
                     try
                     {
-                        string encrypted_result = "";
+                        byte[]? encrypted_result = new byte[0];
                         byte[]? decrypted_content = new byte[0];
                         if (GlobalVariables.Algor == "LSB")
                         {
-                            encrypted_result = LSB_Image.extract(unloading);
-                            UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Extracted File to memory Successful\n"));
-                            UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
-                            decrypted_content = AesGcmDecryptor.Decrypt(Convert.FromBase64String(encrypted_result), GlobalVariables.password);
-                            UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Decrypted File in memory Successful, select a route to save\n"));
-                            UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
+                            encrypted_result = Convert.FromBase64String(LSB_Image.extract(unloading));
                         }
                         else if (GlobalVariables.Algor == "Linear")
                         {
-                            byte[]? filecontent = Core_Linear_Image.DecodeFileFromImage(unloading);
-                            UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Extracted File to memory Successful\n"));
-                            UpdateUI(() => richTextBoxLog.ScrollToCaret());
-                            decrypted_content = AesGcmDecryptor.Decrypt(filecontent, GlobalVariables.password);
-                            UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Decrypted File in memory Successful, select a route to save\n"));
-                            UpdateUI(() => richTextBoxLog.ScrollToCaret());
-                            filecontent = null;
+                            encrypted_result = Core_Linear_Image.DecodeFileFromImage(unloading);
                         }
+
+                        UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Extracted File to memory Successful\n"));
+                        UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                        decrypted_content = AesGcmDecryptor.Decrypt(encrypted_result, GlobalVariables.password);
+                        UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Decrypted File in memory Successful, select a route to save\n"));
+                        UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                        encrypted_result = null;
 
                         int nameserperatorindex = BytesStringThings.FindSeparatorIndex(decrypted_content, GlobalVariables.separator);
                         BytesStringThings.ExtractFileName(decrypted_content, nameserperatorindex);
@@ -396,6 +363,7 @@ namespace HideSloth
 
                         byte[]? realcontent = BytesStringThings.ExtractFileContent(decrypted_content, nameserperatorindex);
                         decrypted_content = null;
+
                         if (GlobalVariables.outputnameandroute != null)
                         {
                             BytesStringThings.BytesWritetoFile(GlobalVariables.outputnameandroute, realcontent);
@@ -441,58 +409,29 @@ namespace HideSloth
                                 lastaccess = File.GetLastAccessTime(single_container);
                             }
 
+                            Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
+                            Bitmap result = null;
                             if (GlobalVariables.Algor == "LSB")
                             {
                                 string StringFromFile = BytesStringThings.ReadFileToStringwithName(GlobalVariables.route_secret);
                                 UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Readed secret File in memory Successful\n"));
                                 UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
-                                Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
                                 UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Loaded container in memory Successful, start to embed.\n"));
                                 UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
-                                Bitmap result = LSB_Image.embed(StringFromFile, loaded);
+                                result = LSB_Image.embed(StringFromFile, loaded);
                                 UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Embed File in memory Successful, select a route to save\n"));
                                 UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
-                                if (check_multi.Checked == false)
-                                {
-                                    this.Invoke(new Action(() => Outputfile_pngbmp()));
-                                }
-                                if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
-                                {
-                                    newroutename = GlobalVariables.outputnameandroute;
-                                    result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-
-                                }
-                                if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
-                                {
-                                    if (GlobalVariables.keepformat)
-                                    {
-                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
-                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-
-                                    }
-                                    else
-                                    {
-                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
-                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-                                    }
-                                }
-
-                                UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- Saved Successful\n", false));
-                                UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
-                                loaded.Dispose();
 
                             }
                             else if (GlobalVariables.Algor == "Linear")
                             {
-                                Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
                                 UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Loaded container in memory Successful, start to embed.\n"));
                                 UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                                result = Core_Linear_Image.EncodeFileLinear(loaded, BytesStringThings.ReadFileToByteswithName(GlobalVariables.route_secret));
+                            }
 
-                                Bitmap result = Core_Linear_Image.EncodeFileLinear(loaded, BytesStringThings.ReadFileToByteswithName(GlobalVariables.route_secret));
                                 UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Readed secret File and embed in container in memory Successful, please save\n"));
                                 UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
@@ -526,7 +465,7 @@ namespace HideSloth
 
                                 loaded.Dispose();
 
-                            }
+                            
                             if (GlobalVariables.copymeta)
                             {
                                 File.SetCreationTime(newroutename, File.GetCreationTime(single_container));
@@ -553,18 +492,25 @@ namespace HideSloth
                 {
                     try
                     {
-                        string result = string.Empty;
+                        byte[] datawithname = new byte[0];
                         Bitmap unloading = new Bitmap(GlobalVariables.route_container);
+
                         UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Readed loaded container\n"));
                         UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
                         if (GlobalVariables.Algor == "LSB")
                         {
-                            result = LSB_Image.extract(unloading);
+                            datawithname = Convert.FromBase64String(LSB_Image.extract(unloading));
                             UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Extracted File Successful\n"));
                             UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
-                            byte[] datawithname = Convert.FromBase64String(result);
+                        }
+                        else if (GlobalVariables.Algor == "Linear")
+                        {
+                            datawithname = Core_Linear_Image.DecodeFileFromImage(unloading);
+                            UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Extracted File Successful\n"));
+                            UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                        }
 
                             int nameserperatorindex = BytesStringThings.FindSeparatorIndex(datawithname, GlobalVariables.separator);
                             BytesStringThings.ExtractFileName(datawithname, nameserperatorindex);
@@ -581,30 +527,7 @@ namespace HideSloth
                             unloading.Dispose();
                             ShowMessageOnUIThread("Success decode file without encryption from image", "Success");
 
-                        }
-                        else if (GlobalVariables.Algor == "Linear")
-                        {
-                            byte[] filecontent = Core_Linear_Image.DecodeFileFromImage(unloading);
-                            UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Extracted File Successful\n"));
-                            UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
-
-                            int nameserperatorindex = BytesStringThings.FindSeparatorIndex(filecontent, GlobalVariables.separator);
-                            BytesStringThings.ExtractFileName(filecontent, nameserperatorindex);
-                            this.Invoke(new Action(() => Outputfile_any()));
-
-                            byte[] realcontent = BytesStringThings.ExtractFileContent(filecontent, nameserperatorindex);
-                            if (GlobalVariables.outputnameandroute != null)
-                            {
-                                BytesStringThings.BytesWritetoFile(GlobalVariables.outputnameandroute, realcontent);
-                            }
-                            UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- Saved Successful\n", false));
-                            UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
-                            unloading.Dispose();
-                            ShowMessageOnUIThread("Success decode file without encryption from image", "Success");
-
-                        }
+                        
 
 
                     }
@@ -644,59 +567,26 @@ namespace HideSloth
                             byte[] encryptedData = AesGcmEncryptor.Encrypt(plain_bin, GlobalVariables.password, out salt, out nonce, out tag);
                             UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Encrypted String Successful\n"));
                             UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
+                            Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
+                            UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Container Loaded Successful, start to embed\n"));
+                            UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                            Bitmap result = null;
 
                             if (GlobalVariables.Algor == "LSB")
                             {
-                                Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
-                                UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Container Loaded Successful, start to embed\n"));
-                                UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
-                                Bitmap result = LSB_Image.embed(Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData)), loaded);
+                                result = LSB_Image.embed(Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData)), loaded);
                                 UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Embed string Successful, please save loaded container\n"));
                                 UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
-                                if (check_multi.Checked == false)
-                                {
-                                    this.Invoke(new Action(() => Outputfile_pngbmp()));
-                                }
-                                if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
-                                {
-                                    newroutename = GlobalVariables.outputnameandroute;
-                                    result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-
-                                }
-                                if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
-                                {
-                                    if (GlobalVariables.keepformat)
-                                    {
-                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
-                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-
-                                    }
-                                    else
-                                    {
-                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
-                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-                                    }
-                                }
-                                loaded.Dispose();
-
-                                UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- Saved Successful\n", false));
-                                UpdateUI(() => richTextBoxLog.ScrollToCaret());
-                                result.Dispose();
 
                             }
                             else if (GlobalVariables.Algor == "Linear")
                             {
-                                Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
-                                UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Container Loaded Successful, start to embed\n"));
-                                UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
-                                Bitmap result = Core_Linear_Image.EncodeMsgLinearImage(Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData)), loaded);
+                                result = Core_Linear_Image.EncodeMsgLinearImage(Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData)), loaded);
                                 UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Embed string Successful, please save loaded container\n"));
                                 UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
+}
                                 if (check_multi.Checked == false)
                                 {
                                     this.Invoke(new Action(() => Outputfile_pngbmp()));
@@ -725,7 +615,7 @@ namespace HideSloth
                                 UpdateUI(() => richTextBoxLog.ScrollToCaret());
                                 loaded.Dispose();
                                 result.Dispose();
-                            }
+                            
                             if (GlobalVariables.copymeta)
                             {
                                 File.SetCreationTime(newroutename, File.GetCreationTime(single_container));
@@ -822,57 +712,28 @@ namespace HideSloth
                             {
                                 lastaccess = File.GetLastAccessTime(single_container);
                             }
-
+                            Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
+                            Bitmap result = null;
                             string newroutename = "";
+
                             if (GlobalVariables.Algor == "LSB")
                             {
-                                Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
                                 UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Loaded container Successful\n"));
                                 UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
-                                Bitmap result = LSB_Image.embed(BytesStringThings.StringtoBase64(Input_PlainText.Text), loaded);
+                                result = LSB_Image.embed(BytesStringThings.StringtoBase64(Input_PlainText.Text), loaded);
                                 UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Embed String Successful\n"));
                                 UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
-                                if (check_multi.Checked == false)
-                                {
-                                    this.Invoke(new Action(() => Outputfile_pngbmp()));
-                                }
-                                if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
-                                {
-                                    newroutename = GlobalVariables.outputnameandroute;
-                                    result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-
-                                }
-                                if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
-                                {
-                                    if (GlobalVariables.keepformat)
-                                    {
-                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
-                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-
-                                    }
-                                    else
-                                    {
-                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
-                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-                                    }
-                                }
-                                UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- Saved Successful\n", false));
-                                UpdateUI(() => richTextBoxLog.ScrollToCaret());
-                                loaded.Dispose();
-                                result.Dispose();
                             }
                             else if (GlobalVariables.Algor == "Linear")
                             {
-                                Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
                                 UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Loaded container Successful\n"));
                                 UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
-                                Bitmap result = Core_Linear_Image.EncodeMsgLinearImage(BytesStringThings.StringtoBase64(Input_PlainText.Text), loaded);
+                                result = Core_Linear_Image.EncodeMsgLinearImage(BytesStringThings.StringtoBase64(Input_PlainText.Text), loaded);
                                 UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Embed String Successful\n"));
                                 UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
+                            }
                                 if (check_multi.Checked == false)
                                 {
                                     this.Invoke(new Action(() => Outputfile_pngbmp()));
@@ -902,7 +763,7 @@ namespace HideSloth
                                 loaded.Dispose();
                                 result.Dispose();
 
-                            }
+                            
                             if (GlobalVariables.copymeta)
                             {
                                 File.SetCreationTime(newroutename, File.GetCreationTime(single_container));
@@ -1241,10 +1102,10 @@ namespace HideSloth
                 if (saveFileDialog.FileName != "")
                 {
                     GlobalVariables.outputnameandroute = saveFileDialog.FileName;
-                    if (Path.GetExtension(GlobalVariables.outputnameandroute)!=".png" && Path.GetExtension(GlobalVariables.outputnameandroute) != ".bmp")
+                    if (Path.GetExtension(GlobalVariables.outputnameandroute) != ".png" && Path.GetExtension(GlobalVariables.outputnameandroute) != ".bmp")
                     {
                         ShowMessageOnUIThread("You entered a format out of png or bmp, you can save it anyway, but it may cause data damage if you open them with other application.", "Warning");
-                    }    
+                    }
                     richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Output Name and Route of Loaded Container Selected: " + GlobalVariables.outputnameandroute + "\n");
 
                 }
