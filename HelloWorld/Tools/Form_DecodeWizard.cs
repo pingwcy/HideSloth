@@ -177,11 +177,21 @@ namespace HideSloth.Tools
                     {
                         GlobalVariables.rerange_decode = true;
                     }
+                    else if (check_rerange.Checked == false)
+                    {
+                        GlobalVariables.rerange_decode = false;
+
+                    }
                     if (check_all.Checked)
                     {
                         issub = true;
                         searchdepth = (int)numericUpDown1.Value;
                     }
+                    else if (check_all.Checked == false)
+                    {
+                        issub = false;
+                    }
+                    button4.Enabled = false;
                     try
                     {
                         ifok = await Task.Run(() =>
@@ -383,9 +393,23 @@ namespace HideSloth.Tools
         private void button4_Click(object sender, EventArgs e)
         {
             form2 = new Settings(form1); // 直接使用类级别的成员变量，不需要重新声明
+            form2.Closed += form2_Closed;
+
             form2.Show();
 
         }
+        private void form2_Closed(object sender, EventArgs e)
+        {
+            if (GlobalVariables.mode=="Normal")
+            {
+                radio_modenormal.Checked = true;
+            }
+            else
+            {
+                radio_modeencrypt.Checked = true;
+            }
+        }
+
     }
 }
 

@@ -124,11 +124,11 @@
             tabPage1.Controls.Add(label1);
             tabPage1.Controls.Add(groupBox2);
             tabPage1.Controls.Add(groupBox1);
-            tabPage1.Location = new Point(4, 19);
+            tabPage1.Location = new Point(4, 5);
             tabPage1.Margin = new Padding(0);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(549, 375);
+            tabPage1.Size = new Size(549, 389);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "t1";
             // 
@@ -331,10 +331,10 @@
             tabPage4.Controls.Add(progressBar2);
             tabPage4.Controls.Add(list_capacity);
             tabPage4.Controls.Add(label4);
-            tabPage4.Location = new Point(4, 19);
+            tabPage4.Location = new Point(4, 5);
             tabPage4.Name = "tabPage4";
             tabPage4.Padding = new Padding(3);
-            tabPage4.Size = new Size(549, 375);
+            tabPage4.Size = new Size(549, 389);
             tabPage4.TabIndex = 3;
             tabPage4.Text = "t4";
             // 

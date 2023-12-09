@@ -44,6 +44,9 @@
             Radio_Encryptor = new RadioButton();
             Radio_Normal = new RadioButton();
             groupBox3 = new GroupBox();
+            check_keepformat = new CheckBox();
+            check_copymetaother = new CheckBox();
+            check_meta = new CheckBox();
             combo_entension = new ComboBox();
             label1 = new Label();
             groupBox5.SuspendLayout();
@@ -88,7 +91,7 @@
             // 
             // button1
             // 
-            button1.Location = new Point(91, 367);
+            button1.Location = new Point(91, 385);
             button1.Name = "button1";
             button1.Size = new Size(165, 42);
             button1.TabIndex = 37;
@@ -98,7 +101,7 @@
             // 
             // button2
             // 
-            button2.Location = new Point(348, 367);
+            button2.Location = new Point(348, 385);
             button2.Name = "button2";
             button2.Size = new Size(165, 42);
             button2.TabIndex = 38;
@@ -220,21 +223,55 @@
             // 
             // groupBox3
             // 
+            groupBox3.Controls.Add(check_keepformat);
+            groupBox3.Controls.Add(check_copymetaother);
+            groupBox3.Controls.Add(check_meta);
             groupBox3.Controls.Add(combo_entension);
             groupBox3.Controls.Add(label1);
             groupBox3.Location = new Point(12, 270);
             groupBox3.Name = "groupBox3";
-            groupBox3.Size = new Size(274, 76);
+            groupBox3.Size = new Size(556, 109);
             groupBox3.TabIndex = 41;
             groupBox3.TabStop = false;
-            groupBox3.Text = "Loaded Containers in Bulk Process";
+            groupBox3.Text = "Properties of Output";
+            // 
+            // check_keepformat
+            // 
+            check_keepformat.AutoSize = true;
+            check_keepformat.Location = new Point(26, 73);
+            check_keepformat.Name = "check_keepformat";
+            check_keepformat.Size = new Size(260, 21);
+            check_keepformat.TabIndex = 4;
+            check_keepformat.Text = "Keep Extension Name in Bulk Processes";
+            check_keepformat.UseVisualStyleBackColor = true;
+            check_keepformat.CheckedChanged += check_keepformat_CheckedChanged;
+            // 
+            // check_copymetaother
+            // 
+            check_copymetaother.AutoSize = true;
+            check_copymetaother.Location = new Point(314, 73);
+            check_copymetaother.Name = "check_copymetaother";
+            check_copymetaother.Size = new Size(194, 21);
+            check_copymetaother.TabIndex = 3;
+            check_copymetaother.Text = "Copy metadata to other files";
+            check_copymetaother.UseVisualStyleBackColor = true;
+            // 
+            // check_meta
+            // 
+            check_meta.AutoSize = true;
+            check_meta.Location = new Point(314, 38);
+            check_meta.Name = "check_meta";
+            check_meta.Size = new Size(241, 21);
+            check_meta.TabIndex = 2;
+            check_meta.Text = "Copy metadata to loaded containers";
+            check_meta.UseVisualStyleBackColor = true;
             // 
             // combo_entension
             // 
             combo_entension.DropDownStyle = ComboBoxStyle.DropDownList;
             combo_entension.FormattingEnabled = true;
             combo_entension.Items.AddRange(new object[] { ".png", ".bmp" });
-            combo_entension.Location = new Point(161, 34);
+            combo_entension.Location = new Point(191, 34);
             combo_entension.Name = "combo_entension";
             combo_entension.Size = new Size(83, 25);
             combo_entension.TabIndex = 1;
@@ -243,17 +280,17 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(6, 37);
+            label1.Location = new Point(26, 37);
             label1.Name = "label1";
-            label1.Size = new Size(146, 17);
+            label1.Size = new Size(153, 17);
             label1.TabIndex = 0;
-            label1.Text = "Output Extension Name";
+            label1.Text = "Output Container Format";
             // 
             // Settings
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(590, 421);
+            ClientSize = new Size(590, 439);
             Controls.Add(groupBox3);
             Controls.Add(groupBox2);
             Controls.Add(groupBox1);
@@ -294,5 +331,8 @@
         private GroupBox groupBox3;
         private ComboBox combo_entension;
         private Label label1;
+        private CheckBox check_meta;
+        private CheckBox check_keepformat;
+        private CheckBox check_copymetaother;
     }
 }

@@ -115,6 +115,7 @@ namespace HideSloth.Tools
             //string targetFilePath = Path.Combine(destinationDirectory, originalFileName);
             if (GlobalVariables.rerange_decode)
             {
+                ALLfilePath.Clear();
                 List<string> targetfloder = [];
                 if (Form_DecodeWizard.issub)
                 {
@@ -193,7 +194,7 @@ namespace HideSloth.Tools
                         catch (Exception ex)
                         {
                             updateStatus?.Invoke(ex.Message);
-
+                            //throw;
                             return false;
                         }
 

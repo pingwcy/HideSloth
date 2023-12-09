@@ -65,6 +65,9 @@ namespace HideSloth
             Text_PBKDF2Iter.Text = GlobalVariables.iteration.ToString();
             ComboBox_Hash.SelectedItem = GlobalVariables.Hash;
             combo_entension.SelectedItem = GlobalVariables.outputformat;
+            check_meta.Checked = GlobalVariables.copymeta;
+            check_keepformat.Checked = GlobalVariables.keepformat;
+            check_copymetaother.Checked = GlobalVariables.copyotherfilemeta;
         }
 
         private void Radio_LSB_PB_CheckedChanged(object sender, EventArgs e)
@@ -118,13 +121,16 @@ namespace HideSloth
                 //Form1.Textbox_Password.Enabled = false;
             }
             GlobalVariables.outputformat = combo_entension.SelectedItem.ToString();
-            
+
             GlobalVariables.iteration = Int32.Parse(Text_PBKDF2Iter.Text);
 #pragma warning disable CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
 #pragma warning disable CS8601 // 引用类型赋值可能为 null。
             GlobalVariables.Hash = (string)ComboBox_Hash.SelectedItem;
 #pragma warning restore CS8601 // 引用类型赋值可能为 null。
 #pragma warning restore CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
+            GlobalVariables.copymeta = check_meta.Checked;
+            GlobalVariables.copyotherfilemeta = check_copymetaother.Checked;
+            GlobalVariables.keepformat = check_keepformat.Checked;
             form1.UpdateStatusStrip();
             this.Close();
         }
@@ -184,6 +190,18 @@ namespace HideSloth
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void check_keepformat_CheckedChanged(object sender, EventArgs e)
+        {
+            if (check_keepformat.Checked)
+            {
+                combo_entension.Enabled = true;
+            }
+            else
+            {
+                combo_entension.Enabled = true;
+            }
         }
     }
 

@@ -41,5 +41,9 @@ namespace HideSloth
         public static bool rerange_decode = false;
 
         public static string outputformat = ".png";//bulk process
+
+        public static bool copymeta = false;//for loaded container
+        public static bool keepformat = false;
+        public static bool copyotherfilemeta = false;//for other files and directories
     }
 }

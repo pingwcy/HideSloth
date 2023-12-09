@@ -245,16 +245,21 @@ namespace HideSloth
                             byte[] plainsecret_content = BytesStringThings.ReadFileToByteswithName(GlobalVariables.route_secret);
                             UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Secret File Readed\n"));
                             UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
+                            DateTime lastaccess = new DateTime(2021, 8, 15);
 
                             byte[] encryptedData = AesGcmEncryptor.Encrypt(plainsecret_content, GlobalVariables.password, out byte[] salt, out byte[] nonce, out byte[] tag);
 
                             UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Secret File Encrypted and stored in memory\n"));
                             UpdateUI(() => richTextBoxLog.ScrollToCaret());
-                            Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
+                            if (GlobalVariables.copymeta)
+                            {
+                                lastaccess = File.GetLastAccessTime(single_container);
+                            }
 
+                            Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
                             UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Container Loaded and Converted if necessary, Start to Embed\n"));
                             UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                            string newroutename = "";
 
                             if (GlobalVariables.Algor == "LSB")
                             {
@@ -267,15 +272,26 @@ namespace HideSloth
                                 }
                                 if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
                                 {
-                                    result.Save(GlobalVariables.outputnameandroute, Support_Converter.SaveFormatImage(Path.GetExtension(GlobalVariables.outputnameandroute)));
+                                    newroutename = GlobalVariables.outputnameandroute;
+                                    result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+
                                 }
                                 if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
                                 {
-                                    result.Save(Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container))+GlobalVariables.outputformat), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    if (GlobalVariables.keepformat)
+                                    {
+                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
+                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+
+                                    }
+                                    else
+                                    {
+                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
+                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    }
                                 }
 
                                 result.Dispose();
-
                                 UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- Loaded container saved\n", false));
                                 UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
@@ -292,16 +308,36 @@ namespace HideSloth
                                 }
                                 if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
                                 {
-                                    result.Save(GlobalVariables.outputnameandroute, Support_Converter.SaveFormatImage(Path.GetExtension(GlobalVariables.outputnameandroute)));
+                                    newroutename = GlobalVariables.outputnameandroute;
+                                    result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    
                                 }
                                 if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
                                 {
-                                    result.Save(Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    if (GlobalVariables.keepformat)
+                                    {
+                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
+                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+
+                                    }
+                                    else
+                                    {
+                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
+                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    }
                                 }
 
                                 result.Dispose();
+
                                 UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- Loaded container saved\n", false));
                                 UpdateUI(() => richTextBoxLog.ScrollToCaret());
+
+                            }
+                            if (GlobalVariables.copymeta)
+                            {
+                                File.SetCreationTime(newroutename, File.GetCreationTime(single_container));
+                                File.SetLastAccessTime(newroutename, lastaccess);
+                                File.SetLastWriteTime(newroutename, File.GetLastWriteTime(single_container));
 
                             }
 
@@ -398,6 +434,12 @@ namespace HideSloth
                         }
                         foreach (string single_container in GlobalVariables.route_containers)
                         {
+                            string newroutename = "";
+                            DateTime lastaccess = new DateTime(2021, 8, 15);
+                            if (GlobalVariables.copymeta)
+                            {
+                                lastaccess = File.GetLastAccessTime(single_container);
+                            }
 
                             if (GlobalVariables.Algor == "LSB")
                             {
@@ -419,11 +461,23 @@ namespace HideSloth
                                 }
                                 if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
                                 {
-                                    result.Save(GlobalVariables.outputnameandroute, Support_Converter.SaveFormatImage(Path.GetExtension(GlobalVariables.outputnameandroute)));
+                                    newroutename = GlobalVariables.outputnameandroute;
+                                    result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+
                                 }
                                 if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
                                 {
-                                    result.Save(Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    if (GlobalVariables.keepformat)
+                                    {
+                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
+                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+
+                                    }
+                                    else
+                                    {
+                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
+                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    }
                                 }
 
                                 UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- Saved Successful\n", false));
@@ -448,11 +502,23 @@ namespace HideSloth
                                 }
                                 if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
                                 {
-                                    result.Save(GlobalVariables.outputnameandroute, Support_Converter.SaveFormatImage(Path.GetExtension(GlobalVariables.outputnameandroute)));
+                                    newroutename = GlobalVariables.outputnameandroute;
+                                    result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+
                                 }
                                 if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
                                 {
-                                    result.Save(Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    if (GlobalVariables.keepformat)
+                                    {
+                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
+                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+
+                                    }
+                                    else
+                                    {
+                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
+                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    }
                                 }
 
                                 UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- Saved Successful\n", false));
@@ -461,6 +527,14 @@ namespace HideSloth
                                 loaded.Dispose();
 
                             }
+                            if (GlobalVariables.copymeta)
+                            {
+                                File.SetCreationTime(newroutename, File.GetCreationTime(single_container));
+                                File.SetLastAccessTime(newroutename, lastaccess);
+                                File.SetLastWriteTime(newroutename, File.GetLastWriteTime(single_container));
+
+                            }
+
                         }
                         ShowMessageOnUIThread("Success to encode file without encryption to image", "Success");
 
@@ -556,7 +630,13 @@ namespace HideSloth
                         }
                         foreach (string single_container in GlobalVariables.route_containers)
                         {
+                            DateTime lastaccess = new DateTime(2021, 8, 15);
+                            if (GlobalVariables.copymeta)
+                            {
+                                lastaccess = File.GetLastAccessTime(single_container);
+                            }
 
+                            string newroutename = "";
                             byte[] plain_bin = Convert.FromBase64String(BytesStringThings.StringtoBase64(Input_PlainText.Text));
 
                             byte[] salt, nonce, tag;
@@ -582,11 +662,23 @@ namespace HideSloth
                                 }
                                 if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
                                 {
-                                    result.Save(GlobalVariables.outputnameandroute, Support_Converter.SaveFormatImage(Path.GetExtension(GlobalVariables.outputnameandroute)));
+                                    newroutename = GlobalVariables.outputnameandroute;
+                                    result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+
                                 }
                                 if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
                                 {
-                                    result.Save(Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    if (GlobalVariables.keepformat)
+                                    {
+                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
+                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+
+                                    }
+                                    else
+                                    {
+                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
+                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    }
                                 }
                                 loaded.Dispose();
 
@@ -611,17 +703,37 @@ namespace HideSloth
                                 }
                                 if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
                                 {
-                                    result.Save(GlobalVariables.outputnameandroute, Support_Converter.SaveFormatImage(Path.GetExtension(GlobalVariables.outputnameandroute)));
+                                    newroutename = GlobalVariables.outputnameandroute;
+                                    result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+
                                 }
                                 if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
                                 {
-                                    result.Save(Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    if (GlobalVariables.keepformat)
+                                    {
+                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
+                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+
+                                    }
+                                    else
+                                    {
+                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
+                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    }
                                 }
                                 UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- Saved Successful\n", false));
                                 UpdateUI(() => richTextBoxLog.ScrollToCaret());
                                 loaded.Dispose();
                                 result.Dispose();
                             }
+                            if (GlobalVariables.copymeta)
+                            {
+                                File.SetCreationTime(newroutename, File.GetCreationTime(single_container));
+                                File.SetLastAccessTime(newroutename, lastaccess);
+                                File.SetLastWriteTime(newroutename, File.GetLastWriteTime(single_container));
+
+                            }
+
                         }
                         ShowMessageOnUIThread("Success to encode string with encryption to image", "Success");
 
@@ -705,7 +817,13 @@ namespace HideSloth
                         }
                         foreach (string single_container in GlobalVariables.route_containers)
                         {
+                            DateTime lastaccess = new DateTime(2021, 8, 15);
+                            if (GlobalVariables.copymeta)
+                            {
+                                lastaccess = File.GetLastAccessTime(single_container);
+                            }
 
+                            string newroutename = "";
                             if (GlobalVariables.Algor == "LSB")
                             {
                                 Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
@@ -722,11 +840,23 @@ namespace HideSloth
                                 }
                                 if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
                                 {
-                                    result.Save(GlobalVariables.outputnameandroute, Support_Converter.SaveFormatImage(Path.GetExtension(GlobalVariables.outputnameandroute)));
+                                    newroutename = GlobalVariables.outputnameandroute;
+                                    result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+
                                 }
                                 if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
                                 {
-                                    result.Save(Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    if (GlobalVariables.keepformat)
+                                    {
+                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
+                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+
+                                    }
+                                    else
+                                    {
+                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
+                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    }
                                 }
                                 UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- Saved Successful\n", false));
                                 UpdateUI(() => richTextBoxLog.ScrollToCaret());
@@ -749,16 +879,35 @@ namespace HideSloth
                                 }
                                 if (GlobalVariables.outputnameandroute != null && check_multi.Checked == false)
                                 {
-                                    result.Save(GlobalVariables.outputnameandroute, Support_Converter.SaveFormatImage(Path.GetExtension(GlobalVariables.outputnameandroute)));
+                                    newroutename = GlobalVariables.outputnameandroute;
+                                    result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+
                                 }
                                 if (GlobalVariables.multipal_route != null && check_multi.Checked == true)
                                 {
-                                    result.Save(Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    if (GlobalVariables.keepformat)
+                                    {
+                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
+                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+
+                                    }
+                                    else
+                                    {
+                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
+                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    }
                                 }
                                 UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- Saved Successful\n", false));
                                 UpdateUI(() => richTextBoxLog.ScrollToCaret());
                                 loaded.Dispose();
                                 result.Dispose();
+
+                            }
+                            if (GlobalVariables.copymeta)
+                            {
+                                File.SetCreationTime(newroutename, File.GetCreationTime(single_container));
+                                File.SetLastAccessTime(newroutename, lastaccess);
+                                File.SetLastWriteTime(newroutename, File.GetLastWriteTime(single_container));
 
                             }
 
@@ -1141,7 +1290,7 @@ namespace HideSloth
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AboutForm = new AboutBox();
-            AboutForm.Show();
+            AboutForm.ShowDialog();
         }
 
         private void benchmarkToolStripMenuItem_Click(object sender, EventArgs e)

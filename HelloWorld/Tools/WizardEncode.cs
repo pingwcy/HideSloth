@@ -110,7 +110,7 @@ namespace HideSloth.Tools
         }
 
 
-        public static bool StegoLarge(string pwd, List<int> bufflist, string containers_route, string route_secret, string output_route, List<string> container_list, List<string> otherfilelist, List<string>  ALLfilePaths, Action<string> updateStatus, CancellationToken token)
+        public static bool StegoLarge(string pwd, List<int> bufflist, string containers_route, string route_secret, string output_route, List<string> container_list, List<string> otherfilelist, List<string> ALLfilePaths, Action<string> updateStatus, CancellationToken token)
         {
             string individualroutecontainer = "";
             List<string> realrouteofcontainers = [];
@@ -120,11 +120,25 @@ namespace HideSloth.Tools
                 foreach (string singlecandidate in ALLfilePaths)
                 {
                     individualroutecontainer = RemoveFirstFolderFromPath(GetRelativePath(containers_route, singlecandidate));
-                    if (Path.GetDirectoryName(individualroutecontainer)!= "")
+                    if (Path.GetDirectoryName(individualroutecontainer) != "")
                     {
-                        string aa = (output_route +@"\\" +Path.GetDirectoryName(individualroutecontainer));
+                        string aa = (output_route + @"\\" + Path.GetDirectoryName(individualroutecontainer));
                         Directory.CreateDirectory(aa);
+                        if (GlobalVariables.copyotherfilemeta)
+                        {
+                            DirectoryInfo sourceDirectoryInfo = new DirectoryInfo(Path.GetDirectoryName(individualroutecontainer));
+                            DirectoryInfo targetDirectoryInfo = new DirectoryInfo(aa);
 
+                            DateTime creationTime = sourceDirectoryInfo.CreationTime;
+                            targetDirectoryInfo.CreationTime = creationTime;
+
+                            DateTime lastWriteTime = sourceDirectoryInfo.LastWriteTime;
+                            targetDirectoryInfo.LastWriteTime = lastWriteTime;
+
+                            DateTime lastAccessTime = sourceDirectoryInfo.LastAccessTime;
+                            targetDirectoryInfo.LastAccessTime = lastAccessTime;
+
+                        }
                     }
                 }
 
@@ -164,59 +178,99 @@ namespace HideSloth.Tools
 
                         ///try
                         //{
-                            //cycle number
-                            byte[] intBytes0 = BitConverter.GetBytes(cycle);
-                            //if (BitConverter.IsLittleEndian)
-                                //Array.Reverse(intBytes0); 确保字节顺序正确
-                            byte[] intBytes = intBytes0.Concat(GlobalVariables.separator).ToArray();
+                        //cycle number
+                        byte[] intBytes0 = BitConverter.GetBytes(cycle);
+                        //if (BitConverter.IsLittleEndian)
+                        //Array.Reverse(intBytes0); 确保字节顺序正确
+                        byte[] intBytes = intBytes0.Concat(GlobalVariables.separator).ToArray();
 
 
-                            byte[] stringBytes0 = Encoding.UTF8.GetBytes(Path.GetFileName(route_secret));
-                            byte[] stringBytes = stringBytes0.Concat(GlobalVariables.separator).ToArray();
+                        byte[] stringBytes0 = Encoding.UTF8.GetBytes(Path.GetFileName(route_secret));
+                        byte[] stringBytes = stringBytes0.Concat(GlobalVariables.separator).ToArray();
 
 
-                            byte[] fullbuffer = new byte[intBytes.Length  +stringBytes.Length  + buffer.Length];
+                        byte[] fullbuffer = new byte[intBytes.Length + stringBytes.Length + buffer.Length];
 
 
-                            Buffer.BlockCopy(intBytes, 0, fullbuffer, 0, intBytes.Length);
-                            Buffer.BlockCopy(stringBytes, 0, fullbuffer, intBytes.Length, stringBytes.Length);
-                            Buffer.BlockCopy(buffer, 0, fullbuffer, intBytes.Length + stringBytes.Length, buffer.Length);
+                        Buffer.BlockCopy(intBytes, 0, fullbuffer, 0, intBytes.Length);
+                        Buffer.BlockCopy(stringBytes, 0, fullbuffer, intBytes.Length, stringBytes.Length);
+                        Buffer.BlockCopy(buffer, 0, fullbuffer, intBytes.Length + stringBytes.Length, buffer.Length);
 
 
 
-                            byte[] encryptedData = AesGcmEncryptor.Encrypt(fullbuffer, pwd, out byte[] salt, out byte[] nonce, out byte[] tag);
-                            Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(Path.Combine(containers_route, container_list[cycle]));
-                            if (GlobalVariables.Algor == "LSB")
-                            {
-                                Bitmap result = LSB_Image.embed(Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData)), loaded);
-
-                                result.Save(Path.Combine(output_route, Path.GetFileNameWithoutExtension(container_list[cycle])+GlobalVariables.outputformat), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-                                loaded.Dispose();
-
-                                result.Dispose();
-                                updateStatus?.Invoke($"Saved: {Path.Combine(output_route, container_list[cycle])}" + ",Number: " + (cycle + 1).ToString() + ".");
-
-                            }
-                            else if (GlobalVariables.Algor == "Linear")
-                            {
-                                Bitmap result = Core_Linear_Image.EncodeFileLinear(loaded, BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData));
-
+                        byte[] encryptedData = AesGcmEncryptor.Encrypt(fullbuffer, pwd, out byte[] salt, out byte[] nonce, out byte[] tag);
+                        Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(Path.Combine(containers_route, container_list[cycle]));
+                        if (GlobalVariables.Algor == "LSB")
+                        {
+                            Bitmap result = LSB_Image.embed(Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData)), loaded);
                             string dirrela = "";
-                            if (Path.GetDirectoryName(container_list[cycle])!="")
+                            string onlyname = "";
+                            if (Path.GetDirectoryName(container_list[cycle]) != "")
                             {
                                 dirrela = Path.GetDirectoryName(container_list[cycle]) + @"\\";
 
                             }
-                            string onlyname = Path.GetFileNameWithoutExtension(container_list[cycle]);
-
-
-                            result.Save((output_route+@"\\"+ dirrela + Path.GetFileNameWithoutExtension(container_list[cycle]) +GlobalVariables.outputformat), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-                                loaded.Dispose();
-
-                                result.Dispose();
-                                updateStatus?.Invoke($"Saved: {Path.Combine(output_route, container_list[cycle])}"+",Number: "+(cycle+1).ToString()+".");
+                            if (GlobalVariables.keepformat)
+                            {
+                                onlyname = Path.GetFileName(container_list[cycle]);
                             }
-                            
+                            else
+                            {
+                                onlyname = Path.GetFileNameWithoutExtension(container_list[cycle]) + GlobalVariables.outputformat;
+
+                            }
+
+                            result.Save((output_route + @"\\" + dirrela + onlyname), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                            loaded.Dispose();
+
+                            result.Dispose();
+                            updateStatus?.Invoke($"Saved: {Path.Combine(output_route, container_list[cycle])}" + ",Number: " + (cycle + 1).ToString() + ".");
+                            if (GlobalVariables.copymeta)
+                            {
+                                File.SetCreationTime((output_route + @"\\" + dirrela + onlyname), File.GetCreationTime(Path.Combine(containers_route, container_list[cycle])));
+                                File.SetLastAccessTime((output_route + @"\\" + dirrela + onlyname), File.GetLastAccessTime(Path.Combine(containers_route, container_list[cycle])));
+                                File.SetLastWriteTime((output_route + @"\\" + dirrela + onlyname), File.GetLastWriteTime(Path.Combine(containers_route, container_list[cycle])));
+
+                            }
+
+                        }
+                        else if (GlobalVariables.Algor == "Linear")
+                        {
+                            Bitmap result = Core_Linear_Image.EncodeFileLinear(loaded, BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData));
+
+                            string dirrela = "";
+                            string onlyname = "";
+                            if (Path.GetDirectoryName(container_list[cycle]) != "")
+                            {
+                                dirrela = Path.GetDirectoryName(container_list[cycle]) + @"\\";
+
+                            }
+                            if (GlobalVariables.keepformat)
+                            {
+                                onlyname = Path.GetFileName(container_list[cycle]);
+                            }
+                            else
+                            {
+                                onlyname = Path.GetFileNameWithoutExtension(container_list[cycle]) + GlobalVariables.outputformat;
+
+                            }
+
+
+                            result.Save((output_route + @"\\" + dirrela + onlyname), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+
+                            loaded.Dispose();
+
+                            result.Dispose();
+                            if (GlobalVariables.copymeta)
+                            {
+                                File.SetCreationTime((output_route + @"\\" + dirrela + onlyname), File.GetCreationTime(Path.Combine(containers_route, container_list[cycle])));
+                                File.SetLastAccessTime((output_route + @"\\" + dirrela + onlyname), File.GetLastAccessTime(Path.Combine(containers_route, container_list[cycle])));
+                                File.SetLastWriteTime((output_route + @"\\" + dirrela + onlyname), File.GetLastWriteTime(Path.Combine(containers_route, container_list[cycle])));
+
+                            }
+                            updateStatus?.Invoke($"Saved: {Path.Combine(output_route, container_list[cycle])}" + ",Number: " + (cycle + 1).ToString() + ".");
+                        }
+
                         //}
                         /*
                         catch (Exception ex)
@@ -235,7 +289,7 @@ namespace HideSloth.Tools
 
                     }
 
-                    
+
                 }
                 //copy non image files
                 updateStatus?.Invoke($"Now we will start copy non image file, please wait");
@@ -255,7 +309,15 @@ namespace HideSloth.Tools
 
                             // 复制文件
                             File.Copy(filePath, destFile, overwrite: true);
-                            updateStatus?.Invoke($"Copied: "+ filePath+"\n");
+                            if (GlobalVariables.copyotherfilemeta)
+                            {
+                                File.SetCreationTime(Path.GetFullPath(destFile), File.GetCreationTime(filePath));
+                                File.SetLastAccessTime(Path.GetFullPath(destFile), File.GetLastAccessTime(filePath));
+                                File.SetLastWriteTime(Path.GetFullPath(destFile), File.GetLastWriteTime(filePath));
+
+                            }
+
+                            updateStatus?.Invoke($"Copied: " + filePath + "\n");
 
                         }
                     }
@@ -270,12 +332,12 @@ namespace HideSloth.Tools
                         {
                             // 从文件路径中提取文件名
 
-                            string relativeroute = RemoveFirstFolderFromPath(GetRelativePath(containers_route,filePath));
-                            if (relativeroute!="")
+                            string relativeroute = RemoveFirstFolderFromPath(GetRelativePath(containers_route, filePath));
+                            if (relativeroute != "")
                             {
                                 relativeroute = @"\\" + relativeroute;
                             }
-                            string fileoutputroute = output_route+ relativeroute;
+                            string fileoutputroute = output_route + relativeroute;
 
                             // 构造目标文件的完整路径
                             //string destFile = Path.Combine(output_route, fileName);
@@ -283,6 +345,13 @@ namespace HideSloth.Tools
 
                             // 复制文件
                             File.Copy(filePath, Path.GetFullPath(fileoutputroute), overwrite: false);
+                            if (GlobalVariables.copyotherfilemeta)
+                            {
+                                File.SetCreationTime(Path.GetFullPath(fileoutputroute), File.GetCreationTime(filePath));
+                                File.SetLastAccessTime(Path.GetFullPath(fileoutputroute), File.GetLastAccessTime(filePath));
+                                File.SetLastWriteTime(Path.GetFullPath(fileoutputroute), File.GetLastWriteTime(filePath));
+
+                            }
                             updateStatus?.Invoke($"Copied: " + filePath + "\n");
 
                         }
@@ -307,7 +376,7 @@ namespace HideSloth.Tools
                 updateStatus?.Invoke($"Encrypted: {file}");
             }
             updateStatus?.Invoke("All files encrypted and saved!");
-            
+
             return true;
         }
 

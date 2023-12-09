@@ -243,6 +243,7 @@ namespace HideSloth.Tools
                 {
                     if (Radio_normalw.Checked && Radio_onetomany.Checked)
                     {
+                        button5.Enabled = false;//disable advanced setting
                         SwitchTab(3);
                         button_next.Enabled = false;
                         button_pre.Enabled = false;
@@ -257,7 +258,10 @@ namespace HideSloth.Tools
                             GetFilePaths(containers, ALLfilePaths, maxfloder);
 
                         }
-
+                        else if (check_searchdeepcontainer.Checked == false)
+                        {
+                            searchdeep = false;
+                        }
                         var list = await Task.Run(() => CheckCapacity(containers, ALLfilePaths));
                         otherfile = await Task.Run(() => WizardEncode.otherfiles(containers, ALLfilePaths));
                         fileNamesList = list.Select(image => image.FileName).ToList();
@@ -358,11 +362,20 @@ namespace HideSloth.Tools
                     {
                         copynonimage = true;
                     }
+                    else if (check_copynonimage.Checked == false)
+                    {
+                        copynonimage = false;
+
+                    }
                     if (check_searchdeepcontainer.Checked && radio_outputkeepstructure.Checked)
                     {
                         keepstrcuture = true;
                     }
+                    else if (radio_outputkeepstructure.Checked == false)
+                    {
+                        keepstrcuture = false;
 
+                    }
                     try
                     {
                         ifok = await Task.Run(() =>
@@ -523,9 +536,23 @@ namespace HideSloth.Tools
 
         }
 
+        private void form2_Closed(object sender, EventArgs e)
+        {
+            if (GlobalVariables.mode == "Normal")
+            {
+                Radio_normalw.Checked = true;
+            }
+            else
+            {
+                Radio_Encryptorw.Checked = true;
+            }
+        }
+
         private void button5_Click(object sender, EventArgs e)
         {
             form2 = new Settings(form1); // 直接使用类级别的成员变量，不需要重新声明
+            form2.Closed += form2_Closed;
+
             form2.Show();
 
 
