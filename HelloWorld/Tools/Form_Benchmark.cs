@@ -219,6 +219,60 @@ namespace HideSloth
                 listView1.Items.Add(item2);
 
             }
+            else if (Alg == "ChaCha20-Poly1305")
+            {
+                resultlist = time[0];
+                ListViewItem item1 = new ListViewItem("ChaCha20-Poly1305-Enc");
+                item1.SubItems.Add((size / resultlist.Average() / 1024 / 1024 / 1024).ToString() + " GB/s");
+                item1.SubItems.Add((size / resultlist.Min() / 1024 / 1024 / 1024).ToString() + " GB/s");
+                item1.SubItems.Add((size / resultlist.Max() / 1024 / 1024 / 1024).ToString().ToString() + " GB/s");
+
+                listView1.Items.Add(item1);
+
+                resultlist = time[1];
+                ListViewItem item2 = new ListViewItem("ChaCha20-Poly1305-Dec");
+                item2.SubItems.Add((size / resultlist.Average() / 1024 / 1024 / 1024).ToString() + " GB/s");
+                item2.SubItems.Add((size / resultlist.Min() / 1024 / 1024 / 1024).ToString() + " GB/s");
+                item2.SubItems.Add((size / resultlist.Max() / 1024 / 1024 / 1024).ToString().ToString() + " GB/s");
+
+                listView1.Items.Add(item2);
+
+            }
+            else if (Alg == "All")
+            {
+                resultlist = time[0];
+                ListViewItem item1 = new ListViewItem("AES256-GCM-Enc");
+                item1.SubItems.Add((size / resultlist.Average() / 1024 / 1024 / 1024).ToString() + " GB/s");
+                item1.SubItems.Add((size / resultlist.Min() / 1024 / 1024 / 1024).ToString() + " GB/s");
+                item1.SubItems.Add((size / resultlist.Max() / 1024 / 1024 / 1024).ToString().ToString() + " GB/s");
+
+                listView1.Items.Add(item1);
+
+                resultlist = time[1];
+                ListViewItem item2 = new ListViewItem("AES256-GCM-Dec");
+                item2.SubItems.Add((size / resultlist.Average() / 1024 / 1024 / 1024).ToString() + " GB/s");
+                item2.SubItems.Add((size / resultlist.Min() / 1024 / 1024 / 1024).ToString() + " GB/s");
+                item2.SubItems.Add((size / resultlist.Max() / 1024 / 1024 / 1024).ToString().ToString() + " GB/s");
+
+                listView1.Items.Add(item2);
+
+                resultlist = time[2];
+                ListViewItem item3 = new ListViewItem("ChaCha20-Poly1305-Enc");
+                item3.SubItems.Add((size / resultlist.Average() / 1024 / 1024 / 1024).ToString() + " GB/s");
+                item3.SubItems.Add((size / resultlist.Min() / 1024 / 1024 / 1024).ToString() + " GB/s");
+                item3.SubItems.Add((size / resultlist.Max() / 1024 / 1024 / 1024).ToString().ToString() + " GB/s");
+
+                listView1.Items.Add(item3);
+
+                resultlist = time[3];
+                ListViewItem item4 = new ListViewItem("ChaCha20-Poly1305-Dec");
+                item4.SubItems.Add((size / resultlist.Average() / 1024 / 1024 / 1024).ToString() + " GB/s");
+                item4.SubItems.Add((size / resultlist.Min() / 1024 / 1024 / 1024).ToString() + " GB/s");
+                item4.SubItems.Add((size / resultlist.Max() / 1024 / 1024 / 1024).ToString().ToString() + " GB/s");
+
+                listView1.Items.Add(item4);
+
+            }
 
             // 确保列能够填充 ListView 控件的宽度
             listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);

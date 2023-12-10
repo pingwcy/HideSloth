@@ -10,7 +10,7 @@ using HideSloth;
 
 namespace HideSloth.Crypto
 {
-    public class FileAES
+    public class FileEnc
     {
         private const int BlockSize = 10 * 1024 * 1024; // 10 MB
         private const int SaltSize = 16;
@@ -29,8 +29,16 @@ namespace HideSloth.Crypto
 
             using var keyDerivationFunction = new Rfc2898DeriveBytes(password, salt, Iterations, (Support_Converter.StringToHashAlgorithmName(HashAlg)));
             byte[] key = keyDerivationFunction.GetBytes(KeySize);
-
-            using var aesGcm = new AesGcm(key, TagSize);
+            AesGcm? Enc_Obj = null; // 使用可空类型，因为 AesGcm 是一个引用类型
+            ChaCha20Poly1305? Enc_obj2 = null;
+            if (GlobalVariables.encalg == "AES")
+            {
+                Enc_Obj = new AesGcm(key, TagSize);
+            }
+            else if (GlobalVariables.encalg == "ChaCha")
+            {
+                Enc_obj2 = new ChaCha20Poly1305(key);
+            }
             using var inputFileStream = new FileStream(inputFilePath, FileMode.Open);
             using var outputFileStream = new FileStream(outputFilePath, FileMode.Create);
 
@@ -47,8 +55,15 @@ namespace HideSloth.Crypto
                 byte[] tag = new byte[TagSize];
 
                 // 加密数据块
-                aesGcm.Encrypt(nonce, buffer.AsSpan(0, bytesRead), encryptedData, tag);
+                if (GlobalVariables.encalg == "AES")
+                {
+                    Enc_Obj.Encrypt(nonce, buffer.AsSpan(0, bytesRead), encryptedData, tag);
+                }
+                else if (GlobalVariables.encalg == "ChaCha")
+                {
+                    Enc_obj2.Encrypt(nonce, buffer.AsSpan(0, bytesRead), encryptedData, tag);
 
+                }
                 // 将 nonce、加密数据和 tag 写入输出文件
                 outputFileStream.Write(nonce, 0, NonceSize);
                 outputFileStream.Write(encryptedData, 0, encryptedData.Length);
@@ -71,7 +86,16 @@ namespace HideSloth.Crypto
             using var keyDerivationFunction = new Rfc2898DeriveBytes(password, salt, Iterations, (Support_Converter.StringToHashAlgorithmName(HashAlg)));
             byte[] key = keyDerivationFunction.GetBytes(KeySize);
 
-            using var aesGcm = new AesGcm(key, TagSize);
+            AesGcm? Dec_Obj = null; // 使用可空类型，因为 AesGcm 是一个引用类型
+            ChaCha20Poly1305? Dec_obj2 = null;
+            if (GlobalVariables.encalg == "AES")
+            {
+                Dec_Obj = new AesGcm(key, TagSize);
+            }
+            else if (GlobalVariables.encalg == "ChaCha")
+            {
+                Dec_obj2 = new ChaCha20Poly1305(key);
+            }
 
             byte[] buffer = new byte[BlockSize + TagSize];
             byte[] nonce = new byte[NonceSize];
@@ -94,8 +118,14 @@ namespace HideSloth.Crypto
                 byte[] decryptedData = new byte[encryptedDataSize];
 
                 // 解密数据块
-                aesGcm.Decrypt(nonce, encryptedData, tag, decryptedData);
-
+                if (GlobalVariables.encalg == "AES")
+                {
+                    Dec_Obj.Decrypt(nonce, encryptedData, tag, decryptedData);
+                }
+                else if (GlobalVariables.encalg == "ChaCha")
+                {
+                    Dec_obj2.Decrypt(nonce, encryptedData, tag, decryptedData);
+                }
                 // 写入解密数据到输出文件
                 outputFileStream.Write(decryptedData, 0, decryptedData.Length);
             }

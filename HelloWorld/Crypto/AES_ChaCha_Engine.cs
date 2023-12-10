@@ -8,7 +8,7 @@ using System.Linq;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace HideSloth.Crypto
 {
-    public class AesGcmEncryptor
+    public class Aes_ChaCha_Encryptor
     {
         private const int SaltSize = 16; // 128 bits
         private const int KeySize = 32; // 256 bits
@@ -31,25 +31,40 @@ namespace HideSloth.Crypto
             using (var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, Support_Converter.StringToHashAlgorithmName(HashAlg)))
             {
                 var key = pbkdf2.GetBytes(KeySize);
+                tag = new byte[TagSize];
+                byte[] encryptedData = new byte[dataToEncrypt.Length];
 
                 // 进行AES-GCM加密
-                using (var aesGcm = new AesGcm(key,TagSize))
+                if (GlobalVariables.encalg == "AES")
                 {
-                    tag = new byte[TagSize];
-                    byte[] encryptedData = new byte[dataToEncrypt.Length];
+                    using (var aesGcm = new AesGcm(key, TagSize))
+                    {
+                        aesGcm.Encrypt(nonce, dataToEncrypt, encryptedData, tag);
 
-                    aesGcm.Encrypt(nonce, dataToEncrypt, encryptedData, tag);
-
-                    // 将 salt, nonce, encryptedData, tag 连接成一个 byte 数组并返回
-                    return encryptedData;
+                        // 将 salt, nonce, encryptedData, tag 连接成一个 byte 数组并返回
+                        return encryptedData;
+                    }
                 }
+                else if (GlobalVariables.encalg == "ChaCha")
+                {
+                    using (var ChaCha = new ChaCha20Poly1305(key))
+                    {
+                        ChaCha.Encrypt(nonce,dataToEncrypt,encryptedData,tag);
+
+                        // 将 salt, nonce, encryptedData, tag 连接成一个 byte 数组并返回
+                        return encryptedData;
+                    }
+
+                }
+                return encryptedData;
             }
         }
     }
 
-    public class AesGcmDecryptor
+    public class Aes_ChaCha_Decryptor
     {
         private const int SaltSize = 16; // 与加密时的盐大小一致
+        private const int KeySize = 32; // 256 bits
         private const int NonceSize = 12; // AES-GCM 常用的随机数大小
         private const int TagSize = 16; // AES-GCM 认证标签的大小
 
@@ -67,8 +82,8 @@ namespace HideSloth.Crypto
             Buffer.BlockCopy(combinedData, SaltSize + NonceSize, tag, 0, TagSize);
 
             // 计算加密数据的长度
-            //int offset = 16 + 12 + 16; // SaltSize + NonceSize + TagSize
-            int encryptedDataLength = combinedData.Length - 44;
+            int offset = SaltSize + NonceSize + TagSize;
+            int encryptedDataLength = combinedData.Length - offset;
             byte[] encryptedData = new byte[encryptedDataLength];
 
             // 从 combinedData 中截取 encryptedData
@@ -77,16 +92,30 @@ namespace HideSloth.Crypto
             // 使用PBKDF2生成密钥
             using (var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, Support_Converter.StringToHashAlgorithmName(HashAlg)))
             {
-                var key = pbkdf2.GetBytes(32); // 256 bits
+                var key = pbkdf2.GetBytes(KeySize); // 256 bits
+                byte[] decryptedData = new byte[encryptedDataLength];
 
                 // 进行AES-GCM解密
-                using (var aesGcm = new AesGcm(key, TagSize))
+                if (GlobalVariables.encalg == "AES")
                 {
-                    byte[] decryptedData = new byte[encryptedDataLength];
-                    aesGcm.Decrypt(nonce, encryptedData, tag, decryptedData);
+                    using (var aesGcm = new AesGcm(key, TagSize))
+                    {
+                        aesGcm.Decrypt(nonce, encryptedData, tag, decryptedData);
 
-                    return decryptedData;
+                        return decryptedData;
+                    }
                 }
+                else if (GlobalVariables.encalg == "ChaCha")
+                {
+                    using (var ChaCha = new ChaCha20Poly1305(key))
+                    {
+                        ChaCha.Decrypt(nonce, encryptedData, tag, decryptedData);
+
+                        return decryptedData;
+                    }
+
+                }
+                return decryptedData;
             }
         }
     }

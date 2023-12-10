@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -45,6 +46,8 @@ namespace HideSloth
         public static bool copymeta = false;//for loaded container
         public static bool keepformat = false;
         public static bool copyotherfilemeta = false;//for other files and directories
-        public static int smallstandard = 1;
+        public static int smallstandard = 1;//ignore image capacity
+        public static string encalg = "AES";
+        public static bool ignoreextracterror = false;
     }
 }

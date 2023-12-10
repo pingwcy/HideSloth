@@ -66,7 +66,7 @@ namespace HideSloth.Tools
                     return false;
                 }
 
-                FileAES.DecryptFile(file, Path.Combine(routeofoutput, Path.GetFileName(file)), pwd);
+                FileEnc.DecryptFile(file, Path.Combine(routeofoutput, Path.GetFileName(file)), pwd);
                 updateStatus?.Invoke($"Decrypted: {file}");
             }
             updateStatus?.Invoke("All files decrypted and saved!");
@@ -176,7 +176,7 @@ namespace HideSloth.Tools
                                 if (GlobalVariables.Algor == "LSB")
                                 {
                                     encrypted_result = LSB_Image.extract(unloading);
-                                    decrypted_content = AesGcmDecryptor.Decrypt(Convert.FromBase64String(encrypted_result), pwd);
+                                    decrypted_content = Aes_ChaCha_Decryptor.Decrypt(Convert.FromBase64String(encrypted_result), pwd);
                                     updateStatus?.Invoke("Readed the sequence information of  File: " + file);
                                     int sequenceNumber = BitConverter.ToInt32(decrypted_content, 0);
 
@@ -194,7 +194,7 @@ namespace HideSloth.Tools
                                 {
 
                                     byte[] filecontent = Core_Linear_Image.DecodeFileFromImage(unloading);
-                                    decrypted_content = AesGcmDecryptor.Decrypt(filecontent, pwd);
+                                    decrypted_content = Aes_ChaCha_Decryptor.Decrypt(filecontent, pwd);
                                     updateStatus?.Invoke("Readed the sequence information of  File: " + file);
                                     int sequenceNumber = BitConverter.ToInt32(decrypted_content, 0);
 
@@ -216,7 +216,10 @@ namespace HideSloth.Tools
                             {
                                 updateStatus?.Invoke(ex.Message);
                                 //throw;
-                                return false;
+                                if (GlobalVariables.ignoreextracterror == false)
+                                {
+                                    return false;
+                                }
                             }
                         }
                         unloading.Dispose();
@@ -240,14 +243,14 @@ namespace HideSloth.Tools
                             if (GlobalVariables.Algor == "LSB")
                             {
                                 encrypted_result = LSB_Image.extract(unloading);
-                                decrypted_content = AesGcmDecryptor.Decrypt(Convert.FromBase64String(encrypted_result), pwd);
+                                decrypted_content = Aes_ChaCha_Decryptor.Decrypt(Convert.FromBase64String(encrypted_result), pwd);
                                 updateStatus?.Invoke("Readed and Extracted from File: " + part.Value);
 
                             }
                             else if (GlobalVariables.Algor == "Linear")
                             {
                                 byte[] filecontent = Core_Linear_Image.DecodeFileFromImage(unloading);
-                                decrypted_content = AesGcmDecryptor.Decrypt(filecontent, pwd);
+                                decrypted_content = Aes_ChaCha_Decryptor.Decrypt(filecontent, pwd);
                                 updateStatus?.Invoke("Readed and Extracted from File: " + part.Value);
                             }
                             using (FileStream fileStream = new FileStream(outputname, FileMode.Append, FileAccess.Write))
@@ -289,7 +292,10 @@ namespace HideSloth.Tools
                         {
                             updateStatus?.Invoke(ex.Message);
 
-                            return false;
+                            if (GlobalVariables.ignoreextracterror == false)
+                            {
+                                return false;
+                            }
                         }
                         finally
                         {
@@ -330,14 +336,14 @@ namespace HideSloth.Tools
                                 if (GlobalVariables.Algor == "LSB")
                                 {
                                     encrypted_result = LSB_Image.extract(unloading);
-                                    decrypted_content = AesGcmDecryptor.Decrypt(Convert.FromBase64String(encrypted_result), pwd);
+                                    decrypted_content = Aes_ChaCha_Decryptor.Decrypt(Convert.FromBase64String(encrypted_result), pwd);
                                     updateStatus?.Invoke("Readed and Extracted from File: " + part);
 
                                 }
                                 else if (GlobalVariables.Algor == "Linear")
                                 {
                                     byte[] filecontent = Core_Linear_Image.DecodeFileFromImage(unloading);
-                                    decrypted_content = AesGcmDecryptor.Decrypt(filecontent, pwd);
+                                    decrypted_content = Aes_ChaCha_Decryptor.Decrypt(filecontent, pwd);
                                     updateStatus?.Invoke("Readed and Extracted from File: " + part);
                                 }
                                 using (FileStream fileStream = new FileStream(outputname, FileMode.Append, FileAccess.Write))
@@ -379,7 +385,10 @@ namespace HideSloth.Tools
                             {
                                 updateStatus?.Invoke(ex.Message);
 
-                                return false;
+                                if (GlobalVariables.ignoreextracterror == false)
+                                {
+                                    return false;
+                                }
                             }
                             finally
                             {

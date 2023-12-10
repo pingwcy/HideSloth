@@ -34,6 +34,7 @@
             button1 = new Button();
             button2 = new Button();
             groupBox1 = new GroupBox();
+            combo_encalg = new ComboBox();
             ComboBox_Hash = new ComboBox();
             Check_CustHash = new CheckBox();
             Text_PBKDF2Iter = new TextBox();
@@ -50,6 +51,7 @@
             combo_entension = new ComboBox();
             label1 = new Label();
             groupBox4 = new GroupBox();
+            check_errorignore = new CheckBox();
             label3 = new Label();
             numericUpDown1 = new NumericUpDown();
             label2 = new Label();
@@ -97,7 +99,7 @@
             // 
             // button1
             // 
-            button1.Location = new Point(91, 473);
+            button1.Location = new Point(91, 499);
             button1.Name = "button1";
             button1.Size = new Size(165, 42);
             button1.TabIndex = 37;
@@ -107,7 +109,7 @@
             // 
             // button2
             // 
-            button2.Location = new Point(348, 473);
+            button2.Location = new Point(348, 499);
             button2.Name = "button2";
             button2.Size = new Size(165, 42);
             button2.TabIndex = 38;
@@ -117,6 +119,7 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(combo_encalg);
             groupBox1.Controls.Add(ComboBox_Hash);
             groupBox1.Controls.Add(Check_CustHash);
             groupBox1.Controls.Add(Text_PBKDF2Iter);
@@ -129,6 +132,16 @@
             groupBox1.TabIndex = 39;
             groupBox1.TabStop = false;
             groupBox1.Text = "Encryption";
+            // 
+            // combo_encalg
+            // 
+            combo_encalg.DropDownStyle = ComboBoxStyle.DropDownList;
+            combo_encalg.FormattingEnabled = true;
+            combo_encalg.Items.AddRange(new object[] { "AES256-GCM", "ChaCha20-Poly1305" });
+            combo_encalg.Location = new Point(104, 23);
+            combo_encalg.Name = "combo_encalg";
+            combo_encalg.Size = new Size(147, 25);
+            combo_encalg.TabIndex = 6;
             // 
             // ComboBox_Hash
             // 
@@ -144,7 +157,7 @@
             // Check_CustHash
             // 
             Check_CustHash.AutoSize = true;
-            Check_CustHash.Location = new Point(25, 121);
+            Check_CustHash.Location = new Point(25, 122);
             Check_CustHash.Name = "Check_CustHash";
             Check_CustHash.Size = new Size(169, 21);
             Check_CustHash.TabIndex = 4;
@@ -155,7 +168,7 @@
             // Text_PBKDF2Iter
             // 
             Text_PBKDF2Iter.Enabled = false;
-            Text_PBKDF2Iter.Location = new Point(47, 81);
+            Text_PBKDF2Iter.Location = new Point(47, 90);
             Text_PBKDF2Iter.Name = "Text_PBKDF2Iter";
             Text_PBKDF2Iter.Size = new Size(121, 23);
             Text_PBKDF2Iter.TabIndex = 3;
@@ -163,7 +176,7 @@
             // Check_CustIter
             // 
             Check_CustIter.AutoSize = true;
-            Check_CustIter.Location = new Point(25, 54);
+            Check_CustIter.Location = new Point(25, 64);
             Check_CustIter.Name = "Check_CustIter";
             Check_CustIter.Size = new Size(195, 21);
             Check_CustIter.TabIndex = 2;
@@ -294,15 +307,26 @@
             // 
             // groupBox4
             // 
+            groupBox4.Controls.Add(check_errorignore);
             groupBox4.Controls.Add(label3);
             groupBox4.Controls.Add(numericUpDown1);
             groupBox4.Controls.Add(label2);
             groupBox4.Location = new Point(12, 393);
             groupBox4.Name = "groupBox4";
-            groupBox4.Size = new Size(555, 64);
+            groupBox4.Size = new Size(555, 100);
             groupBox4.TabIndex = 42;
             groupBox4.TabStop = false;
             groupBox4.Text = "Properties of Operation";
+            // 
+            // check_errorignore
+            // 
+            check_errorignore.AutoSize = true;
+            check_errorignore.Location = new Point(26, 64);
+            check_errorignore.Name = "check_errorignore";
+            check_errorignore.Size = new Size(362, 21);
+            check_errorignore.TabIndex = 3;
+            check_errorignore.Text = "Ignore individual failure in bulk data extracting processes";
+            check_errorignore.UseVisualStyleBackColor = true;
             // 
             // label3
             // 
@@ -336,7 +360,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(590, 527);
+            ClientSize = new Size(590, 553);
             Controls.Add(groupBox4);
             Controls.Add(groupBox3);
             Controls.Add(groupBox2);
@@ -388,5 +412,7 @@
         private Label label3;
         private NumericUpDown numericUpDown1;
         private Label label2;
+        private ComboBox combo_encalg;
+        private CheckBox check_errorignore;
     }
 }

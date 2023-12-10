@@ -77,7 +77,7 @@
             tabControl1.Location = new Point(9, 5);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(413, 336);
+            tabControl1.Size = new Size(413, 376);
             tabControl1.TabIndex = 0;
             // 
             // Tab_Ste
@@ -89,7 +89,7 @@
             Tab_Ste.Location = new Point(4, 26);
             Tab_Ste.Name = "Tab_Ste";
             Tab_Ste.Padding = new Padding(3);
-            Tab_Ste.Size = new Size(405, 306);
+            Tab_Ste.Size = new Size(405, 346);
             Tab_Ste.TabIndex = 0;
             Tab_Ste.Text = "Steganography";
             Tab_Ste.UseVisualStyleBackColor = true;
@@ -98,7 +98,7 @@
             // 
             listBox1.Location = new Point(30, 162);
             listBox1.Name = "listBox1";
-            listBox1.Size = new Size(354, 126);
+            listBox1.Size = new Size(354, 160);
             listBox1.TabIndex = 6;
             listBox1.UseCompatibleStateImageBehavior = false;
             // 
@@ -193,7 +193,7 @@
             Tab_Encryption.Location = new Point(4, 26);
             Tab_Encryption.Name = "Tab_Encryption";
             Tab_Encryption.Padding = new Padding(3);
-            Tab_Encryption.Size = new Size(405, 306);
+            Tab_Encryption.Size = new Size(405, 346);
             Tab_Encryption.TabIndex = 1;
             Tab_Encryption.Text = "Encryption";
             Tab_Encryption.UseVisualStyleBackColor = true;
@@ -202,7 +202,7 @@
             // 
             listView1.Location = new Point(30, 162);
             listView1.Name = "listView1";
-            listView1.Size = new Size(354, 126);
+            listView1.Size = new Size(354, 160);
             listView1.TabIndex = 3;
             listView1.UseCompatibleStateImageBehavior = false;
             // 
@@ -281,7 +281,7 @@
             // 
             combo_encalg.DropDownStyle = ComboBoxStyle.DropDownList;
             combo_encalg.FormattingEnabled = true;
-            combo_encalg.Items.AddRange(new object[] { "AES256-GCM" });
+            combo_encalg.Items.AddRange(new object[] { "AES256-GCM", "ChaCha20-Poly1305", "All" });
             combo_encalg.Location = new Point(169, 28);
             combo_encalg.Name = "combo_encalg";
             combo_encalg.Size = new Size(144, 25);
@@ -295,7 +295,7 @@
             Tab_KDF.Controls.Add(groupBox3);
             Tab_KDF.Location = new Point(4, 26);
             Tab_KDF.Name = "Tab_KDF";
-            Tab_KDF.Size = new Size(405, 306);
+            Tab_KDF.Size = new Size(405, 346);
             Tab_KDF.TabIndex = 2;
             Tab_KDF.Text = "KDF";
             Tab_KDF.UseVisualStyleBackColor = true;
@@ -304,7 +304,7 @@
             // 
             listView2.Location = new Point(30, 162);
             listView2.Name = "listView2";
-            listView2.Size = new Size(354, 126);
+            listView2.Size = new Size(354, 160);
             listView2.TabIndex = 3;
             listView2.UseCompatibleStateImageBehavior = false;
             // 
@@ -390,7 +390,7 @@
             // 
             // progressBar1
             // 
-            progressBar1.Location = new Point(13, 346);
+            progressBar1.Location = new Point(13, 387);
             progressBar1.MarqueeAnimationSpeed = 50;
             progressBar1.Name = "progressBar1";
             progressBar1.Size = new Size(405, 23);
@@ -400,7 +400,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(434, 375);
+            ClientSize = new Size(434, 422);
             Controls.Add(progressBar1);
             Controls.Add(tabControl1);
             Name = "Form_Benchmark";

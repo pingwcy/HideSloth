@@ -42,11 +42,14 @@ namespace HideSloth.Tools
         {
             List<double> time1 = new List<double>();
             List<double> time2 = new List<double>();
+            List<double> time3 = new List<double>();
+            List<double> time4 = new List<double>();
+
             List<List<double>> time = new List<List<double>>();
-            byte[] testdata;
+            //byte[] testdata;
 
             //Start the test
-            if (alg == "AES256-GCM" )
+            if (alg == "AES256-GCM" || alg == "All")
             {
                 using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
                 {
@@ -60,32 +63,71 @@ namespace HideSloth.Tools
                     {
                         Stopwatch stopwatch1 = Stopwatch.StartNew();
 
-                        testdata = BenchAES.Encryptor_Bench(data, key,out byte[] tag);
+                        data = Bench_Encryption.Encryptor_Bench("AES",data, key,out byte[] tag);
                         stopwatch1.Stop();
                         time1.Add(stopwatch1.Elapsed.TotalSeconds);
 
                         Stopwatch stopwatch2 = Stopwatch.StartNew();
 
-                        BenchAES.Decrypt(testdata, tag,key);
+                        Bench_Encryption.Decryptor_Bench("AES", data, tag,key);
                         stopwatch2.Stop();
                         time2.Add(stopwatch2.Elapsed.TotalSeconds);
 
                     }
 #pragma warning disable CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
-                    testdata = null;
+                    //testdata = null;
 #pragma warning restore CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
                     data = null;
                     GC.Collect();
                 }
-
-
             }
 
-            if (alg == "AES256-GCM")
+            if (alg == "ChaCha20-Poly1305" || alg == "All")
+            {
+                using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+                {
+                    var data = new byte[size];
+                    var key = new byte[32];
+                    rng.GetBytes(key);
+
+                    rng.GetBytes(data);
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        Stopwatch stopwatch3 = Stopwatch.StartNew();
+
+                        data = Bench_Encryption.Encryptor_Bench("ChaCha",data, key, out byte[] tag);
+                        stopwatch3.Stop();
+                        time3.Add(stopwatch3.Elapsed.TotalSeconds);
+
+                        Stopwatch stopwatch4 = Stopwatch.StartNew();
+
+                        Bench_Encryption.Decryptor_Bench("ChaCha", data, tag, key);
+                        stopwatch4.Stop();
+                        time4.Add(stopwatch4.Elapsed.TotalSeconds);
+
+                    }
+#pragma warning disable CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
+                    //testdata = null;
+#pragma warning restore CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
+                    data = null;
+                    GC.Collect();
+                }
+            }
+
+
+
+            if (alg == "AES256-GCM" || alg == "All")
             {
                 time.Add(time1);
                 time.Add(time2);
             }
+            if (alg == "ChaCha20-Poly1305" || alg == "All")
+            {
+                time.Add(time3);
+                time.Add(time4);
+            }
+
             return time;
         }
 

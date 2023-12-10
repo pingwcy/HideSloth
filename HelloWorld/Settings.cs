@@ -69,6 +69,15 @@ namespace HideSloth
             check_keepformat.Checked = GlobalVariables.keepformat;
             check_copymetaother.Checked = GlobalVariables.copyotherfilemeta;
             numericUpDown1.Value = GlobalVariables.smallstandard;
+            if (GlobalVariables.encalg == "ChaCha")
+            {
+                combo_encalg.SelectedItem = "ChaCha20-Poly1305";
+            }
+            else if (GlobalVariables.encalg == "AES")
+            {
+                combo_encalg.SelectedItem = "AES256-GCM";
+            }
+            check_errorignore.Checked = GlobalVariables.ignoreextracterror;
         }
 
         private void Radio_LSB_PB_CheckedChanged(object sender, EventArgs e)
@@ -133,6 +142,15 @@ namespace HideSloth
             GlobalVariables.copyotherfilemeta = check_copymetaother.Checked;
             GlobalVariables.keepformat = check_keepformat.Checked;
             GlobalVariables.smallstandard = (int) numericUpDown1.Value;
+            if (combo_encalg.SelectedItem.ToString() == "ChaCha20-Poly1305")
+            {
+                GlobalVariables.encalg = "ChaCha";
+            }
+            else if (combo_encalg.SelectedItem.ToString() == "AES256-GCM")
+            {
+                GlobalVariables.encalg = "AES";
+            }
+            GlobalVariables.ignoreextracterror = check_errorignore.Checked;
             form1.UpdateStatusStrip();
             this.Close();
         }

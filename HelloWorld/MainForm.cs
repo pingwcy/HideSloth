@@ -247,7 +247,7 @@ namespace HideSloth
                             UpdateUI(() => richTextBoxLog.ScrollToCaret());
                             DateTime lastaccess = new DateTime(2021, 8, 15);
 
-                            byte[] encryptedData = AesGcmEncryptor.Encrypt(plainsecret_content, GlobalVariables.password, out byte[] salt, out byte[] nonce, out byte[] tag);
+                            byte[] encryptedData = Aes_ChaCha_Encryptor.Encrypt(plainsecret_content, GlobalVariables.password, out byte[] salt, out byte[] nonce, out byte[] tag);
 
                             UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Secret File Encrypted and stored in memory\n"));
                             UpdateUI(() => richTextBoxLog.ScrollToCaret());
@@ -352,7 +352,7 @@ namespace HideSloth
 
                         UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Extracted File to memory Successful\n"));
                         UpdateUI(() => richTextBoxLog.ScrollToCaret());
-                        decrypted_content = AesGcmDecryptor.Decrypt(encrypted_result, GlobalVariables.password);
+                        decrypted_content = Aes_ChaCha_Decryptor.Decrypt(encrypted_result, GlobalVariables.password);
                         UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Decrypted File in memory Successful, select a route to save\n"));
                         UpdateUI(() => richTextBoxLog.ScrollToCaret());
                         encrypted_result = null;
@@ -564,7 +564,7 @@ namespace HideSloth
 
                             byte[] salt, nonce, tag;
                             // 加密数据
-                            byte[] encryptedData = AesGcmEncryptor.Encrypt(plain_bin, GlobalVariables.password, out salt, out nonce, out tag);
+                            byte[] encryptedData = Aes_ChaCha_Encryptor.Encrypt(plain_bin, GlobalVariables.password, out salt, out nonce, out tag);
                             UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Encrypted String Successful\n"));
                             UpdateUI(() => richTextBoxLog.ScrollToCaret());
                             Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
@@ -670,7 +670,7 @@ namespace HideSloth
                             }
 
                         }
-                        result = System.Text.Encoding.UTF8.GetString(AesGcmDecryptor.Decrypt(Convert.FromBase64String(encrypted_result), GlobalVariables.password));
+                        result = System.Text.Encoding.UTF8.GetString(Aes_ChaCha_Decryptor.Decrypt(Convert.FromBase64String(encrypted_result), GlobalVariables.password));
                         UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- Decrypted String Successful\n", false));
                         UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
@@ -858,7 +858,7 @@ namespace HideSloth
                     {
                         if (GlobalVariables.outputnameandroute != null)
                         {
-                            FileAES.EncryptFile(GlobalVariables.route_secret, GlobalVariables.outputnameandroute, GlobalVariables.password);
+                            FileEnc.EncryptFile(GlobalVariables.route_secret, GlobalVariables.outputnameandroute, GlobalVariables.password);
                         }
                         UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- AS ONLY ENCRYPTOR: Encrypted File And Saved Successfully" + "\n", false));
                         UpdateUI(() => richTextBoxLog.ScrollToCaret());
@@ -879,7 +879,7 @@ namespace HideSloth
                     {
                         if (GlobalVariables.outputnameandroute != null)
                         {
-                            FileAES.DecryptFile(GlobalVariables.route_secret, GlobalVariables.outputnameandroute, GlobalVariables.password);
+                            FileEnc.DecryptFile(GlobalVariables.route_secret, GlobalVariables.outputnameandroute, GlobalVariables.password);
                         }
                         UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- AS ONLY ENCRYPTOR: Decrypted File And Saved Successfully" + "\n", false));
                         UpdateUI(() => richTextBoxLog.ScrollToCaret());
@@ -900,7 +900,7 @@ namespace HideSloth
 
                     byte[] salt, nonce, tag;
                     // 加密数据
-                    byte[] encryptedData = AesGcmEncryptor.Encrypt(plain_bin, GlobalVariables.password, out salt, out nonce, out tag);
+                    byte[] encryptedData = Aes_ChaCha_Encryptor.Encrypt(plain_bin, GlobalVariables.password, out salt, out nonce, out tag);
                     UpdateUI(() => Input_PlainText.Text = (Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData))));
                     UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- AS ONLY ENCRYPTOR: Encrypted String Successfully" + "\n", false));
                     UpdateUI(() => richTextBoxLog.ScrollToCaret());
@@ -911,7 +911,7 @@ namespace HideSloth
                 {
                     try
                     {
-                        string result = System.Text.Encoding.UTF8.GetString(AesGcmDecryptor.Decrypt(Convert.FromBase64String(Input_PlainText.Text), GlobalVariables.password));
+                        string result = System.Text.Encoding.UTF8.GetString(Aes_ChaCha_Decryptor.Decrypt(Convert.FromBase64String(Input_PlainText.Text), GlobalVariables.password));
                         UpdateUI(() => Input_PlainText.Text = result);
                         UpdateUI(() => BoldToLog(DateTime.Now.ToString() + "--- AS ONLY ENCRYPTOR: Decrypted String Successfully" + "\n", false));
                         UpdateUI(() => richTextBoxLog.ScrollToCaret());

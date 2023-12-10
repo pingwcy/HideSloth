@@ -205,7 +205,7 @@ namespace HideSloth.Tools
 
 
 
-                        byte[] encryptedData = AesGcmEncryptor.Encrypt(fullbuffer, pwd, out byte[] salt, out byte[] nonce, out byte[] tag);
+                        byte[] encryptedData = Aes_ChaCha_Encryptor.Encrypt(fullbuffer, pwd, out byte[] salt, out byte[] nonce, out byte[] tag);
                         Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(Path.Combine(containers_route, container_list[cycle]));
                         if (GlobalVariables.Algor == "LSB")
                         {
@@ -417,7 +417,7 @@ namespace HideSloth.Tools
 
             foreach (string file in Directory.GetFiles(routeofsecrets))
             {
-                FileAES.EncryptFile(file, Path.Combine(routeofoutput, Path.GetFileName(file)), pwd);
+                FileEnc.EncryptFile(file, Path.Combine(routeofoutput, Path.GetFileName(file)), pwd);
                 updateStatus?.Invoke($"Encrypted: {file}");
             }
             updateStatus?.Invoke("All files encrypted and saved!");
