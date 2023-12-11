@@ -284,7 +284,7 @@ namespace HideSloth
         {
             if (combo_kdf.SelectedItem.ToString() == "PBKDF2")
             {
-                List < List<double> > time = Benchmark.KDFBench("PBKDF2", Int32.Parse(combo_iter.SelectedItem.ToString()),combo_sha.SelectedItem.ToString());
+                List < List<double> > time = Benchmark.KDFBench("PBKDF2", Int32.Parse(combo_iter.Text.ToString()),combo_sha.SelectedItem.ToString());
                 List<double>  resultlist = time[0];
                 ListViewItem item1 = new ListViewItem("PBKDF2");
                 item1.SubItems.Add(( resultlist.Average() *1000 ).ToString() + " ms");

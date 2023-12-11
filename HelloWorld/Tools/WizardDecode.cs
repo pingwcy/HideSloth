@@ -310,6 +310,8 @@ namespace HideSloth.Tools
             else
             {
                 List<string> targetfloder = [];
+                ALLfilePath.Clear();
+
                 if (Form_DecodeWizard.issub)
                 {
                     GetFilePath(route_loaded, ALLfilePath, searchdepth);
@@ -402,8 +404,10 @@ namespace HideSloth.Tools
             }
 
 
-
-
+            
+            GC.Collect(2, GCCollectionMode.Forced);
+            GC.WaitForPendingFinalizers();
+            
 
             updateStatus?.Invoke("All extractions are down successully!");
 

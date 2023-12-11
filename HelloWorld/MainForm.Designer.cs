@@ -80,6 +80,7 @@ namespace HideSloth
             Label_RouteofContainer = new TextBox();
             Label_RouteofSecret = new TextBox();
             check_multi = new CheckBox();
+            check_audio = new CheckBox();
             groupBox1.SuspendLayout();
             groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
@@ -379,11 +380,18 @@ namespace HideSloth
             check_multi.Name = "check_multi";
             check_multi.UseVisualStyleBackColor = true;
             // 
+            // check_audio
+            // 
+            resources.ApplyResources(check_audio, "check_audio");
+            check_audio.Name = "check_audio";
+            check_audio.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             resources.ApplyResources(this, "$this");
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ButtonFace;
+            Controls.Add(check_audio);
             Controls.Add(check_multi);
             Controls.Add(Label_RouteofSecret);
             Controls.Add(Label_RouteofContainer);
@@ -474,5 +482,6 @@ namespace HideSloth
         private CheckBox check_multi;
         private ToolStripMenuItem chineseSingaporeToolStripMenuItem;
         private ToolStripMenuItem englishUSToolStripMenuItem;
+        private CheckBox check_audio;
     }
 }

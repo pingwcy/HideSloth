@@ -93,6 +93,8 @@ namespace HideSloth
                 form1.Container_Button = true;
                 form1.ContainerLabel_Nousage = true;
                 form1.ContainerLabel2_Nousage = true;
+                form1.Check_Mult = true;
+
 
             }
             else if (Radio_Encryptor.Checked)
@@ -102,7 +104,7 @@ namespace HideSloth
                 form1.Container_Button = false;
                 form1.ContainerLabel_Nousage = false;
                 form1.ContainerLabel2_Nousage = false;
-
+                form1.Check_Mult = false;
 
             }
 
