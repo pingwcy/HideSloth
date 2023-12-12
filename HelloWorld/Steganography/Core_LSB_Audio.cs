@@ -102,7 +102,7 @@ namespace HideSloth.Steganography
                     int output = (x & multy) >> i;
                     multy = multy / 4;
                     int temp = source[offlen] & 252;
-                    source[offlen] = Convert.ToByte(temp | output);
+                    source[offlen] = (byte)(temp | output);
                     offlen++;
                 }
             }
@@ -124,7 +124,7 @@ namespace HideSloth.Steganography
                         int output = (x & multiply) >> i;
                         multiply = multiply / 4;
                         int temp = source[offset] & 252;
-                        source[offset] = Convert.ToByte(temp | output);
+                        source[offset] = (byte)(temp | output);
                         offset++;
                     }
                 }
@@ -168,7 +168,7 @@ namespace HideSloth.Steganography
                     multy = multy / 4;
                     offlen = offlen - 2;
                 }
-                bufferlen[lenstep] = Convert.ToByte(output);
+                bufferlen[lenstep] = (byte)(output);
                 lenstep++;
             }
             int bufferLength = BitConverter.ToInt32(bufferlen, 0);
@@ -189,7 +189,7 @@ namespace HideSloth.Steganography
                     multiply = multiply / 4;
                     offset = offset - 2;
                 }
-                bufferOutput[step] = Convert.ToByte(output);
+                bufferOutput[step] = (byte)(output);
                 step++;
             }
             return bufferOutput;

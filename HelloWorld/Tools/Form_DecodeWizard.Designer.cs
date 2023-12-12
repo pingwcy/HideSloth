@@ -209,10 +209,10 @@
             tabPage2.Controls.Add(button1);
             tabPage2.Controls.Add(text_loaded);
             tabPage2.Controls.Add(label2);
-            tabPage2.Location = new Point(4, 5);
+            tabPage2.Location = new Point(4, 19);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(549, 389);
+            tabPage2.Size = new Size(549, 375);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
             // 
@@ -240,9 +240,9 @@
             check_rerange.AutoSize = true;
             check_rerange.Location = new Point(23, 137);
             check_rerange.Name = "check_rerange";
-            check_rerange.Size = new Size(144, 21);
+            check_rerange.Size = new Size(215, 21);
             check_rerange.TabIndex = 3;
-            check_rerange.Text = "Perform Reordering";
+            check_rerange.Text = "Using Sparse Files if Compatible";
             check_rerange.UseVisualStyleBackColor = true;
             // 
             // button1
@@ -318,10 +318,10 @@
             tabPage4.Controls.Add(button3);
             tabPage4.Controls.Add(text_outname);
             tabPage4.Controls.Add(label4);
-            tabPage4.Location = new Point(4, 19);
+            tabPage4.Location = new Point(4, 5);
             tabPage4.Name = "tabPage4";
             tabPage4.Padding = new Padding(3);
-            tabPage4.Size = new Size(549, 375);
+            tabPage4.Size = new Size(549, 389);
             tabPage4.TabIndex = 3;
             tabPage4.Text = "tabPage4";
             // 
@@ -332,7 +332,6 @@
             button3.Name = "button3";
             button3.Size = new Size(30, 30);
             button3.TabIndex = 3;
-            button3.Text = "button3";
             button3.UseVisualStyleBackColor = true;
             button3.Click += button3_Click;
             // 
@@ -358,10 +357,10 @@
             tabPage5.BackColor = SystemColors.Control;
             tabPage5.Controls.Add(text_pwd);
             tabPage5.Controls.Add(label5);
-            tabPage5.Location = new Point(4, 19);
+            tabPage5.Location = new Point(4, 5);
             tabPage5.Name = "tabPage5";
             tabPage5.Padding = new Padding(3);
-            tabPage5.Size = new Size(549, 375);
+            tabPage5.Size = new Size(549, 389);
             tabPage5.TabIndex = 4;
             tabPage5.Text = "tabPage5";
             // 
@@ -388,10 +387,10 @@
             tabPage6.Controls.Add(progressBar1);
             tabPage6.Controls.Add(richTextBox1);
             tabPage6.Controls.Add(label6);
-            tabPage6.Location = new Point(4, 19);
+            tabPage6.Location = new Point(4, 5);
             tabPage6.Name = "tabPage6";
             tabPage6.Padding = new Padding(3);
-            tabPage6.Size = new Size(549, 375);
+            tabPage6.Size = new Size(549, 389);
             tabPage6.TabIndex = 5;
             tabPage6.Text = "tabPage6";
             // 
@@ -426,10 +425,10 @@
             tabPage7.BackColor = SystemColors.Control;
             tabPage7.Controls.Add(richTextBox2);
             tabPage7.Controls.Add(label7);
-            tabPage7.Location = new Point(4, 19);
+            tabPage7.Location = new Point(4, 5);
             tabPage7.Name = "tabPage7";
             tabPage7.Padding = new Padding(3);
-            tabPage7.Size = new Size(549, 375);
+            tabPage7.Size = new Size(549, 389);
             tabPage7.TabIndex = 6;
             tabPage7.Text = "tabPage7";
             // 

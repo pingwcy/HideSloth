@@ -175,11 +175,11 @@ namespace HideSloth.Tools
                     SwitchTab(5);
                     if (check_rerange.Checked)
                     {
-                        GlobalVariables.rerange_decode = true;
+                        GlobalVariables.sparse_decode = true;
                     }
                     else if (check_rerange.Checked == false)
                     {
-                        GlobalVariables.rerange_decode = false;
+                        GlobalVariables.sparse_decode = false;
 
                     }
                     if (check_all.Checked)

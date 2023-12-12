@@ -143,6 +143,8 @@ namespace HideSloth.Tools
                 }
 
             }
+            FileInfo fileInfo = new FileInfo(route_secret);
+            long fileSiz = fileInfo.Length;
 
 
             int cycle = 0;
@@ -150,7 +152,7 @@ namespace HideSloth.Tools
             using (BinaryReader reader = new BinaryReader(fs))
             {
                 byte[] buffer;
-
+                long currentpostion = 0;
                 while (true)
                 {
 
@@ -185,15 +187,17 @@ namespace HideSloth.Tools
 
                         try
                         {
-                        //cycle number
-                        byte[] intBytes0 = BitConverter.GetBytes(cycle);
+                            //cycle number
+                            long buf = buffer.Length;
+                        byte[] intBytes = BitConverter.GetBytes(currentpostion);
+                            currentpostion += buf;
                         //if (BitConverter.IsLittleEndian)
                         //Array.Reverse(intBytes0); 确保字节顺序正确
-                        byte[] intBytes = intBytes0.Concat(GlobalVariables.separator).ToArray();
+                        //byte[] intBytes = intBytes0.Concat(GlobalVariables.separator).ToArray();
 
 
-                        byte[] stringBytes0 = Encoding.UTF8.GetBytes(Path.GetFileName(route_secret));
-                        byte[] stringBytes = stringBytes0.Concat(GlobalVariables.separator).ToArray();
+                        byte[] stringBytes = BitConverter.GetBytes(fileSiz);
+                        //byte[] stringBytes = stringBytes0.Concat(GlobalVariables.separator).ToArray();
 
 
                         byte[] fullbuffer = new byte[intBytes.Length + stringBytes.Length + buffer.Length];
