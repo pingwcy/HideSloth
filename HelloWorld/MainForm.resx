@@ -1032,6 +1032,9 @@
   <data name="&gt;&gt;check_multi.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
+  <data name="check_audio.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
+  </data>
   <data name="check_audio.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>

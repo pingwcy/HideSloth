@@ -60,23 +60,36 @@ namespace HideSloth.Steganography
             string fileLengthStr = "";
             char currentChar;
 
+            char[] binaryCharArray = new char[32]; // 用于存储二进制表示的字符数组
+            int count = 0; // 用于计数已读取的字符数
+
+
+
             do
             {
                 Point point = LinearIndexToPoint(c, img.Width, img.Height);
                 int decodedValue = DecodePixelFromArray(rgbValues, point, img.Width, bmpData.Stride);
                 currentChar = (char)decodedValue;
+                binaryCharArray[count] = currentChar;
+                count++;
+                if (count == 32) // 检查是否已读取了32个字符
+                {
+                    break; // 如果已读取32个字符，跳出循环
+                }
 
                 // 调试输出每个解码值
                 //Console.WriteLine($"Decoded char at {c}: '{currentChar}' (DecodedValue: {decodedValue})");
-
+                /*
                 if (currentChar == '#')
                     break;
-
+                */
                 fileLengthStr += currentChar;
                 c++;
             } while (c < maxLinear); // 确保循环不超过图像像素总数
+            string binaryString = new string(binaryCharArray); // 将字符数组转换为字符串
+            int fileLength = Convert.ToInt32(binaryString, 2); // 将二进制字符串转换为整数
 
-            int fileLength = Convert.ToInt32(fileLengthStr) ;
+            //int fileLength = Convert.ToInt32(fileLengthStr) ;
             byte[] fileData = new byte[fileLength];
 
             // 读取并解码文件数据
@@ -129,20 +142,25 @@ namespace HideSloth.Steganography
 
             if (file.Length < maxLinear)
             {
-                string fileLength = file.Length.ToString();
-                for (int i = 0; i < fileLength.Length; i++)
+                string binaryString = Convert.ToString(file.Length, 2).PadLeft(32, '0'); // 转换为二进制字符串，左侧填充零以达到 32 位
+
+                char[] binaryCharArray = binaryString.ToCharArray(); // 将二进制字符串转换为字符数组
+
+
+                for (int i = 0; i < binaryCharArray.Length; i++)
                 {
                     Point point = LinearIndexToPoint(c, img.Width, img.Height);
-                    char letter = fileLength[i];
+                    char letter = binaryCharArray[i];
                     int value = Convert.ToInt32(letter);
                     EncodePixelToArray(rgbValues, point, value, img.Width, bmpData.Stride);
                     c++;
                 }
+                /*
                 Point point1 = LinearIndexToPoint(c, img.Width, img.Height);
                 int value1 = Convert.ToInt32('#');
                 EncodePixelToArray(rgbValues, point1, value1, img.Width, bmpData.Stride);
                 c++;
-
+                */
                 // Write file
                 for (int i = 0; i < file.Length; i++)
                 {
