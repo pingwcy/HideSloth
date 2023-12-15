@@ -49,5 +49,9 @@ namespace HideSloth
         public static int smallstandard = 1;//ignore image capacity
         public static string encalg = "AES";
         public static bool ignoreextracterror = false;
+
+        public static string audioorimage = "image";
+
+        public static string stringinfo = "";
     }
 }

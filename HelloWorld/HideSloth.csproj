@@ -10,6 +10,8 @@
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. The software developers are not responsible for any losses due to software defects or system issues. See the GNU General Public License for more details</Description>
     <Copyright>Copyright © 2023 SLOTH. All rights reserved.</Copyright>
     <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <StartupObject></StartupObject>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
