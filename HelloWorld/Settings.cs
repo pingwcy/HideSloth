@@ -143,7 +143,7 @@ namespace HideSloth
             GlobalVariables.copymeta = check_meta.Checked;
             GlobalVariables.copyotherfilemeta = check_copymetaother.Checked;
             GlobalVariables.keepformat = check_keepformat.Checked;
-            GlobalVariables.smallstandard = (int) numericUpDown1.Value;
+            GlobalVariables.smallstandard = (int)numericUpDown1.Value;
             if (combo_encalg.SelectedItem.ToString() == "ChaCha20-Poly1305")
             {
                 GlobalVariables.encalg = "ChaCha";
@@ -199,6 +199,7 @@ namespace HideSloth
             Radio_Linear_PB.Enabled = false;
             Radio_LSB_PB.Enabled = false;
             Radio_disableenc.Enabled = false;
+            Radio_enableenc.Checked = true;
         }
 
         private void Radio_Normal_CheckedChanged(object sender, EventArgs e)
@@ -224,6 +225,21 @@ namespace HideSloth
             {
                 combo_entension.Enabled = true;
             }
+        }
+
+        private void Radio_disableenc_CheckedChanged(object sender, EventArgs e)
+        {
+            combo_encalg.Enabled = false;
+            Check_CustIter.Enabled = false;
+            Check_CustHash.Enabled = false;
+        }
+
+        private void Radio_enableenc_CheckedChanged(object sender, EventArgs e)
+        {
+            combo_encalg.Enabled = true;
+            Check_CustIter.Enabled = true;
+            Check_CustHash.Enabled = true;
+
         }
     }
 

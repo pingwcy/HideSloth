@@ -208,12 +208,15 @@ namespace HideSloth.Tools
                         Buffer.BlockCopy(buffer, 0, fullbuffer, intBytes.Length + stringBytes.Length, buffer.Length);
 
 
-
-                        byte[] encryptedData = Aes_ChaCha_Encryptor.Encrypt(fullbuffer, pwd, out byte[] salt, out byte[] nonce, out byte[] tag);
+                        if (GlobalVariables.enableencrypt)
+                        {
+                                fullbuffer = Aes_ChaCha_Encryptor.Encrypt(fullbuffer, pwd, out byte[] salt, out byte[] nonce, out byte[] tag);
+                                fullbuffer = BytesStringThings.CombineBytes(salt, nonce, tag, fullbuffer);
+                         }
                         Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(Path.Combine(containers_route, container_list[cycle]));
                         if (GlobalVariables.Algor == "LSB")
                         {
-                            Bitmap result = LSB_Image.embed(Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData)), loaded);
+                            Bitmap result = LSB_Image.embed(Convert.ToBase64String(fullbuffer), loaded);
                             string dirrela = "";
                             string onlyname = "";
                             if (Path.GetDirectoryName(container_list[cycle]) != "")
@@ -247,7 +250,7 @@ namespace HideSloth.Tools
                         }
                         else if (GlobalVariables.Algor == "Linear")
                         {
-                            Bitmap result = Core_Linear_Image.EncodeFileLinear(loaded, BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData));
+                            Bitmap result = Core_Linear_Image.EncodeFileLinear(loaded, fullbuffer);
 
                             string dirrela = "";
                             string onlyname = "";
@@ -409,6 +412,8 @@ namespace HideSloth.Tools
                     }
                 }
                 updateStatus?.Invoke($"Copy Finnished");
+                GC.Collect(2, GCCollectionMode.Forced);
+                GC.WaitForPendingFinalizers();
 
                 return true;
             }

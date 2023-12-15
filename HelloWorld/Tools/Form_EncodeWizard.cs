@@ -346,8 +346,15 @@ namespace HideSloth.Tools
                 if (Radio_normalw.Checked && Radio_onetomany.Checked)
                 {
                     pwd = text_pwd.Text;
-                    box_summary.AppendText("Mode: One Large file To List of Containers\nRoute of Secret Files: " + largonesecret + "\nRoute of Containers: " + containers + "\nRoute of Output Directory: " + routeofoutput + "\nPBKDF2 Iterations: " + GlobalVariables.iteration.ToString() + "\nPBKDF2 Hash: " + GlobalVariables.Hash);
-
+                    box_summary.AppendText("Mode: One Large file To List of Containers\nRoute of Secret Files: " + largonesecret + "\nRoute of Containers: " + containers + "\nRoute of Output Directory: " + routeofoutput);
+                    if (GlobalVariables.enableencrypt)
+                    {
+                        box_summary.AppendText("\nEncryption: " + GlobalVariables.enableencrypt.ToString() + "\nPBKDF2 Iterations: " + GlobalVariables.iteration.ToString() + "\nPBKDF2 Hash: " + GlobalVariables.Hash);
+                    }
+                    else
+                    {
+                        box_summary.AppendText("\nEncryption: " + GlobalVariables.enableencrypt.ToString());
+                    }
                     SwitchTab(6);
                 }
             }

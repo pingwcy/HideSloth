@@ -194,6 +194,7 @@
             Radio_disableenc.TabStop = true;
             Radio_disableenc.Text = "Disabled";
             Radio_disableenc.UseVisualStyleBackColor = true;
+            Radio_disableenc.CheckedChanged += Radio_disableenc_CheckedChanged;
             // 
             // Radio_enableenc
             // 
@@ -205,6 +206,7 @@
             Radio_enableenc.TabStop = true;
             Radio_enableenc.Text = "Enabled";
             Radio_enableenc.UseVisualStyleBackColor = true;
+            Radio_enableenc.CheckedChanged += Radio_enableenc_CheckedChanged;
             // 
             // groupBox2
             // 

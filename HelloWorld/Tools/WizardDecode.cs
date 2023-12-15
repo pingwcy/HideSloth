@@ -183,14 +183,24 @@ namespace HideSloth.Tools
                                     if (GlobalVariables.Algor == "LSB")
                                     {
                                         encrypted_result = LSB_Image.extract(unloading);
-                                        decrypted_content = Aes_ChaCha_Decryptor.Decrypt(Convert.FromBase64String(encrypted_result), pwd);
+                                        if (GlobalVariables.enableencrypt)
+                                        {
+                                            decrypted_content = Aes_ChaCha_Decryptor.Decrypt(Convert.FromBase64String(encrypted_result), pwd);
+                                        }
+                                        else
+                                        {
+                                            decrypted_content = Convert.FromBase64String(encrypted_result);
+                                        }
                                         updateStatus?.Invoke("Readed and Extracted from File: " + part);
 
                                     }
                                     else if (GlobalVariables.Algor == "Linear")
                                     {
-                                        byte[] filecontent = Core_Linear_Image.DecodeFileFromImage(unloading);
-                                        decrypted_content = Aes_ChaCha_Decryptor.Decrypt(filecontent, pwd);
+                                        decrypted_content = Core_Linear_Image.DecodeFileFromImage(unloading);
+                                        if (GlobalVariables.enableencrypt)
+                                        {
+                                            decrypted_content = Aes_ChaCha_Decryptor.Decrypt(decrypted_content, pwd);
+                                        }
                                         updateStatus?.Invoke("Readed and Extracted from File: " + part);
                                     }
 
@@ -260,8 +270,8 @@ namespace HideSloth.Tools
                                 }
                                 else if (GlobalVariables.Algor == "Linear")
                                 {
-                                    byte[] filecontent = Core_Linear_Image.DecodeFileFromImage(unloading);
-                                    decrypted_content = Aes_ChaCha_Decryptor.Decrypt(filecontent, pwd);
+                                    decrypted_content = Core_Linear_Image.DecodeFileFromImage(unloading);
+                                    decrypted_content = Aes_ChaCha_Decryptor.Decrypt(decrypted_content, pwd);
                                     updateStatus?.Invoke("Readed and Extracted from File: " + part);
                                 }
 
