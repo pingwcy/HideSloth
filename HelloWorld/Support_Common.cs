@@ -90,11 +90,11 @@ namespace HideSloth
             return combined;
         }
 
-        public static void ExtractFileName(byte[] combined, int separatorIndex)
+        public static string ExtractFileName(byte[] combined, int separatorIndex)
         {
             byte[] fileNameBytes = new byte[separatorIndex];
             Buffer.BlockCopy(combined, 0, fileNameBytes, 0, separatorIndex);
-            GlobalVariables.defaultname =  Encoding.UTF8.GetString(fileNameBytes);
+            return Encoding.UTF8.GetString(fileNameBytes);
         }
         public static byte[] ExtractFileContent(byte[] combined, int separatorIndex)
         {

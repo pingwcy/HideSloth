@@ -20,7 +20,7 @@ namespace HideSloth
         public static bool isfile;
         public static bool isstring;
 
-        public static string? route_container;
+        public static string? route_container ="";
         public static List<string> route_containers = [];
         public static string? multipal_route;
         public static string? password;

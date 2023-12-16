@@ -7,22 +7,38 @@ using System.Text;
 using System.Threading.Tasks;
 using static HideSloth.MainForm;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace HideSloth
 {
+    public class ProgressEventArgs : EventArgs
+    {
+        public int Progress { get; set; }
+        public string Message { get; set; }
+
+
+        public ProgressEventArgs(int progress, string message)
+        {
+            Progress = progress;
+            Message = message;
+        }
+    }
+
     public class Logic
     {
         //public delegate void ProgressReportHandler(string message);
         //public event ProgressReportHandler ProgressReported;
-        private MainForm form1;
-
-        public Logic(MainForm form1)
+        public event EventHandler<ProgressEventArgs>? ProgressChanged;
+        public event EventHandler<FileSaveRequestEventArgs>? RequestFileSave;
+        public event EventHandler<RouteOutputRequestEventArgs>? RequestRouteSave;
+        public event EventHandler<SaveExtractedFileEventArgs>? RequestExtractedSave;
+        protected virtual void OnProgressChanged(ProgressEventArgs e)
         {
-            this.form1 = form1;
+            ProgressChanged?.Invoke(this, e);
         }
-        public async Task CallMethodAsync()
+        public async Task CallMethodAsync(bool ismult, string selecte_secret, bool audiochecked,string password)
         {
-            await Task.Run(() => LongRunningOperation());
+            await Task.Run(() => LongRunningOperation(ismult, selecte_secret, audiochecked, password));
         }
 
 
@@ -39,106 +55,107 @@ namespace HideSloth
                                 form1.TriggerControlAction(updateAction);
                             }));
         */
-        public bool LongRunningOperation()
+        public bool LongRunningOperation(bool ismult, string selecte_secret, bool audiochecked,string password)
         {
+            string manyfilePath = "";
 
             if (GlobalVariables.mode == "Normal")
             {
 
                 if (GlobalVariables.encode && GlobalVariables.enableencrypt && GlobalVariables.isfile)//Encode encrypted file
                 {
-
                     try
                     {
-                        if (form1.is_Mult)
+                        if (ismult)
                         {
-
-                            form1.Invoke(new Action(() => form1.mulitpla_output()));//for duplicate copy, choose route first
+                            var argss = new RouteOutputRequestEventArgs();
+                            RequestRouteSave?.Invoke(this, argss);
+                            manyfilePath = argss.WaitForPath();
                         }
-                        //ShowMessageOnUIThread(GlobalVariables.route_containers[0], "");
 
                         foreach (string single_container in GlobalVariables.route_containers)
                         {
-                            byte[] secretData = BytesStringThings.ReadFileToByteswithName(GlobalVariables.route_secret);
+                            byte[] secretData = BytesStringThings.ReadFileToByteswithName(selecte_secret);
 
+                            OnProgressChanged(new ProgressEventArgs(0, "Secret File Readed"));
 
-                            form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Secret File Readed\n")));
+                            DateTime lastaccess = new DateTime(2021, 8, 15);
 
-                           DateTime lastaccess = new DateTime(2021, 8, 15);
+                            secretData = Aes_ChaCha_Encryptor.Encrypt(secretData, password, out byte[] salt, out byte[] nonce, out byte[] tag);
+                            OnProgressChanged(new ProgressEventArgs(0, "Secret File Encrypted and stored in memory"));
 
-                            secretData = Aes_ChaCha_Encryptor.Encrypt(secretData, GlobalVariables.password, out byte[] salt, out byte[] nonce, out byte[] tag);
-                            form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Secret File Encrypted and stored in memory\n")));
                             if (GlobalVariables.copymeta)
                             {
                                 lastaccess = File.GetLastAccessTime(single_container);
                             }
                             string newroutename = "";
 
-                            if (GlobalVariables.audioorimage == "image")
+                            if (!audiochecked)
                             {
                                 Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
-
-                                Bitmap result = null;
+                                Bitmap? result = null;
 
                                 if (GlobalVariables.Algor == "LSB")
                                 {
-                                    form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Start to embed\n")));
-                                   result = LSB_Image.embed(Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, secretData)), loaded);
+                                    OnProgressChanged(new ProgressEventArgs(0, "Start to embed"));
+
+                                    result = LSB_Image.embed(Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, secretData)), loaded);
 
                                 }
                                 else if (GlobalVariables.Algor == "Linear")
                                 {
-                                    form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Start to embed\n")));
+                                    OnProgressChanged(new ProgressEventArgs(0, "Start to embed"));
 
                                     result = Core_Linear_Image.EncodeFileLinear(loaded, BytesStringThings.CombineBytes(salt, nonce, tag, secretData));
                                 }
 
-                                if (form1.is_Mult == false)
+                                if (ismult == false)
                                 {
-                                    form1.Invoke(new Action(() => form1.Outputfile_pngbmp()));
-                                }
-                                if (GlobalVariables.outputnameandroute != null && form1.is_Mult == false)
-                                {
-                                    newroutename = GlobalVariables.outputnameandroute;
-                                    result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    var args = new FileSaveRequestEventArgs();
+                                    RequestFileSave?.Invoke(this, args);
+                                    var filePath = args.WaitForPath();
+
+                                    result?.Save(filePath, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                     loaded.Dispose();
-                                    result.Dispose();
+                                    result?.Dispose();
                                 }
-                                if (GlobalVariables.multipal_route != null && form1.is_Mult == true)
+                                if (ismult == true && manyfilePath != null)
                                 {
                                     if (GlobalVariables.keepformat)
-                                    {
-                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
-                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    {                                       
+                                        newroutename = Path.Combine(manyfilePath, (Path.GetFileName(single_container)));
+                                        result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                         loaded.Dispose();
-                                        result.Dispose();
+                                        result?.Dispose();
                                     }
                                     else
                                     {
-                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
-                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                        newroutename = Path.Combine(manyfilePath, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
+                                        result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                         loaded.Dispose();
-                                        result.Dispose();
+                                        result?.Dispose();
                                     }
                                 }
 
 
                             }
-                            else if (GlobalVariables.audioorimage == "audio")
+                            else if (audiochecked)
                             {
-                                if (form1.is_Mult == false)
+                                if (ismult == false)
                                 {
-                                    form1.Invoke(new Action(() => form1.Outputfile_wav()));
-                                    form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Start to embed\n")));
+                                    var args = new FileSaveRequestEventArgs();
+                                    RequestFileSave?.Invoke(this, args);
+                                    var filePath = args.WaitForPath();
 
-                                    Audio_LSB.Encode_Audio(single_container, GlobalVariables.outputnameandroute, BytesStringThings.CombineBytes(salt, nonce, tag, secretData));
+                                    OnProgressChanged(new ProgressEventArgs(0, "Start to embed"));
+
+                                    Audio_LSB.Encode_Audio(single_container, filePath, BytesStringThings.CombineBytes(salt, nonce, tag, secretData));
 
                                 }
-                                if (GlobalVariables.multipal_route != null && form1.is_Mult)
+                                if (ismult && manyfilePath != null)
                                 {
-                                    newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
+                                    newroutename = Path.Combine(manyfilePath, (Path.GetFileName(single_container)));
                                     Audio_LSB.Encode_Audio(single_container, newroutename, BytesStringThings.CombineBytes(salt, nonce, tag, secretData));
-
                                 }
                             }
 
@@ -148,18 +165,16 @@ namespace HideSloth
                                 File.SetCreationTime(newroutename, File.GetCreationTime(single_container));
                                 File.SetLastAccessTime(newroutename, lastaccess);
                                 File.SetLastWriteTime(newroutename, File.GetLastWriteTime(single_container));
-
                             }
-                            form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- Loaded container saved\n", false)));
-                            form1.Invoke(new Action(() => form1.ShowMessageOnUIThread("Success to encode file with encryption to image", "Success")));
 
+                            OnProgressChanged(new ProgressEventArgs(1, "Success to encode file with encryption to image"));
 
                         }
                     }
                     catch (Exception ex)
                     {
-                        form1.Invoke(new Action(() => form1.ShowMessageOnUIThread(ex.Message, "Error")));
-                        form1.Invoke(new Action(() => form1.BoldToLog(ex.Message, true)));
+                        OnProgressChanged(new ProgressEventArgs(2, ex.Message));
+
                     }
 
                 }
@@ -169,11 +184,9 @@ namespace HideSloth
                 {
 
                     byte[]? extracted_result = new byte[0];
-                    byte[]? decrypted_content = new byte[0];
-
                     try
                     {
-                        if (GlobalVariables.audioorimage == "image")
+                        if (!audiochecked)
                         {
                             Bitmap unloading = new Bitmap(GlobalVariables.route_container);
 
@@ -188,49 +201,36 @@ namespace HideSloth
                             unloading.Dispose();
 
                         }
-                        else if (GlobalVariables.audioorimage == "audio")
+                        else if (audiochecked)
                         {
-                            //byte[] xx = Audio_LSB.Decode_Audio(GlobalVariables.route_container);
                             extracted_result = Audio_LSB.Decode_Audio(GlobalVariables.route_container);
-                            form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- Decrypted String Successful\n", false)));
-                            // UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
                         }
-                        form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Container Readed\n")));
-
-                        extracted_result = Aes_ChaCha_Decryptor.Decrypt(extracted_result, GlobalVariables.password);
-                        //extracted_result = null;
+                        OnProgressChanged(new ProgressEventArgs(0, "Container Readed"));
+                        extracted_result = Aes_ChaCha_Decryptor.Decrypt(extracted_result, password);
+                        OnProgressChanged(new ProgressEventArgs(0, "Decrypted file Successful"));
 
                         int nameserperatorindex = BytesStringThings.FindSeparatorIndex(extracted_result, GlobalVariables.separator);
-                        BytesStringThings.ExtractFileName(extracted_result, nameserperatorindex);
-                        form1.Invoke(new Action(() => form1.Outputfile_any()));
+                        GlobalVariables.defaultname = BytesStringThings.ExtractFileName(extracted_result, nameserperatorindex);
+
+                        var args = new SaveExtractedFileEventArgs();
+                        RequestExtractedSave?.Invoke(this, args);
+                        var filePath = args.WaitForPath();
 
                         extracted_result = BytesStringThings.ExtractFileContent(extracted_result, nameserperatorindex);
-                        //extracted_result = null;
 
-                        if (GlobalVariables.outputnameandroute != null)
+                        if (filePath != null)
                         {
-                            BytesStringThings.BytesWritetoFile(GlobalVariables.outputnameandroute, extracted_result);
+                            BytesStringThings.BytesWritetoFile(filePath, extracted_result);
                             extracted_result = null;
                         }
-                        form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- Extracted and decrypted file.\n", false)));
-
-                        form1.Invoke(new Action(() => form1.ShowMessageOnUIThread("Success to decode file with encryption from image", "Success")));
-
+                        OnProgressChanged(new ProgressEventArgs(1, "Success to decode file with encryption from image"));
 
                     }
 
                     catch (Exception ex)
                     {
-                        form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "Error" + ex.Message + "\n", true)));
-                        //UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
-                        form1.Invoke(new Action(() => form1.ShowMessageOnUIThread(ex.Message, "Error")));
-                    }
-                    finally
-                    {
-
-
+                        OnProgressChanged(new ProgressEventArgs(2, ex.Message));
                     }
 
                 }
@@ -240,10 +240,11 @@ namespace HideSloth
                 {
                     try
                     {
-                        if (form1.is_Mult)
+                        if (ismult)
                         {
-
-                            form1.Invoke(new Action(() => form1.mulitpla_output()));//for duplicate copy, choose route first
+                            var argss = new RouteOutputRequestEventArgs();
+                            RequestRouteSave?.Invoke(this, argss);
+                            manyfilePath = argss.WaitForPath();
                         }
                         foreach (string single_container in GlobalVariables.route_containers)
                         {
@@ -253,79 +254,76 @@ namespace HideSloth
                             {
                                 lastaccess = File.GetLastAccessTime(single_container);
                             }
-                            if (GlobalVariables.audioorimage == "image")
+                            if (!audiochecked)
                             {
                                 Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
-                                Bitmap result = null;
+                                OnProgressChanged(new ProgressEventArgs(0, "Loaded container in memory Successful, start to embed"));
+
+                                Bitmap? result = null;
                                 if (GlobalVariables.Algor == "LSB")
                                 {
                                     
 
-                                    string StringFromFile = BytesStringThings.ReadFileToStringwithName(GlobalVariables.route_secret);
-                                    form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Readed secret File in memory Successful\n")));
+                                    string StringFromFile = BytesStringThings.ReadFileToStringwithName(selecte_secret);
+                                    OnProgressChanged(new ProgressEventArgs(0, "Readed secret File in memory Successful"));
 
                                     result = LSB_Image.embed(StringFromFile, loaded);
-                                    form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Embed File in memory Successful, select a route to save\n")));
-                                    //UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                                    OnProgressChanged(new ProgressEventArgs(0, "Embed File in memory Successful, select a route to save"));
 
                                 }
                                 else if (GlobalVariables.Algor == "Linear")
                                 {
-                                    form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Loaded container in memory Successful, start to embed.\n")));
-                                    //UpdateUI(() => richTextBoxLog.ScrollToCaret());
-                                    result = Core_Linear_Image.EncodeFileLinear(loaded, BytesStringThings.ReadFileToByteswithName(GlobalVariables.route_secret));
+                                    result = Core_Linear_Image.EncodeFileLinear(loaded, BytesStringThings.ReadFileToByteswithName(selecte_secret));
                                 }
+                                OnProgressChanged(new ProgressEventArgs(0, "Readed secret File and embed in container in memory Successful, please save"));
 
-                                form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Readed secret File and embed in container in memory Successful, please save\n")));
-                                //UpdateUI(() => richTextBoxLog.ScrollToCaret());
-                                //
-                                if (form1.is_Mult == false)
+                                if (ismult == false)
                                 {
-                                    form1.Invoke(new Action(() => form1.Outputfile_pngbmp()));
-                                }
-                                if (GlobalVariables.outputnameandroute != null && form1.is_Mult == false)
-                                {
-                                    newroutename = GlobalVariables.outputnameandroute;
-                                    result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    var args = new FileSaveRequestEventArgs();
+                                    RequestFileSave?.Invoke(this, args);
+                                    var filePath = args.WaitForPath();
+                                    result?.Save(filePath, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                     loaded.Dispose();
 
                                 }
-                                if (GlobalVariables.multipal_route != null && form1.is_Mult)
+                                if (manyfilePath != null && ismult)
                                 {
                                     if (GlobalVariables.keepformat)
                                     {
-                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
-                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                        newroutename = Path.Combine(manyfilePath, (Path.GetFileName(single_container)));
+                                        result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                         loaded.Dispose();
 
                                     }
                                     else
                                     {
-                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
-                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                        newroutename = Path.Combine(manyfilePath, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
+                                        result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                         loaded.Dispose();
                                     }
                                 }
-
-                                form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Saved Successful\n")));
-                                //UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                                OnProgressChanged(new ProgressEventArgs(1, "Success to encode file without encryption to image"));
 
 
                             }
-                            else if (GlobalVariables.audioorimage == "audio")
+                            else if (audiochecked)
                             {
-                                if (form1.is_Mult == false)
+                                if (ismult == false)
                                 {
-                                    form1.Invoke(new Action(() => form1.Outputfile_wav()));
-                                    Audio_LSB.Encode_Audio(single_container, GlobalVariables.outputnameandroute, BytesStringThings.ReadFileToByteswithName(GlobalVariables.route_secret));
+                                    var args = new FileSaveRequestEventArgs();
+                                    RequestFileSave?.Invoke(this, args);
+                                    var filePath = args.WaitForPath();
+
+                                    OnProgressChanged(new ProgressEventArgs(0, "Start to embed"));
+                                    Audio_LSB.Encode_Audio(single_container, filePath, BytesStringThings.ReadFileToByteswithName(selecte_secret));
 
                                 }
-                                if (GlobalVariables.multipal_route != null && form1.is_Mult)
+                                if (manyfilePath != null && ismult)
                                 {
-                                    newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
-                                    Audio_LSB.Encode_Audio(single_container, newroutename, BytesStringThings.ReadFileToByteswithName(GlobalVariables.route_secret));
-
+                                    newroutename = Path.Combine(manyfilePath, (Path.GetFileName(single_container)));
+                                    Audio_LSB.Encode_Audio(single_container, newroutename, BytesStringThings.ReadFileToByteswithName(selecte_secret));
                                 }
+                                OnProgressChanged(new ProgressEventArgs(1, "Saved Successful"));
                             }
 
 
@@ -338,15 +336,11 @@ namespace HideSloth
                             }
 
                         }
-                        form1.Invoke(new Action(() => form1.ShowMessageOnUIThread("Success to encode file without encryption to image", "Success")));
 
                     }
                     catch (Exception ex)
                     {
-                        form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "Error" + ex.Message + "\n", true)));
-                        //UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
-                        form1.Invoke(new Action(() => form1.ShowMessageOnUIThread(ex.Message, "Error")));
+                        OnProgressChanged(new ProgressEventArgs(2, ex.Message));
                     }
                 }
 
@@ -355,58 +349,52 @@ namespace HideSloth
                 {
                     try
                     {
-                        byte[] data = new byte[0];
-                        if (GlobalVariables.audioorimage == "image")
+                        byte[]? data = new byte[0];
+                        if (!audiochecked)
                         {
                             Bitmap unloading = new Bitmap(GlobalVariables.route_container);
+                            OnProgressChanged(new ProgressEventArgs(0, "Readed loaded container"));
 
-                            form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Readed loaded container\n")));
-                            //UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
                             if (GlobalVariables.Algor == "LSB")
                             {
                                 data = Convert.FromBase64String(LSB_Image.extract(unloading));
-                                form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Extracted File Successful\n")));
-                                //UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                                OnProgressChanged(new ProgressEventArgs(0, "Extracted File Successful"));
 
                             }
                             else if (GlobalVariables.Algor == "Linear")
                             {
                                 data = Core_Linear_Image.DecodeFileFromImage(unloading);
-                                form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Extracted File Successful\n")));
-                                //UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                                OnProgressChanged(new ProgressEventArgs(0, "Extracted File Successful"));
                             }
                             unloading.Dispose();
                         }
-                        else if (GlobalVariables.audioorimage == "audio")
+                        else if (audiochecked)
                         {
                             data = Audio_LSB.Decode_Audio(GlobalVariables.route_container);
-                            form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Extracted File Successful\n")));
-                            //UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
+                            OnProgressChanged(new ProgressEventArgs(0, "Extracted File Successful"));
                         }
                         int nameserperatorindex = BytesStringThings.FindSeparatorIndex(data, GlobalVariables.separator);
-                        BytesStringThings.ExtractFileName(data, nameserperatorindex);
-                        form1.Invoke(new Action(() => form1.Outputfile_any()));
+                        GlobalVariables.defaultname = BytesStringThings.ExtractFileName(data, nameserperatorindex);
+
+                        var args = new SaveExtractedFileEventArgs();
+                        RequestExtractedSave?.Invoke(this, args);
+                        var filePath = args.WaitForPath();
 
                         data = BytesStringThings.ExtractFileContent(data, nameserperatorindex);
-                        if (GlobalVariables.outputnameandroute != null)
+
+                        if (filePath != null)
                         {
-                            BytesStringThings.BytesWritetoFile(GlobalVariables.outputnameandroute, data);
+                            BytesStringThings.BytesWritetoFile(filePath, data);
+                            data = null;
                         }
-                        form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Saved Successful\n")));
-                        //UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
-                        form1.Invoke(new Action(() => form1.ShowMessageOnUIThread("Success decode file without encryption from image", "Success")));
-
+                        OnProgressChanged(new ProgressEventArgs(1, "Success to decode file with encryption from image"));
 
 
                     }
                     catch (Exception ex)
                     {
-                        form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "Error" + ex.Message + "\n", true)));
-                        //UpdateUI(() => richTextBoxLog.ScrollToCaret());
-                        form1.Invoke(new Action(() => form1.ShowMessageOnUIThread(ex.Message, "Error")));
+                        OnProgressChanged(new ProgressEventArgs(2, ex.Message));
                     }
 
                 }
@@ -416,10 +404,11 @@ namespace HideSloth
                 {
                     try
                     {
-                        if (form1.is_Mult)
+                        if (ismult)
                         {
-
-                            form1.Invoke(new Action(() => form1.mulitpla_output()));//for duplicate copy, choose route first
+                            var argss = new RouteOutputRequestEventArgs();
+                            RequestRouteSave?.Invoke(this, argss);
+                            manyfilePath = argss.WaitForPath();
                         }
                         foreach (string single_container in GlobalVariables.route_containers)
                         {
@@ -432,73 +421,67 @@ namespace HideSloth
                             string newroutename = "";
                             byte[] plain_bin = Convert.FromBase64String(BytesStringThings.StringtoBase64(GlobalVariables.stringinfo));
 
-                            byte[] salt, nonce, tag;
-                            //         
-                            byte[] encryptedData = Aes_ChaCha_Encryptor.Encrypt(plain_bin, GlobalVariables.password, out salt, out nonce, out tag);
-                            form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Encrypted String Successful\n")));
-                            //UpdateUI(() => richTextBoxLog.ScrollToCaret());
-                            if (GlobalVariables.audioorimage == "image")
+                            byte[] encryptedData = Aes_ChaCha_Encryptor.Encrypt(plain_bin, password, out byte[] salt, out byte[] nonce, out byte[]  tag);
+                            OnProgressChanged(new ProgressEventArgs(0, "Encrypted String Successful"));
+                            if (!audiochecked)
                             {
                                 Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
-                                form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Container Loaded Successful, start to embed\n")));
-                                //UpdateUI(() => richTextBoxLog.ScrollToCaret());
-                                Bitmap result = null;
+                                OnProgressChanged(new ProgressEventArgs(0, "Container Loaded Successful, start to embed"));
+
+                                Bitmap? result = null;
 
                                 if (GlobalVariables.Algor == "LSB")
                                 {
 
                                     result = LSB_Image.embed(Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData)), loaded);
-                                    form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Embed string Successful, please save loaded container\n")));
-                                    //UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                                    OnProgressChanged(new ProgressEventArgs(0, "Embed string Successful, please save loaded container"));
 
                                 }
                                 else if (GlobalVariables.Algor == "Linear")
                                 {
 
                                     result = Core_Linear_Image.EncodeMsgLinearImage(Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData)), loaded);
-                                    form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Embed string Successful, please save loaded container\n")));
-                                    // UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                                    OnProgressChanged(new ProgressEventArgs(0, "Embed string Successful, please save loaded container"));
                                 }
-                                if (form1.is_Mult == false)
+                                if (ismult == false)
                                 {
-                                    form1.Invoke(new Action(() => form1.Outputfile_pngbmp()));
-                                }
-                                if (GlobalVariables.outputnameandroute != null && form1.is_Mult == false)
-                                {
-                                    newroutename = GlobalVariables.outputnameandroute;
-                                    result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    var args = new FileSaveRequestEventArgs();
+                                    RequestFileSave?.Invoke(this, args);
+                                    var filePath = args.WaitForPath();
+                                    result?.Save(filePath, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
 
                                 }
-                                if (GlobalVariables.multipal_route != null && form1.is_Mult == true)
+                                if (manyfilePath != null && ismult == true)
                                 {
                                     if (GlobalVariables.keepformat)
                                     {
-                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
-                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                        newroutename = Path.Combine(manyfilePath, (Path.GetFileName(single_container)));
+                                        result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
 
                                     }
                                     else
                                     {
-                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
-                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                        newroutename = Path.Combine(manyfilePath, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
+                                        result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                     }
                                 }
-                                form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- Saved Successful\n", false)));
-                                //UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                                OnProgressChanged(new ProgressEventArgs(1, "Saved Successful"));
                                 loaded.Dispose();
-                                result.Dispose();
+                                result?.Dispose();
                             }
-                            else if (GlobalVariables.audioorimage == "audio")
+                            else if (audiochecked)
                             {
-                                if (form1.is_Mult == false)
+                                if (ismult == false)
                                 {
-                                    form1.Invoke(new Action(() => form1.Outputfile_wav()));
-                                    Audio_LSB.Encode_Audio(single_container, GlobalVariables.outputnameandroute, BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData));
+                                    var args = new FileSaveRequestEventArgs();
+                                    RequestFileSave?.Invoke(this, args);
+                                    var filePath = args.WaitForPath();
+                                    Audio_LSB.Encode_Audio(single_container, filePath, BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData));
 
                                 }
-                                if (GlobalVariables.multipal_route != null && form1.is_Mult)
+                                if (manyfilePath != null && ismult)
                                 {
-                                    newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
+                                    newroutename = Path.Combine(manyfilePath, (Path.GetFileName(single_container)));
                                     Audio_LSB.Encode_Audio(single_container, newroutename, BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData));
 
                                 }
@@ -512,15 +495,12 @@ namespace HideSloth
                             }
 
                         }
-                        form1.Invoke(new Action(() => form1.ShowMessageOnUIThread("Success to encode string with encryption to image", "Success")));
+                        //form1.Invoke(new Action(() => form1.ShowMessageOnUIThread("Success to encode string with encryption to image", "Success")));
 
                     }
                     catch (Exception ex)
                     {
-                        form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "Error" + ex.Message + "\n", true)));
-                        //UpdateUI(() => richTextBoxLog.ScrollToCaret());
-                        form1.Invoke(new Action(() => form1.ShowMessageOnUIThread(ex.Message, "Error")));
-
+                        OnProgressChanged(new ProgressEventArgs(2, ex.Message));
                     }
                 }
 
@@ -530,11 +510,10 @@ namespace HideSloth
 
                     try
                     {
-                        if (GlobalVariables.audioorimage == "image")
+                        if (!audiochecked)
                         {
                             Bitmap unloading = new Bitmap(GlobalVariables.route_container);
-                            form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Readed Loaded container Successful\n")));
-                            //UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                            OnProgressChanged(new ProgressEventArgs(0, "Readed Loaded container Successful"));
 
                             string encrypted_result = "";
                             string rawresult = "";
@@ -543,15 +522,13 @@ namespace HideSloth
                             if (GlobalVariables.Algor == "LSB")
                             {
                                 encrypted_result = LSB_Image.extract(unloading);
-                                form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Extracted String Successful\n")));
-                                //UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                                OnProgressChanged(new ProgressEventArgs(0, "Extracted String Successful"));
 
                             }
                             else if (GlobalVariables.Algor == "Linear")
                             {
                                 rawresult = Core_Linear_Image.DecodeMsgLinearImage(unloading);
-                                form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Extracted String Successful\n")));
-                                // UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                                OnProgressChanged(new ProgressEventArgs(0, "Extracted String Successful"));
 
                                 int nullCharIndex = rawresult.IndexOf('\0');
                                 if (nullCharIndex != -1)
@@ -560,32 +537,21 @@ namespace HideSloth
                                 }
 
                             }
-                            result = System.Text.Encoding.UTF8.GetString(Aes_ChaCha_Decryptor.Decrypt(Convert.FromBase64String(encrypted_result), GlobalVariables.password));
-                            form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- Decrypted String Successful\n", false)));
-                            // UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                            result = System.Text.Encoding.UTF8.GetString(Aes_ChaCha_Decryptor.Decrypt(Convert.FromBase64String(encrypted_result), password));
                             unloading.Dispose();
-                            form1.Invoke(new Action(() => form1.outputstr = result));
-                            form1.Invoke(new Action(() => form1.ShowMessageOnUIThread("Success to decode string with encryption from image", "Success")));
+                            OnProgressChanged(new ProgressEventArgs(3, result));
                         }
-                        else if (GlobalVariables.audioorimage == "audio")
+                        else if (audiochecked)
                         {
-                            //byte[] xx = Audio_LSB.Decode_Audio(GlobalVariables.route_container);
-                            string result_audio = System.Text.Encoding.UTF8.GetString(Aes_ChaCha_Decryptor.Decrypt(Audio_LSB.Decode_Audio(GlobalVariables.route_container), GlobalVariables.password));
-                            form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- Decrypted String Successful\n", false)));
-                            //UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
-                            form1.Invoke(new Action(() => form1.outputstr = result_audio));
-                            form1.Invoke(new Action(() => form1.ShowMessageOnUIThread("Success to decode string with encryption from wav audio", "Success")));
+                            string result_audio = System.Text.Encoding.UTF8.GetString(Aes_ChaCha_Decryptor.Decrypt(Audio_LSB.Decode_Audio(GlobalVariables.route_container), password));
+                            OnProgressChanged(new ProgressEventArgs(3, result_audio));
 
                         }
 
                     }
                     catch (Exception ex)
                     {
-                        form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "Error" + ex.Message + "\n", true)));
-                        //UpdateUI(() => richTextBoxLog.ScrollToCaret());
-                        form1.Invoke(new Action(() => form1.ShowMessageOnUIThread(ex.Message, "Error")));
-
+                        OnProgressChanged(new ProgressEventArgs(2, ex.Message));
                     }
 
                 }
@@ -594,15 +560,13 @@ namespace HideSloth
                 if (GlobalVariables.encode && GlobalVariables.disablencrypt && GlobalVariables.isstring)//Encode plain string
                 {
 
-
-
-
                     try
                     {
-                        if (form1.is_Mult)
+                        if (ismult)
                         {
-
-                            form1.Invoke(new Action(() => form1.mulitpla_output()));//for duplicate copy, choose route first
+                            var argss = new RouteOutputRequestEventArgs();
+                            RequestRouteSave?.Invoke(this, argss);
+                            manyfilePath = argss.WaitForPath();
                         }
                         foreach (string single_container in GlobalVariables.route_containers)
                         {
@@ -613,70 +577,62 @@ namespace HideSloth
                             {
                                 lastaccess = File.GetLastAccessTime(single_container);
                             }
-                            if (GlobalVariables.audioorimage == "image")
+                            if (!audiochecked)
                             {
 
                                 Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
-                                Bitmap result = null;
+                                Bitmap? result = null;
+                                OnProgressChanged(new ProgressEventArgs(0, "Loaded container Successful"));
 
                                 if (GlobalVariables.Algor == "LSB")
                                 {
-                                    form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Loaded container Successful\n")));
-                                    // UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
                                     result = LSB_Image.embed(BytesStringThings.StringtoBase64(GlobalVariables.stringinfo), loaded);
-                                    form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Embed String Successful\n")));
-                                    // UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                                    OnProgressChanged(new ProgressEventArgs(0, "Embed String Successful"));
                                 }
                                 else if (GlobalVariables.Algor == "Linear")
                                 {
-                                    form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Loaded container Successful\n")));
-                                    // UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
                                     result = Core_Linear_Image.EncodeMsgLinearImage(BytesStringThings.StringtoBase64(GlobalVariables.stringinfo), loaded);
-                                    form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Embed String Successful\n")));
-                                    //UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                                    OnProgressChanged(new ProgressEventArgs(0, "Embed String Successful"));
                                 }
-                                if (form1.is_Mult == false)
+                                if (ismult == false)
                                 {
-                                    form1.Invoke(new Action(() => form1.Outputfile_pngbmp()));
-                                }
-                                if (GlobalVariables.outputnameandroute != null && form1.is_Mult == false)
-                                {
-                                    newroutename = GlobalVariables.outputnameandroute;
-                                    result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    var args = new FileSaveRequestEventArgs();
+                                    RequestFileSave?.Invoke(this, args);
+                                    var filePath = args.WaitForPath();
+                                    result?.Save(filePath, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
 
                                 }
-                                if (GlobalVariables.multipal_route != null && form1.is_Mult == true)
+                                if (manyfilePath != null && ismult == true)
                                 {
                                     if (GlobalVariables.keepformat)
                                     {
-                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
-                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                        newroutename = Path.Combine(manyfilePath, (Path.GetFileName(single_container)));
+                                        result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
 
                                     }
                                     else
                                     {
-                                        newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
-                                        result.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                        newroutename = Path.Combine(manyfilePath, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
+                                        result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                     }
                                 }
-                                form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- Saved Successful\n", false)));
-                                //UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                                OnProgressChanged(new ProgressEventArgs(1, "Saved Successful"));
                                 loaded.Dispose();
-                                result.Dispose();
+                                result?.Dispose();
                             }
-                            else if (GlobalVariables.audioorimage == "audio")
+                            else if (audiochecked)
                             {
-                                if (form1.is_Mult == false)
+                                if (ismult == false)
                                 {
-                                    form1.Invoke(new Action(() => form1.Outputfile_wav()));
-                                    Audio_LSB.Encode_Audio(single_container, GlobalVariables.outputnameandroute, Encoding.UTF8.GetBytes(GlobalVariables.stringinfo));
+                                    var args = new FileSaveRequestEventArgs();
+                                    RequestFileSave?.Invoke(this, args);
+                                    var filePath = args.WaitForPath();
+                                    Audio_LSB.Encode_Audio(single_container, filePath, Encoding.UTF8.GetBytes(GlobalVariables.stringinfo));
 
                                 }
-                                if (GlobalVariables.multipal_route != null && form1.is_Mult)
+                                if (manyfilePath != null && ismult)
                                 {
-                                    newroutename = Path.Combine(GlobalVariables.multipal_route, (Path.GetFileName(single_container)));
+                                    newroutename = Path.Combine(manyfilePath, (Path.GetFileName(single_container)));
                                     Audio_LSB.Encode_Audio(single_container, newroutename, Encoding.UTF8.GetBytes(GlobalVariables.stringinfo));
 
                                 }
@@ -687,20 +643,15 @@ namespace HideSloth
                                 File.SetCreationTime(newroutename, File.GetCreationTime(single_container));
                                 File.SetLastAccessTime(newroutename, lastaccess);
                                 File.SetLastWriteTime(newroutename, File.GetLastWriteTime(single_container));
-
                             }
 
                         }
-                        form1.Invoke(new Action(() => form1.ShowMessageOnUIThread("Success to encode plain text to image", "Success")));
+                        //form1.Invoke(new Action(() => form1.ShowMessageOnUIThread("Success to encode plain text to image", "Success")));
 
                     }
                     catch (Exception ex)
                     {
-                        form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "Error" + ex.Message + "\n", true)));
-                        // UpdateUI(() => richTextBoxLog.ScrollToCaret());
-                        form1.Invoke(new Action(() => form1.ShowMessageOnUIThread(ex.Message, "Error")));
-
-
+                        OnProgressChanged(new ProgressEventArgs(2, ex.Message));
                     }
                 }
 
@@ -708,29 +659,24 @@ namespace HideSloth
                 if (GlobalVariables.decode && GlobalVariables.disablencrypt && GlobalVariables.isstring)//Decode plain string
                 {
 
-
                     string result = "";
                     string rawresult = "";
                     try
                     {
-                        if (GlobalVariables.audioorimage == "image")
+                        if (!audiochecked)
                         {
                             Bitmap unloading = new Bitmap(GlobalVariables.route_container);
-                            form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Readed Loaded container Successful\n")));
-                            //UpdateUI(() => richTextBoxLog.ScrollToCaret());
+
+                            OnProgressChanged(new ProgressEventArgs(0, "Readed Loaded container Successful"));
 
                             if (GlobalVariables.Algor == "LSB")
                             {
                                 result = LSB_Image.extract(unloading);
-                                form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- Extracted String Successful\n", false)));
-                                // UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
                             }
                             else if (GlobalVariables.Algor == "Linear")
                             {
                                 rawresult = Core_Linear_Image.DecodeMsgLinearImage(unloading);
-                                form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- Extracted String Successful\n", false)));
-                                // UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
                                 int nullCharIndex = rawresult.IndexOf('\0');
                                 if (nullCharIndex != -1)
@@ -738,49 +684,27 @@ namespace HideSloth
                                     result = rawresult.Substring(0, nullCharIndex);
                                 }
                             }
-                            form1.Invoke(new Action(() => form1.outputstr = BytesStringThings.Base64toString(result)));
-                            form1.Invoke(new Action(() => form1.outputstr = BytesStringThings.Base64toString(result)));
+                            OnProgressChanged(new ProgressEventArgs(3, System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(result))));
                             unloading.Dispose();
-                            form1.Invoke(new Action(() => form1.ShowMessageOnUIThread("Success to deocode plain text from image", "Success")));
                         }
-                        else if (GlobalVariables.audioorimage == "audio")
+                        else if (audiochecked)
                         {
-                            //byte[] xx = Audio_LSB.Decode_Audio(GlobalVariables.route_container);
                             string result_audio = System.Text.Encoding.UTF8.GetString(Audio_LSB.Decode_Audio(GlobalVariables.route_container));
-                            form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- Decrypted String Successful\n", false)));
-                            //UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
-                            form1.Invoke(new Action(() => form1.outputstr = result_audio));
-                            form1.Invoke(new Action(() => form1.outputstr = result_audio));
-                            form1.Invoke(new Action(() => form1.ShowMessageOnUIThread("Success to decode string with encryption from wav audio", "Success")));
-
+                            OnProgressChanged(new ProgressEventArgs(3, result_audio));
                         }
 
                     }
                     catch (Exception ex)
                     {
-                        form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "Error" + ex.Message + "\n", true)));
-                        //UpdateUI(() => richTextBoxLog.ScrollToCaret());
-                        form1.Invoke(new Action(() => form1.ShowMessageOnUIThread(ex.Message, "Error")));
-
-                    }
-                    finally
-                    {
-
+                        OnProgressChanged(new ProgressEventArgs(2, ex.Message));
                     }
                 }
 
 
                 if ((GlobalVariables.encode == false && GlobalVariables.decode == false) || (GlobalVariables.enableencrypt == false && GlobalVariables.disablencrypt == false) )
                 {
-                    form1.Invoke(new Action(() => form1.log = (DateTime.Now.ToString() + "--- Lack of Choice\n")));
-                    //UpdateUI(() => richTextBoxLog.ScrollToCaret());
-                    form1.Invoke(new Action(() => form1.ShowMessageOnUIThread("Lack of one or more Choices", "Error")));
-
+                    OnProgressChanged(new ProgressEventArgs(2, "Lack of Choice(s)"));
                 }
-
-
-                GC.Collect();
 
             }
             else if (GlobalVariables.mode == "Encryptor")
@@ -789,20 +713,20 @@ namespace HideSloth
                 if (GlobalVariables.encode && GlobalVariables.isfile)
                 {
                     GlobalVariables.defaultname = "";
-                    form1.Invoke(new Action(() => form1.Outputfile_any()));
+                    //form1.Invoke(new Action(() => form1.Outputfile_any()));
                     try
                     {
                         if (GlobalVariables.outputnameandroute != null)
                         {
-                            FileEnc.EncryptFile(GlobalVariables.route_secret, GlobalVariables.outputnameandroute, GlobalVariables.password);
+                            FileEnc.EncryptFile(GlobalVariables.route_secret, GlobalVariables.outputnameandroute, password);
                         }
-                        form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- AS ONLY ENCRYPTOR: Encrypted File And Saved Successfully" + "\n", false)));
+                        //form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- AS ONLY ENCRYPTOR: Encrypted File And Saved Successfully" + "\n", false)));
                         //UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
                     }
                     catch (Exception ex)
                     {
-                        form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "Error" + ex.Message + "\n", true)));
+                        //form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "Error" + ex.Message + "\n", true)));
                         //UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
                     }
@@ -810,20 +734,20 @@ namespace HideSloth
                 else if (GlobalVariables.decode && GlobalVariables.isfile)
                 {
                     GlobalVariables.defaultname = "";
-                    form1.Invoke(new Action(() => form1.Outputfile_any()));
+                    //form1.Invoke(new Action(() => form1.Outputfile_any()));
                     try
                     {
                         if (GlobalVariables.outputnameandroute != null)
                         {
-                            FileEnc.DecryptFile(GlobalVariables.route_secret, GlobalVariables.outputnameandroute, GlobalVariables.password);
+                            FileEnc.DecryptFile(GlobalVariables.route_secret, GlobalVariables.outputnameandroute, password);
                         }
-                        form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- AS ONLY ENCRYPTOR: Decrypted File And Saved Successfully" + "\n", false)));
+                        //form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- AS ONLY ENCRYPTOR: Decrypted File And Saved Successfully" + "\n", false)));
                         //UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
                     }
                     catch (Exception ex)
                     {
-                        form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "Error" + ex.Message + "\n", true)));
+                        //form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "Error" + ex.Message + "\n", true)));
                         //UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
                     }
@@ -836,9 +760,9 @@ namespace HideSloth
 
                     byte[] salt, nonce, tag;
                     //         
-                    byte[] encryptedData = Aes_ChaCha_Encryptor.Encrypt(plain_bin, GlobalVariables.password, out salt, out nonce, out tag);
-                    form1.Invoke(new Action(() => form1.outputstr = (Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData)))));
-                    form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- AS ONLY ENCRYPTOR: Encrypted String Successfully" + "\n", false)));
+                    byte[] encryptedData = Aes_ChaCha_Encryptor.Encrypt(plain_bin, password, out salt, out nonce, out tag);
+                    //form1.Invoke(new Action(() => form1.outputstr = (Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData)))));
+                    //form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- AS ONLY ENCRYPTOR: Encrypted String Successfully" + "\n", false)));
                     // UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
                 }
@@ -847,17 +771,17 @@ namespace HideSloth
                 {
                     try
                     {
-                        string result = System.Text.Encoding.UTF8.GetString(Aes_ChaCha_Decryptor.Decrypt(Convert.FromBase64String(GlobalVariables.stringinfo), GlobalVariables.password));
-                        form1.Invoke(new Action(() => form1.outputstr = result));
-                        form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- AS ONLY ENCRYPTOR: Decrypted String Successfully" + "\n", false)));
+                        string result = System.Text.Encoding.UTF8.GetString(Aes_ChaCha_Decryptor.Decrypt(Convert.FromBase64String(GlobalVariables.stringinfo), password));
+                        //form1.Invoke(new Action(() => form1.outputstr = result));
+                        //form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- AS ONLY ENCRYPTOR: Decrypted String Successfully" + "\n", false)));
                         // UpdateUI(() => richTextBoxLog.ScrollToCaret());
 
                     }
                     catch (Exception ex)
                     {
-                        form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "Error" + ex.Message + "\n", true)));
+                        //form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "Error" + ex.Message + "\n", true)));
                         //UpdateUI(() => richTextBoxLog.ScrollToCaret());
-                        form1.Invoke(new Action(() => form1.ShowMessageOnUIThread(ex.Message, "Error")));
+                        //form1.Invoke(new Action(() => form1.ShowMessageOnUIThread(ex.Message, "Error")));
 
                     }
                 }
@@ -871,6 +795,53 @@ namespace HideSloth
             GC.WaitForPendingFinalizers();
             return true;
         }
+    }
+    public class FileSaveRequestEventArgs : EventArgs
+    {
+        private TaskCompletionSource<string> _pathCompletionSource = new TaskCompletionSource<string>();
+
+        public void SetPath(string path)
+        {
+            _pathCompletionSource.SetResult(path);
+        }
+
+        public string WaitForPath()
+        {
+            return _pathCompletionSource.Task.Result; // 同步等待路径
+        }
+    }
+
+    public class RouteOutputRequestEventArgs: EventArgs
+    {
+        private TaskCompletionSource<string> _pathCompletionSource = new TaskCompletionSource<string>();
+
+        public void SetPath(string path)
+        {
+            _pathCompletionSource.SetResult(path);
+        }
+
+        public string WaitForPath()
+        {
+            return _pathCompletionSource.Task.Result; // 同步等待路径
+        }
 
     }
+
+    public class SaveExtractedFileEventArgs: EventArgs
+    {
+        private TaskCompletionSource<string> _pathCompletionSource = new TaskCompletionSource<string>();
+
+        public void SetPath(string path)
+        {
+            _pathCompletionSource.SetResult(path);
+        }
+
+        public string WaitForPath()
+        {
+            return _pathCompletionSource.Task.Result; // 同步等待路径
+        }
+
+    }
+
+
 }

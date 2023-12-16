@@ -28,7 +28,8 @@ namespace HideSloth
         private Form_EncodeWizard WizardEncode;
         private Form_DecodeWizard WizardDecode;
         public event EventHandler<ControlActionEventArgs> UpdateUIControlEvent;
-
+        private Logic logic;
+        string selecte_secret = "";
         public class ControlActionEventArgs : EventArgs
         {
             public Action ControlAction { get; set; }
@@ -176,13 +177,115 @@ namespace HideSloth
             helpToolStripMenuItem.Text = Properties.Resources.HelpMenu;
             // 更新其他 UI 元素...
         }
+        private void Logic_ProgressChanged(object sender, ProgressEventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new EventHandler<ProgressEventArgs>(Logic_ProgressChanged), sender, e);
+                return;
+            }
+            if (e.Progress == 0) // Normal New Progess
+            {
+                richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- "+e.Message+"\n");
+                richTextBoxLog.ScrollToCaret();
+            }
+            else if (e.Progress == 1) // Bold Finnished Signal
+            {
+                BoldToLog(DateTime.Now.ToString() + "--- " + e.Message+"\n", false);
+                richTextBoxLog.ScrollToCaret();
+                ShowMessageOnUIThread(e.Message, "Success");
+
+            }
+            else if (e.Progress == 2)//Error
+            {
+                BoldToLog(DateTime.Now.ToString() + "--- " + e.Message+"\n", true);
+                richTextBoxLog.ScrollToCaret();
+                ShowMessageOnUIThread(e.Message, "Error");
+            }
+            else if (e.Progress == 3)//Transform Output string
+            {
+                Input_PlainText.Text = e.Message;
+                BoldToLog(DateTime.Now.ToString() + "--- " + "Success to extract string\n", false);
+                ShowMessageOnUIThread("Success to extract string! ", "Success");
+            }
+        }
 
 
+        private void Logic_RequestFileSave(object sender, FileSaveRequestEventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new EventHandler<FileSaveRequestEventArgs>(Logic_RequestFileSave), sender, e);
+            }
+            else
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                // 配置 SaveFileDialog...
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    e.SetPath(saveFileDialog.FileName);
+                }
+                else
+                {
+                    e.SetPath(""); // 用户取消操作时，可以传递 null 或适当的默认值
+                }
+            }
+        }
+
+        private void Logic_RequestRouteSave(object sender, RouteOutputRequestEventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new EventHandler<RouteOutputRequestEventArgs>(Logic_RequestRouteSave), sender, e);
+            }
+            else
+            {
+                FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
+                folderBrowserDialog.Description = "请选择文件夹";
+                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+                {
+                    e.SetPath(folderBrowserDialog.SelectedPath);
+                }
+                else
+                {
+                    e.SetPath(""); // 用户取消操作时，可以传递 null 或适当的默认值
+                }
+            }
+        }
+
+        private void Logic_RequestExtractedSave(object sender, SaveExtractedFileEventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new EventHandler<SaveExtractedFileEventArgs>(Logic_RequestExtractedSave), sender, e);
+            }
+            else
+            {
+                using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+                {
+                    saveFileDialog.Title = "Save the decoded file";
+                    saveFileDialog.FileName = GlobalVariables.defaultname; // 设置默认文件名
+
+                    if (saveFileDialog.ShowDialog() == DialogResult.OK && !string.IsNullOrEmpty(saveFileDialog.FileName))
+                    {
+                        //GlobalVariables.outputnameandroute = saveFileDialog.FileName;
+                        e.SetPath(saveFileDialog.FileName);
+                        //richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Output Name and Route of Extracted File Selected: " + GlobalVariables.outputnameandroute + "\n");
+                    }
+                }
+            }
+        }
 
         public MainForm()
         {
-            UpdateUIControlEvent += MainForm_UpdateUIControlEvent;
+            InitializeComponent();
 
+            //UpdateUIControlEvent += MainForm_UpdateUIControlEvent;
+            logic = new Logic();
+            logic.ProgressChanged += Logic_ProgressChanged;
+            logic.RequestFileSave += Logic_RequestFileSave;
+            logic.RequestRouteSave += Logic_RequestRouteSave;
+            logic.RequestExtractedSave += Logic_RequestExtractedSave;
             /*
             CultureInfo currentUICulture = CultureInfo.CurrentUICulture;
             CultureInfo currentCulture = CultureInfo.CurrentCulture;
@@ -192,7 +295,6 @@ namespace HideSloth
             Thread.CurrentThread.CurrentCulture = currentCulture;
             */
 
-            InitializeComponent();
 
             UpdateUIForCulture();
             this.Text = Resources.MainFormTitle;
@@ -281,22 +383,13 @@ namespace HideSloth
             GlobalVariables.isstring = ReadUI(() => Radio_String.Checked);
 
             GlobalVariables.route_container = ReadUI(() => Label_RouteofContainer.Text);
-            GlobalVariables.password = ReadUI(() => Textbox_Password.Text);
+            string password = ReadUI(() => Textbox_Password.Text);
             GlobalVariables.route_secret = ReadUI(() => Label_RouteofSecret.Text);
             GlobalVariables.stringinfo = ReadUI(() => Input_PlainText.Text);
             UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Process Started\n"));
             UpdateUI(() => richTextBoxLog.ScrollToCaret());
-            if (check_audio.Checked)
-            {
-                GlobalVariables.audioorimage = "audio";
-            }
-            else if (!check_audio.Checked)
-            {
-                GlobalVariables.audioorimage = "image";
-
-            }
-            var logic = new Logic(this);
-            await logic.CallMethodAsync();
+            //var logic = new Logic();
+            await logic.CallMethodAsync(check_multi.Checked, selecte_secret, check_audio.Checked, password);
             pictureBox1.Image = Resources.Idle;
             action.Enabled = true;
 
@@ -349,14 +442,12 @@ namespace HideSloth
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    string selecte_secret = openFileDialog.FileName;
+                    selecte_secret = openFileDialog.FileName;
                     GlobalVariables.route_secret = selecte_secret;
                     Label_RouteofSecret.Text = selecte_secret;
                     richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Input Secret File's Name and Route Selected: " + selecte_secret + "\n");
-
                 }
             }
-
         }
 
         private void button2_Click(object sender, EventArgs e)
