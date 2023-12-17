@@ -27,9 +27,10 @@ namespace HideSloth
         private Form_Benchmark formBenchmark;
         private Form_EncodeWizard WizardEncode;
         private Form_DecodeWizard WizardDecode;
-        public event EventHandler<ControlActionEventArgs> UpdateUIControlEvent;
+        //public event EventHandler<ControlActionEventArgs> UpdateUIControlEvent;
         private Logic logic;
         string selecte_secret = "";
+        /*
         public class ControlActionEventArgs : EventArgs
         {
             public Action ControlAction { get; set; }
@@ -81,6 +82,7 @@ namespace HideSloth
             get { return Input_PlainText.Text; }
             set { Input_PlainText.Text = value; }
         }
+        */
         public bool PasswordBOX
         {
             get { return Textbox_Password.Enabled; }
@@ -276,6 +278,41 @@ namespace HideSloth
             }
         }
 
+        private void Settings_UpdateGUIMainform (object sender, SettingUpdateUIEventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new EventHandler<ProgressEventArgs>(Logic_ProgressChanged), sender, e);
+                return;
+            }
+            //MessageBox.Show(e.Encalg);
+            if (e.Isenc)
+            {
+                this.PasswordBOX = true;
+            }
+            else
+            {
+                this.PasswordBOX = false;
+            }
+            if (e.Modechange)
+            {
+                this.Container_Button = true;
+                this.ContainerLabel_Nousage = true;
+                this.ContainerLabel2_Nousage = true;
+                this.Check_Mult = true;
+
+            }
+            else
+            {
+                this.Container_Button = false;
+                this.ContainerLabel_Nousage = false;
+                this.ContainerLabel2_Nousage = false;
+                this.Check_Mult = false;
+
+            }
+            this.UpdateStatusStrip();
+        }
+
         public MainForm()
         {
             InitializeComponent();
@@ -286,6 +323,8 @@ namespace HideSloth
             logic.RequestFileSave += Logic_RequestFileSave;
             logic.RequestRouteSave += Logic_RequestRouteSave;
             logic.RequestExtractedSave += Logic_RequestExtractedSave;
+            form2 = new Settings();
+            form2.SettingUpdateUI += Settings_UpdateGUIMainform;
             /*
             CultureInfo currentUICulture = CultureInfo.CurrentUICulture;
             CultureInfo currentCulture = CultureInfo.CurrentCulture;
@@ -538,19 +577,26 @@ namespace HideSloth
 
         private void Button_Advanced_Click(object sender, EventArgs e)
         {
+            
             if (form2 == null || form2.IsDisposed)
             {
-                form2 = new Settings(this); // 直接使用类级别的成员变量，不需要重新声明
+                form2 = new Settings(); // 直接使用类级别的成员变量，不需要重新声明
                 form2.FormClosed += (s, args) => this.form2 = null; // 当Form2关闭时，将类级别的引用设置为null
+                form2.SettingUpdateUI += Settings_UpdateGUIMainform;
                 form2.Show();
                 richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Loaded Advanced Settings Form\n");
 
             }
             else
             {
+                //form2 = new Settings();
+                form2.Show();
+
                 form2.BringToFront(); // 如果Form2已经存在，将其带到前台
             }
+            
         }
+
 
         public void Outputfile_pngbmp()
         {
@@ -608,26 +654,12 @@ namespace HideSloth
                 }
             }
         }
-
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
-        private void statusStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
 
-        }
-
-        private void toolStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-
-        }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -646,13 +678,15 @@ namespace HideSloth
 
         private void bulkEmbeddingWizardToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            WizardEncode = new Form_EncodeWizard(this);
+            WizardEncode = new Form_EncodeWizard();
+            WizardEncode.SettingUpdateUI3 += Settings_UpdateGUIMainform;
             WizardEncode.Show();
         }
 
         private void batchExtractionWizardToolStripMenuItem_Click(object sender, EventArgs e)
         {
             WizardDecode = new Form_DecodeWizard(this);
+            WizardDecode.SettingUpdateUI2 += Settings_UpdateGUIMainform;
             WizardDecode.Show();
         }
 
@@ -704,10 +738,6 @@ namespace HideSloth
 
         }
 
-        private void Label_RouteofSecret_TextChanged(object sender, EventArgs e)
-        {
-
-        }
 
         private void chineseSingaporeToolStripMenuItem_Click(object sender, EventArgs e)
         {

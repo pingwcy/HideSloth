@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Security;
 using System.Security.Cryptography.Pkcs;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,25 +15,27 @@ namespace HideSloth
 {
     public partial class Settings : Form
     {
-        private MainForm form1;
+        public event EventHandler<SettingUpdateUIEventArgs> SettingUpdateUI;
+        protected virtual void SubmitSettingsChangedUI(SettingUpdateUIEventArgs e)
+        {
+            SettingUpdateUI?.Invoke(this, e);
+        }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             // 检查是否按下了Esc键
             if (keyData == Keys.Escape)
             {
-                this.Dispose(); // 关闭并释放窗口
+                this.Close(); // 关闭并释放窗口
                 return true;    // 返回true表示按键已处理
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        public Settings(MainForm form1)
+        public Settings()
         {
             InitializeComponent();
-            this.form1 = form1;
-
             if (GlobalVariables.mode == "Normal")
             {
                 Radio_Normal.Checked = true;
@@ -90,21 +93,21 @@ namespace HideSloth
             if (Radio_Normal.Checked)
             {
                 GlobalVariables.mode = "Normal";
-                form1.Container_Button = true;
-                form1.ContainerLabel_Nousage = true;
-                form1.ContainerLabel2_Nousage = true;
-                form1.Check_Mult = true;
+                //form1.Container_Button = true;
+                //form1.ContainerLabel_Nousage = true;
+                //form1.ContainerLabel2_Nousage = true;
+                //form1.Check_Mult = true;
 
 
             }
             else if (Radio_Encryptor.Checked)
             {
                 GlobalVariables.mode = "Encryptor";
-                //GlobalVariables.route_container = "";
-                form1.Container_Button = false;
-                form1.ContainerLabel_Nousage = false;
-                form1.ContainerLabel2_Nousage = false;
-                form1.Check_Mult = false;
+                GlobalVariables.route_container = "";
+                //form1.Container_Button = false;
+               // form1.ContainerLabel_Nousage = false;
+                //form1.ContainerLabel2_Nousage = false;
+                //form1.Check_Mult = false;
 
             }
 
@@ -122,14 +125,14 @@ namespace HideSloth
             {
                 GlobalVariables.enableencrypt = true;
                 GlobalVariables.disablencrypt = false;
-                form1.PasswordBOX = true;
+                //form1.PasswordBOX = true;
 
             }
             if (Radio_disableenc.Checked)
             {
                 GlobalVariables.disablencrypt = true;
                 GlobalVariables.enableencrypt = false;
-                form1.PasswordBOX = false;
+                //form1.PasswordBOX = false;
                 //Form1.Textbox_Password.Enabled = false;
             }
             GlobalVariables.outputformat = combo_entension.SelectedItem.ToString();
@@ -153,7 +156,8 @@ namespace HideSloth
                 GlobalVariables.encalg = "AES";
             }
             GlobalVariables.ignoreextracterror = check_errorignore.Checked;
-            form1.UpdateStatusStrip();
+            //form1.UpdateStatusStrip();
+            SubmitSettingsChangedUI(new SettingUpdateUIEventArgs(Radio_enableenc.Checked, Radio_Normal.Checked));
             this.Close();
         }
 
@@ -242,6 +246,16 @@ namespace HideSloth
 
         }
     }
+    public class SettingUpdateUIEventArgs : EventArgs
+    {
+        public bool Isenc { get; set; }
+        public bool Modechange { get; set; }
 
+        public SettingUpdateUIEventArgs(bool isenc, bool modechange)
+        {
+            Isenc = isenc;
+            Modechange = modechange;
+        }
+    }
 
 }

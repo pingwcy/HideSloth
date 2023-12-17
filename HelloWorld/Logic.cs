@@ -113,9 +113,9 @@ namespace HideSloth
                                 {
                                     var args = new FileSaveRequestEventArgs();
                                     RequestFileSave?.Invoke(this, args);
-                                    var filePath = args.WaitForPath();
+                                    newroutename = args.WaitForPath();
 
-                                    result?.Save(filePath, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                     loaded.Dispose();
                                     result?.Dispose();
                                 }
@@ -145,11 +145,11 @@ namespace HideSloth
                                 {
                                     var args = new FileSaveRequestEventArgs();
                                     RequestFileSave?.Invoke(this, args);
-                                    var filePath = args.WaitForPath();
+                                    newroutename = args.WaitForPath();
 
                                     OnProgressChanged(new ProgressEventArgs(0, "Start to embed"));
 
-                                    Audio_LSB.Encode_Audio(single_container, filePath, BytesStringThings.CombineBytes(salt, nonce, tag, secretData));
+                                    Audio_LSB.Encode_Audio(single_container, newroutename, BytesStringThings.CombineBytes(salt, nonce, tag, secretData));
 
                                 }
                                 if (ismult && manyfilePath != null)
@@ -167,9 +167,9 @@ namespace HideSloth
                                 File.SetLastWriteTime(newroutename, File.GetLastWriteTime(single_container));
                             }
 
-                            OnProgressChanged(new ProgressEventArgs(1, "Success to encode file with encryption to image"));
-
                         }
+                        OnProgressChanged(new ProgressEventArgs(1, "Success to encode file with encryption to image"));
+
                     }
                     catch (Exception ex)
                     {
@@ -281,8 +281,8 @@ namespace HideSloth
                                 {
                                     var args = new FileSaveRequestEventArgs();
                                     RequestFileSave?.Invoke(this, args);
-                                    var filePath = args.WaitForPath();
-                                    result?.Save(filePath, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    newroutename = args.WaitForPath();
+                                    result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                     loaded.Dispose();
 
                                 }
@@ -302,7 +302,7 @@ namespace HideSloth
                                         loaded.Dispose();
                                     }
                                 }
-                                OnProgressChanged(new ProgressEventArgs(1, "Success to encode file without encryption to image"));
+                                //OnProgressChanged(new ProgressEventArgs(1, "Success to encode file without encryption to image"));
 
 
                             }
@@ -312,10 +312,10 @@ namespace HideSloth
                                 {
                                     var args = new FileSaveRequestEventArgs();
                                     RequestFileSave?.Invoke(this, args);
-                                    var filePath = args.WaitForPath();
+                                    newroutename = args.WaitForPath();
 
                                     OnProgressChanged(new ProgressEventArgs(0, "Start to embed"));
-                                    Audio_LSB.Encode_Audio(single_container, filePath, BytesStringThings.ReadFileToByteswithName(selecte_secret));
+                                    Audio_LSB.Encode_Audio(single_container, newroutename, BytesStringThings.ReadFileToByteswithName(selecte_secret));
 
                                 }
                                 if (manyfilePath != null && ismult)
@@ -323,7 +323,6 @@ namespace HideSloth
                                     newroutename = Path.Combine(manyfilePath, (Path.GetFileName(single_container)));
                                     Audio_LSB.Encode_Audio(single_container, newroutename, BytesStringThings.ReadFileToByteswithName(selecte_secret));
                                 }
-                                OnProgressChanged(new ProgressEventArgs(1, "Saved Successful"));
                             }
 
 
@@ -336,6 +335,7 @@ namespace HideSloth
                             }
 
                         }
+                        OnProgressChanged(new ProgressEventArgs(1, "Saved Successful"));
 
                     }
                     catch (Exception ex)
@@ -447,8 +447,8 @@ namespace HideSloth
                                 {
                                     var args = new FileSaveRequestEventArgs();
                                     RequestFileSave?.Invoke(this, args);
-                                    var filePath = args.WaitForPath();
-                                    result?.Save(filePath, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    newroutename = args.WaitForPath();
+                                    result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
 
                                 }
                                 if (manyfilePath != null && ismult == true)
@@ -465,7 +465,6 @@ namespace HideSloth
                                         result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                     }
                                 }
-                                OnProgressChanged(new ProgressEventArgs(1, "Saved Successful"));
                                 loaded.Dispose();
                                 result?.Dispose();
                             }
@@ -475,8 +474,8 @@ namespace HideSloth
                                 {
                                     var args = new FileSaveRequestEventArgs();
                                     RequestFileSave?.Invoke(this, args);
-                                    var filePath = args.WaitForPath();
-                                    Audio_LSB.Encode_Audio(single_container, filePath, BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData));
+                                    newroutename = args.WaitForPath();
+                                    Audio_LSB.Encode_Audio(single_container, newroutename, BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData));
 
                                 }
                                 if (manyfilePath != null && ismult)
@@ -495,6 +494,8 @@ namespace HideSloth
                             }
 
                         }
+                        OnProgressChanged(new ProgressEventArgs(1, "Success to encode string with encryption"));
+
                         //form1.Invoke(new Action(() => form1.ShowMessageOnUIThread("Success to encode string with encryption to image", "Success")));
 
                     }
@@ -598,8 +599,8 @@ namespace HideSloth
                                 {
                                     var args = new FileSaveRequestEventArgs();
                                     RequestFileSave?.Invoke(this, args);
-                                    var filePath = args.WaitForPath();
-                                    result?.Save(filePath, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                                    newroutename = args.WaitForPath();
+                                    result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
 
                                 }
                                 if (manyfilePath != null && ismult == true)
@@ -616,7 +617,6 @@ namespace HideSloth
                                         result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
                                     }
                                 }
-                                OnProgressChanged(new ProgressEventArgs(1, "Saved Successful"));
                                 loaded.Dispose();
                                 result?.Dispose();
                             }
@@ -626,8 +626,8 @@ namespace HideSloth
                                 {
                                     var args = new FileSaveRequestEventArgs();
                                     RequestFileSave?.Invoke(this, args);
-                                    var filePath = args.WaitForPath();
-                                    Audio_LSB.Encode_Audio(single_container, filePath, Encoding.UTF8.GetBytes(GlobalVariables.stringinfo));
+                                    newroutename = args.WaitForPath();
+                                    Audio_LSB.Encode_Audio(single_container, newroutename, Encoding.UTF8.GetBytes(GlobalVariables.stringinfo));
 
                                 }
                                 if (manyfilePath != null && ismult)
@@ -646,6 +646,8 @@ namespace HideSloth
                             }
 
                         }
+                        OnProgressChanged(new ProgressEventArgs(1, "Saved Successful"));
+
                         //form1.Invoke(new Action(() => form1.ShowMessageOnUIThread("Success to encode plain text to image", "Success")));
 
                     }

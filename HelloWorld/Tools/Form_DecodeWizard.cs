@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.VisualBasic.Devices;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,8 +14,15 @@ using static System.Windows.Forms.DataFormats;
 
 namespace HideSloth.Tools
 {
+
     public partial class Form_DecodeWizard : Form
     {
+        public event EventHandler<SettingUpdateUIEventArgs> SettingUpdateUI2;
+        protected virtual void SubmitSettingsChangedUI2(SettingUpdateUIEventArgs e)
+        {
+            SettingUpdateUI2?.Invoke(this, e);
+        }
+
         private MainForm form1;
         private Settings form2;
         CancellationTokenSource cts = new CancellationTokenSource();
@@ -392,7 +401,7 @@ namespace HideSloth.Tools
 
         private void button4_Click(object sender, EventArgs e)
         {
-            form2 = new Settings(form1); // 直接使用类级别的成员变量，不需要重新声明
+            form2 = new Settings(); // 直接使用类级别的成员变量，不需要重新声明
             form2.Closed += form2_Closed;
 
             form2.Show();
@@ -400,6 +409,9 @@ namespace HideSloth.Tools
         }
         private void form2_Closed(object sender, EventArgs e)
         {
+            bool modes = false;
+            if (GlobalVariables.mode == "Nomral") { modes = true; }
+            SubmitSettingsChangedUI2(new SettingUpdateUIEventArgs(GlobalVariables.enableencrypt, modes));
             if (GlobalVariables.mode=="Normal")
             {
                 radio_modenormal.Checked = true;
@@ -411,5 +423,6 @@ namespace HideSloth.Tools
         }
 
     }
+
 }
 

@@ -4,9 +4,15 @@ namespace HideSloth.Tools
 {
     public partial class Form_EncodeWizard : Form
     {
+        public event EventHandler<SettingUpdateUIEventArgs> SettingUpdateUI3;
+        protected virtual void SubmitSettingsChangedUI3(SettingUpdateUIEventArgs e)
+        {
+            SettingUpdateUI3?.Invoke(this, e);
+        }
+
         private Settings form2;
 #pragma warning disable CS0649 // 从未对字段“Form_EncodeWizard.form1”赋值，字段将一直保持其默认值 null
-        private MainForm form1;
+        //private MainForm form1;
 #pragma warning restore CS0649 // 从未对字段“Form_EncodeWizard.form1”赋值，字段将一直保持其默认值 null
         private bool ifok = false;
         private bool checkedcapacity = false;
@@ -91,9 +97,9 @@ namespace HideSloth.Tools
             }
         }
 
-        public Form_EncodeWizard(MainForm mainForm)
+        public Form_EncodeWizard()
         {
-            form1 = mainForm; // 接收并存储对主窗体的引用
+            //form1 = mainForm; // 接收并存储对主窗体的引用
 
             InitializeComponent();
             InitializeListView();
@@ -545,6 +551,9 @@ namespace HideSloth.Tools
 
         private void form2_Closed(object sender, EventArgs e)
         {
+            bool modes = false;
+            if (GlobalVariables.mode == "Normal") { modes = true; }
+            SubmitSettingsChangedUI3(new SettingUpdateUIEventArgs(GlobalVariables.enableencrypt, modes));
             if (GlobalVariables.mode == "Normal")
             {
                 Radio_normalw.Checked = true;
@@ -557,7 +566,7 @@ namespace HideSloth.Tools
 
         private void button5_Click(object sender, EventArgs e)
         {
-            form2 = new Settings(form1); // 直接使用类级别的成员变量，不需要重新声明
+            form2 = new Settings(); // 直接使用类级别的成员变量，不需要重新声明
             form2.Closed += form2_Closed;
 
             form2.Show();

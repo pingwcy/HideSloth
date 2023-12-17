@@ -233,7 +233,7 @@ namespace HideSloth
             pictureBox1.Image = Properties.Resources.Idle;
             pictureBox1.Name = "pictureBox1";
             pictureBox1.TabStop = false;
-            pictureBox1.Click += pictureBox1_Click;
+            //pictureBox1.Click += pictureBox1_Click;
             // 
             // contextMenuStrip1
             // 
@@ -361,7 +361,7 @@ namespace HideSloth
             // 
             resources.ApplyResources(statusStrip1, "statusStrip1");
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.ItemClicked += statusStrip1_ItemClicked;
+            //statusStrip1.ItemClicked += statusStrip1_ItemClicked;
             // 
             // Label_RouteofContainer
             // 
@@ -372,7 +372,7 @@ namespace HideSloth
             // 
             resources.ApplyResources(Label_RouteofSecret, "Label_RouteofSecret");
             Label_RouteofSecret.Name = "Label_RouteofSecret";
-            Label_RouteofSecret.TextChanged += Label_RouteofSecret_TextChanged;
+            //Label_RouteofSecret.TextChanged += Label_RouteofSecret_TextChanged;
             // 
             // check_multi
             // 
