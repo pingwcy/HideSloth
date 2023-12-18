@@ -138,13 +138,6 @@ namespace HideSloth.Tools
                     }
 
                     buffer = reader.ReadBytes(Convert.ToInt32(bufflist[cycle]));
-                    /*
-                    if (buffer.Length == 0)
-                    {
-                        // 如果没有更多数据，跳出循环
-                        break;
-                    }
-                    */
                     
                     if (IsImageFile(Path.Combine(containers_route, container_list[cycle])))
                     {
@@ -218,15 +211,6 @@ namespace HideSloth.Tools
                             return false;
                         }
                         
-                        //
-
-                        // 如果读取的数据小于缓冲区大小，表示已到达文件末尾
-                        /*
-                        if (buffer.Length < bufflist[cycle])
-                        {
-                            break;
-                        }
-                        */
                         if (buffer.Length < bufflist[cycle] || fs.Position >= fs.Length)
                         {
                             break;

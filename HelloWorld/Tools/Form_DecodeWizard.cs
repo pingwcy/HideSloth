@@ -17,12 +17,6 @@ namespace HideSloth.Tools
 
     public partial class Form_DecodeWizard : Form
     {
-        public event EventHandler<SettingUpdateUIEventArgs> SettingUpdateUI2;
-        protected virtual void SubmitSettingsChangedUI2(SettingUpdateUIEventArgs e)
-        {
-            SettingUpdateUI2?.Invoke(this, e);
-        }
-
         private Settings form2;
         CancellationTokenSource cts = new CancellationTokenSource();
         public static bool issub = false;
@@ -49,7 +43,7 @@ namespace HideSloth.Tools
             }
         }
 
-        public Form_DecodeWizard(MainForm mainForm)
+        public Form_DecodeWizard(IEventAggregator eventAggregator)
         {
 
             InitializeComponent();
@@ -399,17 +393,14 @@ namespace HideSloth.Tools
 
         private void button4_Click(object sender, EventArgs e)
         {
-            form2 = new Settings(); // 直接使用类级别的成员变量，不需要重新声明
-            form2.Closed += form2_Closed;
+           form2 = new Settings(SimpleEventAggregator.Instance);
+           form2.Closed += form2_Closed;
 
             form2.Show();
 
         }
         private void form2_Closed(object sender, EventArgs e)
         {
-            bool modes = false;
-            if (GlobalVariables.Mode == "Nomral") { modes = true; }
-            SubmitSettingsChangedUI2(new SettingUpdateUIEventArgs(GlobalVariables.Enableencrypt, modes));
             if (GlobalVariables.Mode=="Normal")
             {
                 radio_modenormal.Checked = true;

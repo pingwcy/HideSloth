@@ -1,6 +1,7 @@
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 
+
 namespace HideSloth
 {
 
@@ -15,8 +16,10 @@ namespace HideSloth
         private static partial bool AllocConsole();
 
         [STAThread]
+
         static void Main(string[] args)
         {
+
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
 #if WINDOWS
@@ -30,7 +33,7 @@ namespace HideSloth
             {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new MainForm()); 
+                Application.Run(new MainForm(SimpleEventAggregator.Instance)); 
                 /*
                 ApplicationConfiguration.Initialize();
                 Application.Run(new MainForm());

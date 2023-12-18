@@ -15,10 +15,17 @@ namespace HideSloth
 {
     public partial class Settings : Form
     {
-        public event EventHandler<SettingUpdateUIEventArgs> SettingUpdateUI;
+        //public event EventHandler<SettingUpdateUIEventArgs> SettingUpdateUI;
+        private readonly IEventAggregator _eventAggregator;
+        /*
         protected virtual void SubmitSettingsChangedUI(SettingUpdateUIEventArgs e)
         {
             SettingUpdateUI?.Invoke(this, e);
+        }
+        */
+        protected virtual void SubmitSettingsChangedUI(SettingUpdateUIEventArgs e)
+        {
+            _eventAggregator.Publish(e);
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -33,9 +40,11 @@ namespace HideSloth
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        public Settings()
+        public Settings(IEventAggregator eventAggregator)
         {
             InitializeComponent();
+            _eventAggregator = eventAggregator;
+
             combo_imgalg.DataSource = GlobalVariables.listofsupportimagealg;
             if (GlobalVariables.Mode == "Normal")
             {
@@ -93,22 +102,10 @@ namespace HideSloth
             if (Radio_Normal.Checked)
             {
                 GlobalVariables.Mode = "Normal";
-                //form1.Container_Button = true;
-                //form1.ContainerLabel_Nousage = true;
-                //form1.ContainerLabel2_Nousage = true;
-                //form1.Check_Mult = true;
-
-
             }
             else if (Radio_Encryptor.Checked)
             {
                 GlobalVariables.Mode = "Encryptor";
-                //GlobalVariables.route_container = "";
-                //form1.Container_Button = false;
-               // form1.ContainerLabel_Nousage = false;
-                //form1.ContainerLabel2_Nousage = false;
-                //form1.Check_Mult = false;
-
             }
 
             GlobalVariables.Algor = combo_imgalg.SelectedItem.ToString();
@@ -117,24 +114,15 @@ namespace HideSloth
             {
                 GlobalVariables.Enableencrypt = true;
                 GlobalVariables.Disablencrypt = false;
-                //form1.PasswordBOX = true;
-
             }
             if (Radio_disableenc.Checked)
             {
                 GlobalVariables.Disablencrypt = true;
                 GlobalVariables.Enableencrypt = false;
-                //form1.PasswordBOX = false;
-                //Form1.Textbox_Password.Enabled = false;
             }
             GlobalVariables.Outputformat = combo_entension.SelectedItem.ToString();
-
             GlobalVariables.Iteration = Int32.Parse(Text_PBKDF2Iter.Text);
-#pragma warning disable CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
-#pragma warning disable CS8601 // 引用类型赋值可能为 null。
             GlobalVariables.Hash = (string)ComboBox_Hash.SelectedItem;
-#pragma warning restore CS8601 // 引用类型赋值可能为 null。
-#pragma warning restore CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
             GlobalVariables.Copymeta = check_meta.Checked;
             GlobalVariables.Copyotherfilemeta = check_copymetaother.Checked;
             GlobalVariables.Keepformat = check_keepformat.Checked;
@@ -148,7 +136,6 @@ namespace HideSloth
                 GlobalVariables.Encalg = "AES";
             }
             GlobalVariables.Ignoreextracterror = check_errorignore.Checked;
-            //form1.UpdateStatusStrip();
             SubmitSettingsChangedUI(new SettingUpdateUIEventArgs(Radio_enableenc.Checked, Radio_Normal.Checked));
             this.Close();
         }

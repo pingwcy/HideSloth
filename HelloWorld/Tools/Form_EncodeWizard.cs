@@ -4,21 +4,13 @@ namespace HideSloth.Tools
 {
     public partial class Form_EncodeWizard : Form
     {
-        public event EventHandler<SettingUpdateUIEventArgs> SettingUpdateUI3;
-        protected virtual void SubmitSettingsChangedUI3(SettingUpdateUIEventArgs e)
-        {
-            SettingUpdateUI3?.Invoke(this, e);
-        }
 
         private Settings form2;
-#pragma warning disable CS0649 // 从未对字段“Form_EncodeWizard.form1”赋值，字段将一直保持其默认值 null
         private bool ifok = false;
         private bool checkedcapacity = false;
         private int containercount = 0;
         private string routesecretfiles, routeofoutput, pwd, largonesecret, containers;
-#pragma warning disable CS0169 // 从不使用字段“Form_EncodeWizard.fileSizeInBytes”
         double fileSizeInBytes, capacity;
-#pragma warning restore CS0169 // 从不使用字段“Form_EncodeWizard.fileSizeInBytes”
         private List<string> fileNamesList;
         List<int> AssgCapacityList = new List<int>();
         CancellationTokenSource cts = new CancellationTokenSource();
@@ -535,9 +527,6 @@ namespace HideSloth.Tools
 
         private void form2_Closed(object sender, EventArgs e)
         {
-            bool modes = false;
-            if (GlobalVariables.Mode == "Normal") { modes = true; }
-            SubmitSettingsChangedUI3(new SettingUpdateUIEventArgs(GlobalVariables.Enableencrypt, modes));
             if (GlobalVariables.Mode == "Normal")
             {
                 Radio_normalw.Checked = true;
@@ -550,10 +539,10 @@ namespace HideSloth.Tools
 
         private void button5_Click(object sender, EventArgs e)
         {
-            form2 = new Settings(); // 直接使用类级别的成员变量，不需要重新声明
-            form2.Closed += form2_Closed;
+           form2 = new Settings(SimpleEventAggregator.Instance); // 直接使用类级别的成员变量，不需要重新声明
+           form2.Closed += form2_Closed;
 
-            form2.Show();
+           form2.Show();
 
 
         }

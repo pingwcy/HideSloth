@@ -29,7 +29,8 @@ namespace HideSloth
         private Form_DecodeWizard WizardDecode;
         private readonly Logic logic;
         string selecte_secret = "";
-     
+        private readonly IEventAggregator _eventAggregator;
+
         public bool PasswordBOX
         {
             get { return Textbox_Password.Enabled; }
@@ -225,11 +226,11 @@ namespace HideSloth
             }
         }
 
-        private void Settings_UpdateGUIMainform (object sender, SettingUpdateUIEventArgs e)
+        private void Settings_UpdateGUIMainform (SettingUpdateUIEventArgs e)
         {
             if (InvokeRequired)
             {
-                Invoke(new EventHandler<SettingUpdateUIEventArgs>(Settings_UpdateGUIMainform), sender, e);
+                Invoke(new Action<SettingUpdateUIEventArgs>(Settings_UpdateGUIMainform), e);
                 return;
             }
             //MessageBox.Show(e.Encalg);
@@ -260,7 +261,7 @@ namespace HideSloth
             this.UpdateStatusStrip();
         }
 
-        public MainForm()
+        public MainForm(IEventAggregator eventAggregator)
         {
             InitializeComponent();
 
@@ -270,8 +271,9 @@ namespace HideSloth
             logic.RequestFileSave += Logic_RequestFileSave;
             logic.RequestRouteSave += Logic_RequestRouteSave;
             logic.RequestExtractedSave += Logic_RequestExtractedSave;
-            form2 = new Settings();
-            form2.SettingUpdateUI += Settings_UpdateGUIMainform;
+            _eventAggregator = eventAggregator;
+            _eventAggregator.Subscribe<SettingUpdateUIEventArgs>(Settings_UpdateGUIMainform);
+            //form2.SettingUpdateUI += Settings_UpdateGUIMainform;
             /*
             CultureInfo currentUICulture = CultureInfo.CurrentUICulture;
             CultureInfo currentCulture = CultureInfo.CurrentCulture;
@@ -518,10 +520,10 @@ namespace HideSloth
             
             if (form2 == null || form2.IsDisposed)
             {
-                form2 = new Settings(); // 直接使用类级别的成员变量，不需要重新声明
-                form2.FormClosed += (s, args) => this.form2 = null; // 当Form2关闭时，将类级别的引用设置为null
-                form2.SettingUpdateUI += Settings_UpdateGUIMainform;
-                form2.Show();
+               form2 = new Settings(SimpleEventAggregator.Instance); // 直接使用类级别的成员变量，不需要重新声明
+               form2.FormClosed += (s, args) => this.form2 = null; // 当Form2关闭时，将类级别的引用设置为null
+               //form2.SettingUpdateUI += Settings_UpdateGUIMainform;
+               form2.Show();
                 richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Loaded Advanced Settings Form\n");
 
             }
@@ -558,14 +560,14 @@ namespace HideSloth
         private void bulkEmbeddingWizardToolStripMenuItem_Click(object sender, EventArgs e)
         {
             WizardEncode = new Form_EncodeWizard();
-            WizardEncode.SettingUpdateUI3 += Settings_UpdateGUIMainform;
+            //WizardEncode.SettingUpdateUI3 += Settings_UpdateGUIMainform;
             WizardEncode.Show();
         }
 
         private void batchExtractionWizardToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            WizardDecode = new Form_DecodeWizard(this);
-            WizardDecode.SettingUpdateUI2 += Settings_UpdateGUIMainform;
+            WizardDecode = new Form_DecodeWizard(SimpleEventAggregator.Instance);
+            //WizardDecode.SettingUpdateUI2 += Settings_UpdateGUIMainform;
             WizardDecode.Show();
         }
 
