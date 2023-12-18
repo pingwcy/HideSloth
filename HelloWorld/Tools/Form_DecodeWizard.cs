@@ -23,7 +23,6 @@ namespace HideSloth.Tools
             SettingUpdateUI2?.Invoke(this, e);
         }
 
-        private MainForm form1;
         private Settings form2;
         CancellationTokenSource cts = new CancellationTokenSource();
         public static bool issub = false;
@@ -52,15 +51,14 @@ namespace HideSloth.Tools
 
         public Form_DecodeWizard(MainForm mainForm)
         {
-            form1 = mainForm; // 接收并存储对主窗体的引用
 
             InitializeComponent();
             //pwd = "123"
-            if (GlobalVariables.mode == "Normal")
+            if (GlobalVariables.Mode == "Normal")
             {
                 radio_modenormal.Checked = true;
             }
-            else if (GlobalVariables.mode == "Encryptor")
+            else if (GlobalVariables.Mode == "Encryptor")
             {
                 radio_modeencrypt.Checked = true;
             }
@@ -184,11 +182,11 @@ namespace HideSloth.Tools
                     SwitchTab(5);
                     if (check_rerange.Checked)
                     {
-                        GlobalVariables.sparse_decode = true;
+                        GlobalVariables.Sparse_decode = true;
                     }
                     else if (check_rerange.Checked == false)
                     {
-                        GlobalVariables.sparse_decode = false;
+                        GlobalVariables.Sparse_decode = false;
 
                     }
                     if (check_all.Checked)
@@ -410,9 +408,9 @@ namespace HideSloth.Tools
         private void form2_Closed(object sender, EventArgs e)
         {
             bool modes = false;
-            if (GlobalVariables.mode == "Nomral") { modes = true; }
-            SubmitSettingsChangedUI2(new SettingUpdateUIEventArgs(GlobalVariables.enableencrypt, modes));
-            if (GlobalVariables.mode=="Normal")
+            if (GlobalVariables.Mode == "Nomral") { modes = true; }
+            SubmitSettingsChangedUI2(new SettingUpdateUIEventArgs(GlobalVariables.Enableencrypt, modes));
+            if (GlobalVariables.Mode=="Normal")
             {
                 radio_modenormal.Checked = true;
             }

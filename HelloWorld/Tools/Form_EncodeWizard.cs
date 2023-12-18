@@ -12,8 +12,6 @@ namespace HideSloth.Tools
 
         private Settings form2;
 #pragma warning disable CS0649 // 从未对字段“Form_EncodeWizard.form1”赋值，字段将一直保持其默认值 null
-        //private MainForm form1;
-#pragma warning restore CS0649 // 从未对字段“Form_EncodeWizard.form1”赋值，字段将一直保持其默认值 null
         private bool ifok = false;
         private bool checkedcapacity = false;
         private int containercount = 0;
@@ -49,25 +47,12 @@ namespace HideSloth.Tools
             return fileNames;
         }
 
-
         private void InitializeListView()
         {
             list_capacity.View = View.Details;
             list_capacity.Columns.Add("File Name", -2, HorizontalAlignment.Left);
             list_capacity.Columns.Add("Capacity", -2, HorizontalAlignment.Left);
         }
-        /*
-        private void LoadImagesToListView(string folderPath)
-        {
-            List<ImageInfo> imageList = WizardEncode.CheckCapacity(folderPath);
-            foreach (var image in imageList)
-            {
-                ListViewItem item = new ListViewItem(image.FileName);
-                item.SubItems.Add(image.Dimensions);
-                list_capacity.Items.Add(item);
-            }
-        }
-        */
         public void AppendTextToRichTextBox(string text)
         {
             // 检查是否需要跨线程调用
@@ -103,11 +88,11 @@ namespace HideSloth.Tools
 
             InitializeComponent();
             InitializeListView();
-            if (GlobalVariables.mode == "Normal")
+            if (GlobalVariables.Mode == "Normal")
             {
                 Radio_normalw.Checked = true;
             }
-            else if (GlobalVariables.mode == "Encryptor")
+            else if (GlobalVariables.Mode == "Encryptor")
             {
                 Radio_Encryptorw.Checked = true;
             }
@@ -182,7 +167,7 @@ namespace HideSloth.Tools
                 {
                     pwd = text_pwd.Text;
                     box_summary.Clear();
-                    box_summary.AppendText("Mode: Bulk File Encryptor\nDirectory of Secret Files: " + routesecretfiles + "\nRoute of Output Directory: " + routeofoutput + "\nPBKDF2 Iterations: " + GlobalVariables.iteration.ToString() + "\nPBKDF2 Hash: " + GlobalVariables.Hash);
+                    box_summary.AppendText("Mode: Bulk File Encryptor\nDirectory of Secret Files: " + routesecretfiles + "\nRoute of Output Directory: " + routeofoutput + "\nPBKDF2 Iterations: " + GlobalVariables.Iteration.ToString() + "\nPBKDF2 Hash: " + GlobalVariables.Hash);
                     SwitchTab(6);
                 }
             }
@@ -260,7 +245,6 @@ namespace HideSloth.Tools
                             maxfloder = (int)numericUpDown1.Value;
                             //Now we need to know the folder structure
                             //MessageBox.Show("执行了深度搜索");
-                            // 获取文件路径
                             GetFilePaths(containers, ALLfilePaths, maxfloder);
 
                         }
@@ -353,13 +337,13 @@ namespace HideSloth.Tools
                 {
                     pwd = text_pwd.Text;
                     box_summary.AppendText("Mode: One Large file To List of Containers\nRoute of Secret Files: " + largonesecret + "\nRoute of Containers: " + containers + "\nRoute of Output Directory: " + routeofoutput);
-                    if (GlobalVariables.enableencrypt)
+                    if (GlobalVariables.Enableencrypt)
                     {
-                        box_summary.AppendText("\nEncryption: " + GlobalVariables.enableencrypt.ToString() + "\nPBKDF2 Iterations: " + GlobalVariables.iteration.ToString() + "\nPBKDF2 Hash: " + GlobalVariables.Hash);
+                        box_summary.AppendText("\nEncryption: " + GlobalVariables.Enableencrypt.ToString() + "\nPBKDF2 Iterations: " + GlobalVariables.Iteration.ToString() + "\nPBKDF2 Hash: " + GlobalVariables.Hash);
                     }
                     else
                     {
-                        box_summary.AppendText("\nEncryption: " + GlobalVariables.enableencrypt.ToString());
+                        box_summary.AppendText("\nEncryption: " + GlobalVariables.Enableencrypt.ToString());
                     }
                     SwitchTab(6);
                 }
@@ -473,7 +457,7 @@ namespace HideSloth.Tools
                     }
                 }
 
-                //Large file mode
+                //Large file Mode
 
                 if (tabControl1.SelectedIndex == 9)
                 {
@@ -552,9 +536,9 @@ namespace HideSloth.Tools
         private void form2_Closed(object sender, EventArgs e)
         {
             bool modes = false;
-            if (GlobalVariables.mode == "Normal") { modes = true; }
-            SubmitSettingsChangedUI3(new SettingUpdateUIEventArgs(GlobalVariables.enableencrypt, modes));
-            if (GlobalVariables.mode == "Normal")
+            if (GlobalVariables.Mode == "Normal") { modes = true; }
+            SubmitSettingsChangedUI3(new SettingUpdateUIEventArgs(GlobalVariables.Enableencrypt, modes));
+            if (GlobalVariables.Mode == "Normal")
             {
                 Radio_normalw.Checked = true;
             }

@@ -22,67 +22,14 @@ namespace HideSloth
 
     public partial class MainForm : Form
     {
+        private List<string> Containers = new List<string>();
         private Settings form2;
-        private AboutBox AboutForm;
         private Form_Benchmark formBenchmark;
         private Form_EncodeWizard WizardEncode;
         private Form_DecodeWizard WizardDecode;
-        //public event EventHandler<ControlActionEventArgs> UpdateUIControlEvent;
-        private Logic logic;
+        private readonly Logic logic;
         string selecte_secret = "";
-        /*
-        public class ControlActionEventArgs : EventArgs
-        {
-            public Action ControlAction { get; set; }
-        }
-
-        protected virtual void OnUpdateUIControl(ControlActionEventArgs e)
-        {
-            UpdateUIControlEvent?.Invoke(this, e);
-        }
-        public void TriggerControlAction(Action action)
-        {
-            OnUpdateUIControl(new ControlActionEventArgs { ControlAction = action });
-        }
-
-        private void MainForm_UpdateUIControlEvent(object sender, ControlActionEventArgs e)
-        {
-            // 这里调用你的 UI 更新方法
-            if (InvokeRequired)
-            {
-                Invoke(e.ControlAction);
-            }
-            else
-            {
-                e.ControlAction?.Invoke();
-            }
-        }
-
-        public void UpdateUIControl(Action controlAction)
-        {
-            if (InvokeRequired)
-            {
-                Invoke(controlAction);
-            }
-            else
-            {
-                controlAction();
-            }
-        }
-
-
-        public string log
-        {
-            get {return richTextBoxLog.Text; }
-            set { richTextBoxLog.AppendText(value); }
-        }
-
-        public string outputstr
-        {
-            get { return Input_PlainText.Text; }
-            set { Input_PlainText.Text = value; }
-        }
-        */
+     
         public bool PasswordBOX
         {
             get { return Textbox_Password.Enabled; }
@@ -121,9 +68,9 @@ namespace HideSloth
         }
         public void UpdateStatusStrip()
         {
-            toolStripStatusLabel1.Text = GlobalVariables.mode + " Mode";
+            toolStripStatusLabel1.Text = GlobalVariables.Mode + " Mode";
             toolStripStatusLabel2.Text = "Algorithm: " + GlobalVariables.Algor;
-            toolStripStatusLabel3.Text = "Encryption: " + GlobalVariables.enableencrypt.ToString().ToUpper() + ", Iteration: " + GlobalVariables.iteration.ToString() + ", Hash: " + GlobalVariables.Hash.ToString();
+            toolStripStatusLabel3.Text = "Encryption: " + GlobalVariables.Enableencrypt.ToString().ToUpper() + ", Iteration: " + GlobalVariables.Iteration.ToString() + ", Hash: " + GlobalVariables.Hash.ToString();
 
         }
         private void InitializeStatusStrip()
@@ -149,9 +96,9 @@ namespace HideSloth
                 bar1
             });
             this.Controls.Add(statusStrip1);
-            toolStripStatusLabel1.Text = GlobalVariables.mode + " Mode";
+            toolStripStatusLabel1.Text = GlobalVariables.Mode + " Mode";
             toolStripStatusLabel2.Text = "Algorithm: " + GlobalVariables.Algor;
-            toolStripStatusLabel3.Text = "Encryption: " + GlobalVariables.enableencrypt.ToString().ToUpper() + ", Iteration: " + GlobalVariables.iteration.ToString() + ", Hash: " + GlobalVariables.Hash.ToString();
+            toolStripStatusLabel3.Text = "Encryption: " + GlobalVariables.Enableencrypt.ToString().ToUpper() + ", Iteration: " + GlobalVariables.Iteration.ToString() + ", Hash: " + GlobalVariables.Hash.ToString();
 
         }
         private void UpdateUIForCulture()
@@ -266,7 +213,7 @@ namespace HideSloth
                 using (SaveFileDialog saveFileDialog = new SaveFileDialog())
                 {
                     saveFileDialog.Title = "Save the decoded file";
-                    saveFileDialog.FileName = GlobalVariables.defaultname; // 设置默认文件名
+                    saveFileDialog.FileName = GlobalVariables.Defaultname; // 设置默认文件名
 
                     if (saveFileDialog.ShowDialog() == DialogResult.OK && !string.IsNullOrEmpty(saveFileDialog.FileName))
                     {
@@ -282,7 +229,7 @@ namespace HideSloth
         {
             if (InvokeRequired)
             {
-                Invoke(new EventHandler<ProgressEventArgs>(Logic_ProgressChanged), sender, e);
+                Invoke(new EventHandler<SettingUpdateUIEventArgs>(Settings_UpdateGUIMainform), sender, e);
                 return;
             }
             //MessageBox.Show(e.Encalg);
@@ -377,12 +324,10 @@ namespace HideSloth
         {
             if (InvokeRequired)
             {
-                // 如果当前不在 UI 线程，则通过 Invoke 在 UI 线程上执行读取操作
                 return (T)Invoke(readAction);
             }
             else
             {
-                // 如果已经在 UI 线程，则直接执行读取操作
                 return readAction();
             }
         }
@@ -414,21 +359,16 @@ namespace HideSloth
         {
             action.Enabled = false;
             pictureBox1.Image = Resources.Running;
-            GlobalVariables.check_result = (ReadUI(() => (Label_RouteofContainer.Text).Contains("png")) || ReadUI(() => (Label_RouteofContainer.Text).Contains("bmp")));
 
-            GlobalVariables.encode = ReadUI(() => Radio_Encode.Checked);
-            GlobalVariables.decode = ReadUI(() => Radio_Decode.Checked);
-            GlobalVariables.isfile = ReadUI(() => Radio_File.Checked);
-            GlobalVariables.isstring = ReadUI(() => Radio_String.Checked);
-
-            GlobalVariables.route_container = ReadUI(() => Label_RouteofContainer.Text);
+            bool encode = ReadUI(() => Radio_Encode.Checked);
+            bool decode = ReadUI(() => Radio_Decode.Checked);
+            bool isfile = ReadUI(() => Radio_File.Checked);
+            bool isstring = ReadUI(() => Radio_String.Checked);
             string password = ReadUI(() => Textbox_Password.Text);
-            GlobalVariables.route_secret = ReadUI(() => Label_RouteofSecret.Text);
-            GlobalVariables.stringinfo = ReadUI(() => Input_PlainText.Text);
+            string stringinfo = ReadUI(() => Input_PlainText.Text);
             UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Process Started\n"));
             UpdateUI(() => richTextBoxLog.ScrollToCaret());
-            //var logic = new Logic();
-            await logic.CallMethodAsync(check_multi.Checked, selecte_secret, check_audio.Checked, password);
+            await logic.CallMethodAsync(check_multi.Checked, selecte_secret, check_audio.Checked, password, stringinfo, Containers,encode,decode,isfile,isstring);
             pictureBox1.Image = Resources.Idle;
             action.Enabled = true;
 
@@ -447,10 +387,10 @@ namespace HideSloth
                     if (check_multi.Checked)
                     {
                         string[] selectedFiles = openFileDialog.FileNames;
-                        GlobalVariables.route_containers.Clear();
+                        Containers.Clear();
                         foreach (string i in selectedFiles)
                         {
-                            GlobalVariables.route_containers.Add(i);
+                            Containers.Add(i);
                         }
                         Label_RouteofContainer.Text = String.Join("; ", selectedFiles);
                         richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- MulitpalContainer's Name and Route Selected: " + Label_RouteofContainer.Text + "\n");
@@ -458,10 +398,10 @@ namespace HideSloth
                     }
                     else
                     {
-                        GlobalVariables.route_containers.Clear();
+                        Containers.Clear();
                         string selecte_containerroute = openFileDialog.FileName;
-                        GlobalVariables.route_container = selecte_containerroute;
-                        GlobalVariables.route_containers.Add(selecte_containerroute);
+                        //GlobalVariables.route_container = selecte_containerroute;
+                        Containers.Add(selecte_containerroute);
                         Label_RouteofContainer.Text = selecte_containerroute;
                         richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Container's Name and Route Selected: " + selecte_containerroute + "\n");
 
@@ -482,7 +422,6 @@ namespace HideSloth
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     selecte_secret = openFileDialog.FileName;
-                    GlobalVariables.route_secret = selecte_secret;
                     Label_RouteofSecret.Text = selecte_secret;
                     richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Input Secret File's Name and Route Selected: " + selecte_secret + "\n");
                 }
@@ -502,14 +441,14 @@ namespace HideSloth
             string outputcapacity = "";
             string containfile = Label_RouteofContainer.Text;
             bool containsSlash = containfile.Contains(@"\");
-            if (containsSlash == true || GlobalVariables.multipal_route != null)
+            if (containsSlash == true )
             {
                 try
                 {
-                    if (check_multi.Checked && GlobalVariables.route_containers != null)
+                    if (check_multi.Checked && Containers != null)
                     {
                         List<double> imagesizes = new List<double>();
-                        foreach (string single in GlobalVariables.route_containers)
+                        foreach (string single in Containers)
                         {
                             Image img = Image.FromFile(single);
                             double singlesize = 0.0;
@@ -553,7 +492,6 @@ namespace HideSloth
                 }
                 catch (Exception ex)
                 {
-                    //progressBar1.Value = 0;
 
                     ShowMessageOnUIThread(ex.Message, "Error");
 
@@ -589,81 +527,22 @@ namespace HideSloth
             }
             else
             {
-                //form2 = new Settings();
                 form2.Show();
-
                 form2.BringToFront(); // 如果Form2已经存在，将其带到前台
             }
             
         }
 
 
-        public void Outputfile_pngbmp()
-        {
-            {
-                SaveFileDialog saveFileDialog = new SaveFileDialog();
-                saveFileDialog.Filter = "PNG Image|*.png|Bitmap Image|*.bmp";
-                saveFileDialog.Title = "Save an Image File";
-                saveFileDialog.ShowDialog();
-
-                if (saveFileDialog.FileName != "")
-                {
-                    GlobalVariables.outputnameandroute = saveFileDialog.FileName;
-                    if (Path.GetExtension(GlobalVariables.outputnameandroute) != ".png" && Path.GetExtension(GlobalVariables.outputnameandroute) != ".bmp")
-                    {
-                        ShowMessageOnUIThread("You entered a format out of png or bmp, you can save it anyway, but it may cause data damage if you open them with other application.", "Warning");
-                    }
-                    richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Output Name and Route of Loaded Container Selected: " + GlobalVariables.outputnameandroute + "\n");
-
-                }
-            }
-
-        }
-
-
-        public void Outputfile_wav()
-        {
-            {
-                SaveFileDialog saveFileDialog = new SaveFileDialog();
-                saveFileDialog.Filter = "WAV Audio|*.wav";
-                saveFileDialog.Title = "Save an Audio File";
-                saveFileDialog.ShowDialog();
-
-                if (saveFileDialog.FileName != "")
-                {
-                    GlobalVariables.outputnameandroute = saveFileDialog.FileName;
-                    richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Output Name and Route of Loaded Container Selected: " + GlobalVariables.outputnameandroute + "\n");
-
-                }
-            }
-
-        }
-
-        public void Outputfile_any()
-        {
-            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
-            {
-                saveFileDialog.Title = "Save the decoded file";
-                //saveFileDialog.Filter = "文本文件 (*.txt)|*.txt|所有文件 (*.*)|*.*"; // 根据需要调整文件类型
-                saveFileDialog.FileName = GlobalVariables.defaultname; // 设置默认文件名
-
-                if (saveFileDialog.ShowDialog() == DialogResult.OK && !string.IsNullOrEmpty(saveFileDialog.FileName))
-                {
-                    GlobalVariables.outputnameandroute = saveFileDialog.FileName;
-                    richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Output Name and Route of Extracted File Selected: " + GlobalVariables.outputnameandroute + "\n");
-                }
-            }
-        }
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
 
-
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var AboutForm = new AboutBox())
+            using (AboutBox AboutForm = new AboutBox())
             {
                 AboutForm.ShowDialog();
 
@@ -699,17 +578,6 @@ namespace HideSloth
 
         }
 
-        public void mulitpla_output()
-        {
-            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
-            folderBrowserDialog.Description = "请选择文件夹";
-            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
-            {
-                GlobalVariables.multipal_route = folderBrowserDialog.SelectedPath;
-            }
-
-        }
-
         private void Radio_Decode_CheckedChanged(object sender, EventArgs e)
         {
             if (Radio_Decode.Checked)
@@ -728,7 +596,6 @@ namespace HideSloth
             if (this.WindowState == FormWindowState.Maximized)
             {
                 //Input_PlainText.Height = 300;
-
                 richTextBoxLog.Height = 350;
             }
             if (this.WindowState == FormWindowState.Normal)

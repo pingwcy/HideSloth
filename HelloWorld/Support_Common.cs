@@ -8,49 +8,69 @@ using System.Reflection.Metadata;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.Security.Cryptography.Xml;
 using System.Security.Policy;
+using System.Drawing.Imaging;
+using System.Security.Cryptography;
 
 namespace HideSloth
 {
-    public class FileNamer
+    public class Support_Checker
     {
-        public static string RenameFileToload(string originalPath)
+        public static bool IsSuitableForBeingContainer(string Candidate_Path)
         {
-            // 确保源文件存在
-            if (File.Exists(originalPath))
-            {
-#pragma warning disable CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
-                string directory = Path.GetDirectoryName(originalPath);
-#pragma warning restore CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
-
-                // 获取不带扩展名的文件名
-                string filenameWithoutExtension = Path.GetFileNameWithoutExtension(originalPath);
-
-                // 添加新的文件名部分
-                string newFilename = filenameWithoutExtension + "_loaded";
-
-                // 获取扩展名
-                string extension = Path.GetExtension(originalPath);
-
-                // 组合新路径
-#pragma warning disable CS8604 // 引用类型参数可能为 null。
-                string newPath = Path.Combine(directory, newFilename + extension);
-#pragma warning restore CS8604 // 引用类型参数可能为 null。
-
-                return newPath;
-            }
-            else
-                return originalPath;
+            return false;
         }
-        public static string Getpath (string Filepath)
+        //public static List<> 
+    }
+    class Support_Converter
+    {
+        public static Image ConvertOthersToPngInMemory(string jpgFilePath)
         {
-#pragma warning disable CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
-            string directory = Path.GetDirectoryName(Filepath);
-#pragma warning restore CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
-#pragma warning disable CS8603 // 可能返回 null 引用。
-            return directory;
-#pragma warning restore CS8603 // 可能返回 null 引用。
+            using (Image jpgImage = Image.FromFile(jpgFilePath))
+            {
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    // 将JPG图像保存到内存流中，格式为PNG
+                    jpgImage.Save(ms, ImageFormat.Png);
+
+                    ms.Position = 0;
+
+                    return new Bitmap(ms);
+                }
+            }
+        }
+        public static HashAlgorithmName StringToHashAlgorithmName(string hashAlgorithm)
+        {
+            switch (hashAlgorithm.ToUpper())
+            {
+                case "SHA256":
+                    return HashAlgorithmName.SHA256;
+                case "SHA384":
+                    return HashAlgorithmName.SHA384;
+                case "SHA512":
+                    return HashAlgorithmName.SHA512;
+                default:
+                    throw new ArgumentException("Invalid Input");
+            }
+        }
+        public static ImageFormat SaveFormatImage(string formatstring)
+        {
+            ImageFormat format;
+
+            switch (formatstring)
+            {
+                case ".bmp":
+                    format = ImageFormat.Bmp;
+                    return format;
+                case ".png":
+                    format = ImageFormat.Png;
+                    return format;
+                default:
+                    throw new InvalidOperationException("Unsupported format");
+            }
+
         }
     }
+
 
 
     public class BytesStringThings
@@ -98,7 +118,7 @@ namespace HideSloth
         }
         public static byte[] ExtractFileContent(byte[] combined, int separatorIndex)
         {
-            int separatorLength = GlobalVariables.separator.Length;
+            int separatorLength = GlobalVariables.Separator.Length;
             int fileContentStartIndex = separatorIndex + separatorLength;
             int fileContentLength = combined.Length - fileContentStartIndex;
             byte[] fileContent = new byte[fileContentLength];
@@ -196,8 +216,5 @@ namespace HideSloth
             return Encoding.UTF8.GetString(bindata);
         }
     }
-
-
-
 
 }

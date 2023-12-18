@@ -24,7 +24,7 @@ namespace HideSloth.Crypto
 
             RandomNumberGenerator.Create().GetBytes(salt);
             RandomNumberGenerator.Create().GetBytes(nonce);
-            int Iterations = GlobalVariables.iteration; // PBKDF2 iterations
+            int Iterations = GlobalVariables.Iteration; // PBKDF2 iterations
             string HashAlg = GlobalVariables.Hash;
 
             // 使用PBKDF2生成密钥
@@ -35,7 +35,7 @@ namespace HideSloth.Crypto
                 byte[] encryptedData = new byte[dataToEncrypt.Length];
 
                 // 进行AES-GCM加密
-                if (GlobalVariables.encalg == "AES")
+                if (GlobalVariables.Encalg == "AES")
                 {
                     using (var aesGcm = new AesGcm(key, TagSize))
                     {
@@ -45,7 +45,7 @@ namespace HideSloth.Crypto
                         return encryptedData;
                     }
                 }
-                else if (GlobalVariables.encalg == "ChaCha")
+                else if (GlobalVariables.Encalg == "ChaCha")
                 {
                     using (var ChaCha = new ChaCha20Poly1305(key))
                     {
@@ -74,7 +74,7 @@ namespace HideSloth.Crypto
             byte[] salt = new byte[SaltSize];
             byte[] nonce = new byte[NonceSize];
             byte[] tag = new byte[TagSize];
-            int Iterations = GlobalVariables.iteration; // PBKDF2 iterations
+            int Iterations = GlobalVariables.Iteration; // PBKDF2 iterations
             string HashAlg = GlobalVariables.Hash;
 
             Buffer.BlockCopy(combinedData, 0, salt, 0, SaltSize);
@@ -96,7 +96,7 @@ namespace HideSloth.Crypto
                 byte[] decryptedData = new byte[encryptedDataLength];
 
                 // 进行AES-GCM解密
-                if (GlobalVariables.encalg == "AES")
+                if (GlobalVariables.Encalg == "AES")
                 {
                     using (var aesGcm = new AesGcm(key, TagSize))
                     {
@@ -105,7 +105,7 @@ namespace HideSloth.Crypto
                         return decryptedData;
                     }
                 }
-                else if (GlobalVariables.encalg == "ChaCha")
+                else if (GlobalVariables.Encalg == "ChaCha")
                 {
                     using (var ChaCha = new ChaCha20Poly1305(key))
                     {

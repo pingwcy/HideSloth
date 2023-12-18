@@ -36,11 +36,11 @@ namespace HideSloth
         public Settings()
         {
             InitializeComponent();
-            if (GlobalVariables.mode == "Normal")
+            if (GlobalVariables.Mode == "Normal")
             {
                 Radio_Normal.Checked = true;
             }
-            else if (GlobalVariables.mode == "Encryptor")
+            else if (GlobalVariables.Mode == "Encryptor")
             {
                 Radio_Encryptor.Checked = true;
             }
@@ -54,33 +54,33 @@ namespace HideSloth
                 Radio_Linear_PB.Checked = true;
             }
 
-            if (GlobalVariables.enableencrypt == true)
+            if (GlobalVariables.Enableencrypt == true)
             {
                 Radio_enableenc.Checked = true;
             }
-            if (GlobalVariables.disablencrypt == true)
+            if (GlobalVariables.Disablencrypt == true)
             {
                 Radio_disableenc.Checked = true;
             }
 
             Check_CustIter.Checked = GlobalVariables.CustIter;
             Check_CustHash.Checked = GlobalVariables.CustHash;
-            Text_PBKDF2Iter.Text = GlobalVariables.iteration.ToString();
+            Text_PBKDF2Iter.Text = GlobalVariables.Iteration.ToString();
             ComboBox_Hash.SelectedItem = GlobalVariables.Hash;
-            combo_entension.SelectedItem = GlobalVariables.outputformat;
-            check_meta.Checked = GlobalVariables.copymeta;
-            check_keepformat.Checked = GlobalVariables.keepformat;
-            check_copymetaother.Checked = GlobalVariables.copyotherfilemeta;
-            numericUpDown1.Value = GlobalVariables.smallstandard;
-            if (GlobalVariables.encalg == "ChaCha")
+            combo_entension.SelectedItem = GlobalVariables.Outputformat;
+            check_meta.Checked = GlobalVariables.Copymeta;
+            check_keepformat.Checked = GlobalVariables.Keepformat;
+            check_copymetaother.Checked = GlobalVariables.Copyotherfilemeta;
+            numericUpDown1.Value = GlobalVariables.Smallstandard;
+            if (GlobalVariables.Encalg == "ChaCha")
             {
                 combo_encalg.SelectedItem = "ChaCha20-Poly1305";
             }
-            else if (GlobalVariables.encalg == "AES")
+            else if (GlobalVariables.Encalg == "AES")
             {
                 combo_encalg.SelectedItem = "AES256-GCM";
             }
-            check_errorignore.Checked = GlobalVariables.ignoreextracterror;
+            check_errorignore.Checked = GlobalVariables.Ignoreextracterror;
         }
 
         private void Radio_LSB_PB_CheckedChanged(object sender, EventArgs e)
@@ -92,7 +92,7 @@ namespace HideSloth
         {
             if (Radio_Normal.Checked)
             {
-                GlobalVariables.mode = "Normal";
+                GlobalVariables.Mode = "Normal";
                 //form1.Container_Button = true;
                 //form1.ContainerLabel_Nousage = true;
                 //form1.ContainerLabel2_Nousage = true;
@@ -102,8 +102,8 @@ namespace HideSloth
             }
             else if (Radio_Encryptor.Checked)
             {
-                GlobalVariables.mode = "Encryptor";
-                GlobalVariables.route_container = "";
+                GlobalVariables.Mode = "Encryptor";
+                //GlobalVariables.route_container = "";
                 //form1.Container_Button = false;
                // form1.ContainerLabel_Nousage = false;
                 //form1.ContainerLabel2_Nousage = false;
@@ -123,39 +123,39 @@ namespace HideSloth
 
             if (Radio_enableenc.Checked)
             {
-                GlobalVariables.enableencrypt = true;
-                GlobalVariables.disablencrypt = false;
+                GlobalVariables.Enableencrypt = true;
+                GlobalVariables.Disablencrypt = false;
                 //form1.PasswordBOX = true;
 
             }
             if (Radio_disableenc.Checked)
             {
-                GlobalVariables.disablencrypt = true;
-                GlobalVariables.enableencrypt = false;
+                GlobalVariables.Disablencrypt = true;
+                GlobalVariables.Enableencrypt = false;
                 //form1.PasswordBOX = false;
                 //Form1.Textbox_Password.Enabled = false;
             }
-            GlobalVariables.outputformat = combo_entension.SelectedItem.ToString();
+            GlobalVariables.Outputformat = combo_entension.SelectedItem.ToString();
 
-            GlobalVariables.iteration = Int32.Parse(Text_PBKDF2Iter.Text);
+            GlobalVariables.Iteration = Int32.Parse(Text_PBKDF2Iter.Text);
 #pragma warning disable CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
 #pragma warning disable CS8601 // 引用类型赋值可能为 null。
             GlobalVariables.Hash = (string)ComboBox_Hash.SelectedItem;
 #pragma warning restore CS8601 // 引用类型赋值可能为 null。
 #pragma warning restore CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
-            GlobalVariables.copymeta = check_meta.Checked;
-            GlobalVariables.copyotherfilemeta = check_copymetaother.Checked;
-            GlobalVariables.keepformat = check_keepformat.Checked;
-            GlobalVariables.smallstandard = (int)numericUpDown1.Value;
+            GlobalVariables.Copymeta = check_meta.Checked;
+            GlobalVariables.Copyotherfilemeta = check_copymetaother.Checked;
+            GlobalVariables.Keepformat = check_keepformat.Checked;
+            GlobalVariables.Smallstandard = (int)numericUpDown1.Value;
             if (combo_encalg.SelectedItem.ToString() == "ChaCha20-Poly1305")
             {
-                GlobalVariables.encalg = "ChaCha";
+                GlobalVariables.Encalg = "ChaCha";
             }
             else if (combo_encalg.SelectedItem.ToString() == "AES256-GCM")
             {
-                GlobalVariables.encalg = "AES";
+                GlobalVariables.Encalg = "AES";
             }
-            GlobalVariables.ignoreextracterror = check_errorignore.Checked;
+            GlobalVariables.Ignoreextracterror = check_errorignore.Checked;
             //form1.UpdateStatusStrip();
             SubmitSettingsChangedUI(new SettingUpdateUIEventArgs(Radio_enableenc.Checked, Radio_Normal.Checked));
             this.Close();

@@ -132,7 +132,7 @@ namespace HideSloth.Tools
             {
                 size = Math.Round(img.Width * img.Height * 3 / 8 * 0.89 / 1024 / 1.34).ToString();
             }
-            if (Int32.Parse(size) <= GlobalVariables.smallstandard)
+            if (Int32.Parse(size) <= GlobalVariables.Smallstandard)
             {
                 return false;
             }
@@ -154,7 +154,7 @@ namespace HideSloth.Tools
                 targetfloder = Directory.GetFiles(route_loaded).OrderBy(path => Path.GetFileName(path)).ToArray().ToList();
             }
 
-            if (GlobalVariables.sparse_decode)
+            if (GlobalVariables.Sparse_decode)
             {
 
 
@@ -183,7 +183,7 @@ namespace HideSloth.Tools
                                     if (GlobalVariables.Algor == "LSB")
                                     {
                                         encrypted_result = LSB_Image.extract(unloading);
-                                        if (GlobalVariables.enableencrypt)
+                                        if (GlobalVariables.Enableencrypt)
                                         {
                                             decrypted_content = Aes_ChaCha_Decryptor.Decrypt(Convert.FromBase64String(encrypted_result), pwd);
                                         }
@@ -197,7 +197,7 @@ namespace HideSloth.Tools
                                     else if (GlobalVariables.Algor == "Linear")
                                     {
                                         decrypted_content = Core_Linear_Image.DecodeFileFromImage(unloading);
-                                        if (GlobalVariables.enableencrypt)
+                                        if (GlobalVariables.Enableencrypt)
                                         {
                                             decrypted_content = Aes_ChaCha_Decryptor.Decrypt(decrypted_content, pwd);
                                         }
@@ -230,7 +230,7 @@ namespace HideSloth.Tools
                                 {
                                     updateStatus?.Invoke(ex.Message);
 
-                                    if (GlobalVariables.ignoreextracterror == false)
+                                    if (GlobalVariables.Ignoreextracterror == false)
                                     {
                                         return false;
                                     }
@@ -246,7 +246,7 @@ namespace HideSloth.Tools
             }
 
 
-            else if(GlobalVariables.sparse_decode == false)
+            else if(GlobalVariables.Sparse_decode == false)
             {
                 bool isfirst = true;
 
@@ -305,7 +305,7 @@ namespace HideSloth.Tools
                             {
                                 updateStatus?.Invoke(ex.Message);
 
-                                if (GlobalVariables.ignoreextracterror == false)
+                                if (GlobalVariables.Ignoreextracterror == false)
                                 {
                                     return false;
                                 }
@@ -438,7 +438,7 @@ foreach (string file in targetfloder)
             {
                 updateStatus?.Invoke(ex.Message);
                 //throw;
-                if (GlobalVariables.ignoreextracterror == false)
+                if (GlobalVariables.Ignoreextracterror == false)
                 {
                     return false;
                 }
@@ -514,7 +514,7 @@ foreach (var part in orderedParts)
         {
             updateStatus?.Invoke(ex.Message);
 
-            if (GlobalVariables.ignoreextracterror == false)
+            if (GlobalVariables.Ignoreextracterror == false)
             {
                 return false;
             }

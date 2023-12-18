@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using static HideSloth.MainForm;
 using System.Windows.Forms;
 using System.Diagnostics;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Reflection.Emit;
 
 namespace HideSloth
 {
@@ -26,8 +28,6 @@ namespace HideSloth
 
     public class Logic
     {
-        //public delegate void ProgressReportHandler(string message);
-        //public event ProgressReportHandler ProgressReported;
         public event EventHandler<ProgressEventArgs>? ProgressChanged;
         public event EventHandler<FileSaveRequestEventArgs>? RequestFileSave;
         public event EventHandler<RouteOutputRequestEventArgs>? RequestRouteSave;
@@ -36,107 +36,92 @@ namespace HideSloth
         {
             ProgressChanged?.Invoke(this, e);
         }
-        public async Task CallMethodAsync(bool ismult, string selecte_secret, bool audiochecked,string password)
+        public async Task CallMethodAsync(bool ismult, string selecte_secret, bool audiochecked,string password,string stringinfo, List<string> Containers, bool encode, bool decode, bool isfile, bool isstring)
         {
-            await Task.Run(() => LongRunningOperation(ismult, selecte_secret, audiochecked, password));
+            await Task.Run(() => LongRunningOperation(ismult, selecte_secret, audiochecked, password, stringinfo,Containers, encode, decode, isfile, isstring));
         }
 
-
-        /*  something useless
-                                   Action updateAction = () =>
-                            {
-                                form1.log = "!";
-                                
-                            };
-
-                            // 触发事件
-                            form1.BeginInvoke((Action)(() =>
-                            {
-                                form1.TriggerControlAction(updateAction);
-                            }));
-        */
-        public bool LongRunningOperation(bool ismult, string selecte_secret, bool audiochecked,string password)
+        public bool LongRunningOperation(bool ismult, string selecte_secret, bool audiochecked,string password,string stringinfo, List<string> Containers, bool encode, bool decode, bool isfile, bool isstring)
         {
-            string manyfilePath = "";
+            string multipalPath = "";
+            string currentName = "";
+            DateTime lastaccess = new DateTime(2021, 8, 15);
 
-            if (GlobalVariables.mode == "Normal")
+            if (GlobalVariables.Mode == "Normal")
             {
-
-                if (GlobalVariables.encode && GlobalVariables.enableencrypt && GlobalVariables.isfile)//Encode encrypted file
+                if (encode)
                 {
                     try
                     {
-                        if (ismult)
+                        if (ismult)//if it is mulitpla embed, choose output route first
                         {
                             var argss = new RouteOutputRequestEventArgs();
                             RequestRouteSave?.Invoke(this, argss);
-                            manyfilePath = argss.WaitForPath();
+                            multipalPath = argss.WaitForPath();
                         }
-
-                        foreach (string single_container in GlobalVariables.route_containers)
+                        byte[] secretData = new byte[0];
+                        foreach (string single_container in Containers)
                         {
-                            byte[] secretData = BytesStringThings.ReadFileToByteswithName(selecte_secret);
+                            if (isfile)
+                            {
+                                secretData = BytesStringThings.ReadFileToByteswithName(selecte_secret);
+                            }
+                            else if (isstring)
+                            {
+                                secretData = Convert.FromBase64String(BytesStringThings.StringtoBase64(stringinfo));
+                            }
+                            OnProgressChanged(new ProgressEventArgs(0, "Secret information Readed"));
 
-                            OnProgressChanged(new ProgressEventArgs(0, "Secret File Readed"));
+                            if (GlobalVariables.Enableencrypt)
+                            {
+                                secretData = Aes_ChaCha_Encryptor.Encrypt(secretData, password, out byte[] salt, out byte[] nonce, out byte[] tag);
+                                secretData = BytesStringThings.CombineBytes(salt, nonce, tag, secretData);
+                                OnProgressChanged(new ProgressEventArgs(0, "Secret Information Encrypted and stored in memory"));
+                            }
 
-                            DateTime lastaccess = new DateTime(2021, 8, 15);
-
-                            secretData = Aes_ChaCha_Encryptor.Encrypt(secretData, password, out byte[] salt, out byte[] nonce, out byte[] tag);
-                            OnProgressChanged(new ProgressEventArgs(0, "Secret File Encrypted and stored in memory"));
-
-                            if (GlobalVariables.copymeta)
+                            if (GlobalVariables.Copymeta)
                             {
                                 lastaccess = File.GetLastAccessTime(single_container);
                             }
-                            string newroutename = "";
 
                             if (!audiochecked)
                             {
                                 Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
                                 Bitmap? result = null;
+                                OnProgressChanged(new ProgressEventArgs(0, "Start to embed"));
 
                                 if (GlobalVariables.Algor == "LSB")
                                 {
-                                    OnProgressChanged(new ProgressEventArgs(0, "Start to embed"));
-
-                                    result = LSB_Image.embed(Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, secretData)), loaded);
-
+                                    result = LSB_Image.embed(Convert.ToBase64String(secretData), loaded);
                                 }
                                 else if (GlobalVariables.Algor == "Linear")
                                 {
-                                    OnProgressChanged(new ProgressEventArgs(0, "Start to embed"));
-
-                                    result = Core_Linear_Image.EncodeFileLinear(loaded, BytesStringThings.CombineBytes(salt, nonce, tag, secretData));
+                                    result = Core_Linear_Image.EncodeFileLinear(loaded, secretData);
                                 }
 
-                                if (ismult == false)
+                                if (ismult == false)//single file process request name now
                                 {
                                     var args = new FileSaveRequestEventArgs();
                                     RequestFileSave?.Invoke(this, args);
-                                    newroutename = args.WaitForPath();
+                                    currentName = args.WaitForPath();
 
-                                    result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-                                    loaded.Dispose();
-                                    result?.Dispose();
+                                    result?.Save(currentName, Support_Converter.SaveFormatImage(GlobalVariables.Outputformat));
                                 }
-                                if (ismult == true && manyfilePath != null)
+                                if (ismult == true && multipalPath != null)
                                 {
-                                    if (GlobalVariables.keepformat)
-                                    {                                       
-                                        newroutename = Path.Combine(manyfilePath, (Path.GetFileName(single_container)));
-                                        result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-                                        loaded.Dispose();
-                                        result?.Dispose();
+                                    if (GlobalVariables.Keepformat)
+                                    {
+                                        currentName = Path.Combine(multipalPath, (Path.GetFileName(single_container)));
+                                        result?.Save(currentName, Support_Converter.SaveFormatImage(GlobalVariables.Outputformat));
                                     }
                                     else
                                     {
-                                        newroutename = Path.Combine(manyfilePath, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
-                                        result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-                                        loaded.Dispose();
-                                        result?.Dispose();
+                                        currentName = Path.Combine(multipalPath, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.Outputformat);
+                                        result?.Save(currentName, Support_Converter.SaveFormatImage(GlobalVariables.Outputformat));
                                     }
                                 }
-
+                                loaded.Dispose();
+                                result?.Dispose();
 
                             }
                             else if (audiochecked)
@@ -145,50 +130,44 @@ namespace HideSloth
                                 {
                                     var args = new FileSaveRequestEventArgs();
                                     RequestFileSave?.Invoke(this, args);
-                                    newroutename = args.WaitForPath();
+                                    currentName = args.WaitForPath();
 
                                     OnProgressChanged(new ProgressEventArgs(0, "Start to embed"));
 
-                                    Audio_LSB.Encode_Audio(single_container, newroutename, BytesStringThings.CombineBytes(salt, nonce, tag, secretData));
+                                    Audio_LSB.Encode_Audio(single_container, currentName, secretData);
 
                                 }
-                                if (ismult && manyfilePath != null)
+                                if (ismult && multipalPath != null)
                                 {
-                                    newroutename = Path.Combine(manyfilePath, (Path.GetFileName(single_container)));
-                                    Audio_LSB.Encode_Audio(single_container, newroutename, BytesStringThings.CombineBytes(salt, nonce, tag, secretData));
+                                    currentName = Path.Combine(multipalPath, (Path.GetFileName(single_container)));
+                                    Audio_LSB.Encode_Audio(single_container, currentName, secretData);
                                 }
                             }
 
-
-                            if (GlobalVariables.copymeta)
+                            if (GlobalVariables.Copymeta)
                             {
-                                File.SetCreationTime(newroutename, File.GetCreationTime(single_container));
-                                File.SetLastAccessTime(newroutename, lastaccess);
-                                File.SetLastWriteTime(newroutename, File.GetLastWriteTime(single_container));
+                                File.SetCreationTime(currentName, File.GetCreationTime(single_container));
+                                File.SetLastAccessTime(currentName, lastaccess);
+                                File.SetLastWriteTime(currentName, File.GetLastWriteTime(single_container));
                             }
+                            OnProgressChanged(new ProgressEventArgs(1, "Secret Information Embeded successfully!"));
 
                         }
-                        OnProgressChanged(new ProgressEventArgs(1, "Success to encode file with encryption to image"));
-
                     }
                     catch (Exception ex)
                     {
                         OnProgressChanged(new ProgressEventArgs(2, ex.Message));
-
                     }
-
                 }
-
-
-                if (GlobalVariables.decode && GlobalVariables.enableencrypt && GlobalVariables.isfile)//Decode encrypted file
+                else if (decode)
                 {
-
-                    byte[]? extracted_result = new byte[0];
                     try
                     {
+
+                        byte[]? extracted_result = new byte[0];
                         if (!audiochecked)
                         {
-                            Bitmap unloading = new Bitmap(GlobalVariables.route_container);
+                            Bitmap unloading = new Bitmap(Containers[0]);
 
                             if (GlobalVariables.Algor == "LSB")
                             {
@@ -203,595 +182,112 @@ namespace HideSloth
                         }
                         else if (audiochecked)
                         {
-                            extracted_result = Audio_LSB.Decode_Audio(GlobalVariables.route_container);
+                            extracted_result = Audio_LSB.Decode_Audio(Containers[0]);
 
                         }
                         OnProgressChanged(new ProgressEventArgs(0, "Container Readed"));
-                        extracted_result = Aes_ChaCha_Decryptor.Decrypt(extracted_result, password);
-                        OnProgressChanged(new ProgressEventArgs(0, "Decrypted file Successful"));
-
-                        int nameserperatorindex = BytesStringThings.FindSeparatorIndex(extracted_result, GlobalVariables.separator);
-                        GlobalVariables.defaultname = BytesStringThings.ExtractFileName(extracted_result, nameserperatorindex);
-
-                        var args = new SaveExtractedFileEventArgs();
-                        RequestExtractedSave?.Invoke(this, args);
-                        var filePath = args.WaitForPath();
-
-                        extracted_result = BytesStringThings.ExtractFileContent(extracted_result, nameserperatorindex);
-
-                        if (filePath != null)
+                        if (GlobalVariables.Enableencrypt)
                         {
-                            BytesStringThings.BytesWritetoFile(filePath, extracted_result);
-                            extracted_result = null;
+                            extracted_result = Aes_ChaCha_Decryptor.Decrypt(extracted_result, password);
+                            OnProgressChanged(new ProgressEventArgs(0, "Decrypted file Successful"));
                         }
-                        OnProgressChanged(new ProgressEventArgs(1, "Success to decode file with encryption from image"));
-
-                    }
-
-                    catch (Exception ex)
-                    {
-                        OnProgressChanged(new ProgressEventArgs(2, ex.Message));
-                    }
-
-                }
-
-
-                if (GlobalVariables.encode && GlobalVariables.disablencrypt && GlobalVariables.isfile)//Encode plain file
-                {
-                    try
-                    {
-                        if (ismult)
+                        if (isfile)
                         {
-                            var argss = new RouteOutputRequestEventArgs();
-                            RequestRouteSave?.Invoke(this, argss);
-                            manyfilePath = argss.WaitForPath();
+                            int nameserperatorindex = BytesStringThings.FindSeparatorIndex(extracted_result, GlobalVariables.Separator);
+                            GlobalVariables.Defaultname = BytesStringThings.ExtractFileName(extracted_result, nameserperatorindex);
+                            var args = new SaveExtractedFileEventArgs();
+                            RequestExtractedSave?.Invoke(this, args);
+                            var filePath = args.WaitForPath();
+                            extracted_result = BytesStringThings.ExtractFileContent(extracted_result, nameserperatorindex);
+                            if (filePath != null)
+                            {
+                                BytesStringThings.BytesWritetoFile(filePath, extracted_result);
+                                extracted_result = null;
+                            }
+                            OnProgressChanged(new ProgressEventArgs(1, "Success to decode file with encryption from image"));
                         }
-                        foreach (string single_container in GlobalVariables.route_containers)
+                        if (isstring)
                         {
-                            string newroutename = "";
-                            DateTime lastaccess = new DateTime(2021, 8, 15);
-                            if (GlobalVariables.copymeta)
-                            {
-                                lastaccess = File.GetLastAccessTime(single_container);
-                            }
-                            if (!audiochecked)
-                            {
-                                Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
-                                OnProgressChanged(new ProgressEventArgs(0, "Loaded container in memory Successful, start to embed"));
-
-                                Bitmap? result = null;
-                                if (GlobalVariables.Algor == "LSB")
-                                {
-                                    
-
-                                    string StringFromFile = BytesStringThings.ReadFileToStringwithName(selecte_secret);
-                                    OnProgressChanged(new ProgressEventArgs(0, "Readed secret File in memory Successful"));
-
-                                    result = LSB_Image.embed(StringFromFile, loaded);
-                                    OnProgressChanged(new ProgressEventArgs(0, "Embed File in memory Successful, select a route to save"));
-
-                                }
-                                else if (GlobalVariables.Algor == "Linear")
-                                {
-                                    result = Core_Linear_Image.EncodeFileLinear(loaded, BytesStringThings.ReadFileToByteswithName(selecte_secret));
-                                }
-                                OnProgressChanged(new ProgressEventArgs(0, "Readed secret File and embed in container in memory Successful, please save"));
-
-                                if (ismult == false)
-                                {
-                                    var args = new FileSaveRequestEventArgs();
-                                    RequestFileSave?.Invoke(this, args);
-                                    newroutename = args.WaitForPath();
-                                    result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-                                    loaded.Dispose();
-
-                                }
-                                if (manyfilePath != null && ismult)
-                                {
-                                    if (GlobalVariables.keepformat)
-                                    {
-                                        newroutename = Path.Combine(manyfilePath, (Path.GetFileName(single_container)));
-                                        result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-                                        loaded.Dispose();
-
-                                    }
-                                    else
-                                    {
-                                        newroutename = Path.Combine(manyfilePath, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
-                                        result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-                                        loaded.Dispose();
-                                    }
-                                }
-                                //OnProgressChanged(new ProgressEventArgs(1, "Success to encode file without encryption to image"));
-
-
-                            }
-                            else if (audiochecked)
-                            {
-                                if (ismult == false)
-                                {
-                                    var args = new FileSaveRequestEventArgs();
-                                    RequestFileSave?.Invoke(this, args);
-                                    newroutename = args.WaitForPath();
-
-                                    OnProgressChanged(new ProgressEventArgs(0, "Start to embed"));
-                                    Audio_LSB.Encode_Audio(single_container, newroutename, BytesStringThings.ReadFileToByteswithName(selecte_secret));
-
-                                }
-                                if (manyfilePath != null && ismult)
-                                {
-                                    newroutename = Path.Combine(manyfilePath, (Path.GetFileName(single_container)));
-                                    Audio_LSB.Encode_Audio(single_container, newroutename, BytesStringThings.ReadFileToByteswithName(selecte_secret));
-                                }
-                            }
-
-
-                            if (GlobalVariables.copymeta)
-                            {
-                                File.SetCreationTime(newroutename, File.GetCreationTime(single_container));
-                                File.SetLastAccessTime(newroutename, lastaccess);
-                                File.SetLastWriteTime(newroutename, File.GetLastWriteTime(single_container));
-
-                            }
+                            string extracted_string = System.Text.Encoding.UTF8.GetString(extracted_result);
+                            OnProgressChanged(new ProgressEventArgs(3, extracted_string));
 
                         }
-                        OnProgressChanged(new ProgressEventArgs(1, "Saved Successful"));
-
                     }
                     catch (Exception ex)
                     {
                         OnProgressChanged(new ProgressEventArgs(2, ex.Message));
                     }
                 }
-
-
-                if (GlobalVariables.decode && GlobalVariables.disablencrypt && GlobalVariables.isfile)//Decode plain file
-                {
-                    try
-                    {
-                        byte[]? data = new byte[0];
-                        if (!audiochecked)
-                        {
-                            Bitmap unloading = new Bitmap(GlobalVariables.route_container);
-                            OnProgressChanged(new ProgressEventArgs(0, "Readed loaded container"));
-
-
-                            if (GlobalVariables.Algor == "LSB")
-                            {
-                                data = Convert.FromBase64String(LSB_Image.extract(unloading));
-                                OnProgressChanged(new ProgressEventArgs(0, "Extracted File Successful"));
-
-                            }
-                            else if (GlobalVariables.Algor == "Linear")
-                            {
-                                data = Core_Linear_Image.DecodeFileFromImage(unloading);
-                                OnProgressChanged(new ProgressEventArgs(0, "Extracted File Successful"));
-                            }
-                            unloading.Dispose();
-                        }
-                        else if (audiochecked)
-                        {
-                            data = Audio_LSB.Decode_Audio(GlobalVariables.route_container);
-                            OnProgressChanged(new ProgressEventArgs(0, "Extracted File Successful"));
-                        }
-                        int nameserperatorindex = BytesStringThings.FindSeparatorIndex(data, GlobalVariables.separator);
-                        GlobalVariables.defaultname = BytesStringThings.ExtractFileName(data, nameserperatorindex);
-
-                        var args = new SaveExtractedFileEventArgs();
-                        RequestExtractedSave?.Invoke(this, args);
-                        var filePath = args.WaitForPath();
-
-                        data = BytesStringThings.ExtractFileContent(data, nameserperatorindex);
-
-                        if (filePath != null)
-                        {
-                            BytesStringThings.BytesWritetoFile(filePath, data);
-                            data = null;
-                        }
-                        OnProgressChanged(new ProgressEventArgs(1, "Success to decode file with encryption from image"));
-
-
-                    }
-                    catch (Exception ex)
-                    {
-                        OnProgressChanged(new ProgressEventArgs(2, ex.Message));
-                    }
-
-                }
-
-                //Start string
-                if (GlobalVariables.encode && GlobalVariables.enableencrypt && GlobalVariables.isstring)//Encode encrypted string
-                {
-                    try
-                    {
-                        if (ismult)
-                        {
-                            var argss = new RouteOutputRequestEventArgs();
-                            RequestRouteSave?.Invoke(this, argss);
-                            manyfilePath = argss.WaitForPath();
-                        }
-                        foreach (string single_container in GlobalVariables.route_containers)
-                        {
-                            DateTime lastaccess = new DateTime(2021, 8, 15);
-                            if (GlobalVariables.copymeta)
-                            {
-                                lastaccess = File.GetLastAccessTime(single_container);
-                            }
-
-                            string newroutename = "";
-                            byte[] plain_bin = Convert.FromBase64String(BytesStringThings.StringtoBase64(GlobalVariables.stringinfo));
-
-                            byte[] encryptedData = Aes_ChaCha_Encryptor.Encrypt(plain_bin, password, out byte[] salt, out byte[] nonce, out byte[]  tag);
-                            OnProgressChanged(new ProgressEventArgs(0, "Encrypted String Successful"));
-                            if (!audiochecked)
-                            {
-                                Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
-                                OnProgressChanged(new ProgressEventArgs(0, "Container Loaded Successful, start to embed"));
-
-                                Bitmap? result = null;
-
-                                if (GlobalVariables.Algor == "LSB")
-                                {
-
-                                    result = LSB_Image.embed(Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData)), loaded);
-                                    OnProgressChanged(new ProgressEventArgs(0, "Embed string Successful, please save loaded container"));
-
-                                }
-                                else if (GlobalVariables.Algor == "Linear")
-                                {
-
-                                    result = Core_Linear_Image.EncodeMsgLinearImage(Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData)), loaded);
-                                    OnProgressChanged(new ProgressEventArgs(0, "Embed string Successful, please save loaded container"));
-                                }
-                                if (ismult == false)
-                                {
-                                    var args = new FileSaveRequestEventArgs();
-                                    RequestFileSave?.Invoke(this, args);
-                                    newroutename = args.WaitForPath();
-                                    result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-
-                                }
-                                if (manyfilePath != null && ismult == true)
-                                {
-                                    if (GlobalVariables.keepformat)
-                                    {
-                                        newroutename = Path.Combine(manyfilePath, (Path.GetFileName(single_container)));
-                                        result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-
-                                    }
-                                    else
-                                    {
-                                        newroutename = Path.Combine(manyfilePath, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
-                                        result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-                                    }
-                                }
-                                loaded.Dispose();
-                                result?.Dispose();
-                            }
-                            else if (audiochecked)
-                            {
-                                if (ismult == false)
-                                {
-                                    var args = new FileSaveRequestEventArgs();
-                                    RequestFileSave?.Invoke(this, args);
-                                    newroutename = args.WaitForPath();
-                                    Audio_LSB.Encode_Audio(single_container, newroutename, BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData));
-
-                                }
-                                if (manyfilePath != null && ismult)
-                                {
-                                    newroutename = Path.Combine(manyfilePath, (Path.GetFileName(single_container)));
-                                    Audio_LSB.Encode_Audio(single_container, newroutename, BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData));
-
-                                }
-                            }
-                            if (GlobalVariables.copymeta)
-                            {
-                                File.SetCreationTime(newroutename, File.GetCreationTime(single_container));
-                                File.SetLastAccessTime(newroutename, lastaccess);
-                                File.SetLastWriteTime(newroutename, File.GetLastWriteTime(single_container));
-
-                            }
-
-                        }
-                        OnProgressChanged(new ProgressEventArgs(1, "Success to encode string with encryption"));
-
-                        //form1.Invoke(new Action(() => form1.ShowMessageOnUIThread("Success to encode string with encryption to image", "Success")));
-
-                    }
-                    catch (Exception ex)
-                    {
-                        OnProgressChanged(new ProgressEventArgs(2, ex.Message));
-                    }
-                }
-
-
-                if (GlobalVariables.decode && GlobalVariables.enableencrypt && GlobalVariables.isstring)//Decode encrypted string
-                {
-
-                    try
-                    {
-                        if (!audiochecked)
-                        {
-                            Bitmap unloading = new Bitmap(GlobalVariables.route_container);
-                            OnProgressChanged(new ProgressEventArgs(0, "Readed Loaded container Successful"));
-
-                            string encrypted_result = "";
-                            string rawresult = "";
-                            string result = "";
-
-                            if (GlobalVariables.Algor == "LSB")
-                            {
-                                encrypted_result = LSB_Image.extract(unloading);
-                                OnProgressChanged(new ProgressEventArgs(0, "Extracted String Successful"));
-
-                            }
-                            else if (GlobalVariables.Algor == "Linear")
-                            {
-                                rawresult = Core_Linear_Image.DecodeMsgLinearImage(unloading);
-                                OnProgressChanged(new ProgressEventArgs(0, "Extracted String Successful"));
-
-                                int nullCharIndex = rawresult.IndexOf('\0');
-                                if (nullCharIndex != -1)
-                                {
-                                    encrypted_result = rawresult.Substring(0, nullCharIndex);
-                                }
-
-                            }
-                            result = System.Text.Encoding.UTF8.GetString(Aes_ChaCha_Decryptor.Decrypt(Convert.FromBase64String(encrypted_result), password));
-                            unloading.Dispose();
-                            OnProgressChanged(new ProgressEventArgs(3, result));
-                        }
-                        else if (audiochecked)
-                        {
-                            string result_audio = System.Text.Encoding.UTF8.GetString(Aes_ChaCha_Decryptor.Decrypt(Audio_LSB.Decode_Audio(GlobalVariables.route_container), password));
-                            OnProgressChanged(new ProgressEventArgs(3, result_audio));
-
-                        }
-
-                    }
-                    catch (Exception ex)
-                    {
-                        OnProgressChanged(new ProgressEventArgs(2, ex.Message));
-                    }
-
-                }
-
-
-                if (GlobalVariables.encode && GlobalVariables.disablencrypt && GlobalVariables.isstring)//Encode plain string
-                {
-
-                    try
-                    {
-                        if (ismult)
-                        {
-                            var argss = new RouteOutputRequestEventArgs();
-                            RequestRouteSave?.Invoke(this, argss);
-                            manyfilePath = argss.WaitForPath();
-                        }
-                        foreach (string single_container in GlobalVariables.route_containers)
-                        {
-                            DateTime lastaccess = new DateTime(2021, 8, 15);
-                            string newroutename = "";
-
-                            if (GlobalVariables.copymeta)
-                            {
-                                lastaccess = File.GetLastAccessTime(single_container);
-                            }
-                            if (!audiochecked)
-                            {
-
-                                Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
-                                Bitmap? result = null;
-                                OnProgressChanged(new ProgressEventArgs(0, "Loaded container Successful"));
-
-                                if (GlobalVariables.Algor == "LSB")
-                                {
-                                    result = LSB_Image.embed(BytesStringThings.StringtoBase64(GlobalVariables.stringinfo), loaded);
-                                    OnProgressChanged(new ProgressEventArgs(0, "Embed String Successful"));
-                                }
-                                else if (GlobalVariables.Algor == "Linear")
-                                {
-                                    result = Core_Linear_Image.EncodeMsgLinearImage(BytesStringThings.StringtoBase64(GlobalVariables.stringinfo), loaded);
-                                    OnProgressChanged(new ProgressEventArgs(0, "Embed String Successful"));
-                                }
-                                if (ismult == false)
-                                {
-                                    var args = new FileSaveRequestEventArgs();
-                                    RequestFileSave?.Invoke(this, args);
-                                    newroutename = args.WaitForPath();
-                                    result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-
-                                }
-                                if (manyfilePath != null && ismult == true)
-                                {
-                                    if (GlobalVariables.keepformat)
-                                    {
-                                        newroutename = Path.Combine(manyfilePath, (Path.GetFileName(single_container)));
-                                        result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-
-                                    }
-                                    else
-                                    {
-                                        newroutename = Path.Combine(manyfilePath, (Path.GetFileNameWithoutExtension(single_container)) + GlobalVariables.outputformat);
-                                        result?.Save(newroutename, Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
-                                    }
-                                }
-                                loaded.Dispose();
-                                result?.Dispose();
-                            }
-                            else if (audiochecked)
-                            {
-                                if (ismult == false)
-                                {
-                                    var args = new FileSaveRequestEventArgs();
-                                    RequestFileSave?.Invoke(this, args);
-                                    newroutename = args.WaitForPath();
-                                    Audio_LSB.Encode_Audio(single_container, newroutename, Encoding.UTF8.GetBytes(GlobalVariables.stringinfo));
-
-                                }
-                                if (manyfilePath != null && ismult)
-                                {
-                                    newroutename = Path.Combine(manyfilePath, (Path.GetFileName(single_container)));
-                                    Audio_LSB.Encode_Audio(single_container, newroutename, Encoding.UTF8.GetBytes(GlobalVariables.stringinfo));
-
-                                }
-                            }
-
-                            if (GlobalVariables.copymeta)
-                            {
-                                File.SetCreationTime(newroutename, File.GetCreationTime(single_container));
-                                File.SetLastAccessTime(newroutename, lastaccess);
-                                File.SetLastWriteTime(newroutename, File.GetLastWriteTime(single_container));
-                            }
-
-                        }
-                        OnProgressChanged(new ProgressEventArgs(1, "Saved Successful"));
-
-                        //form1.Invoke(new Action(() => form1.ShowMessageOnUIThread("Success to encode plain text to image", "Success")));
-
-                    }
-                    catch (Exception ex)
-                    {
-                        OnProgressChanged(new ProgressEventArgs(2, ex.Message));
-                    }
-                }
-
-
-                if (GlobalVariables.decode && GlobalVariables.disablencrypt && GlobalVariables.isstring)//Decode plain string
-                {
-
-                    string result = "";
-                    string rawresult = "";
-                    try
-                    {
-                        if (!audiochecked)
-                        {
-                            Bitmap unloading = new Bitmap(GlobalVariables.route_container);
-
-                            OnProgressChanged(new ProgressEventArgs(0, "Readed Loaded container Successful"));
-
-                            if (GlobalVariables.Algor == "LSB")
-                            {
-                                result = LSB_Image.extract(unloading);
-
-                            }
-                            else if (GlobalVariables.Algor == "Linear")
-                            {
-                                rawresult = Core_Linear_Image.DecodeMsgLinearImage(unloading);
-
-                                int nullCharIndex = rawresult.IndexOf('\0');
-                                if (nullCharIndex != -1)
-                                {
-                                    result = rawresult.Substring(0, nullCharIndex);
-                                }
-                            }
-                            OnProgressChanged(new ProgressEventArgs(3, System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(result))));
-                            unloading.Dispose();
-                        }
-                        else if (audiochecked)
-                        {
-                            string result_audio = System.Text.Encoding.UTF8.GetString(Audio_LSB.Decode_Audio(GlobalVariables.route_container));
-                            OnProgressChanged(new ProgressEventArgs(3, result_audio));
-                        }
-
-                    }
-                    catch (Exception ex)
-                    {
-                        OnProgressChanged(new ProgressEventArgs(2, ex.Message));
-                    }
-                }
-
-
-                if ((GlobalVariables.encode == false && GlobalVariables.decode == false) || (GlobalVariables.enableencrypt == false && GlobalVariables.disablencrypt == false) )
-                {
-                    OnProgressChanged(new ProgressEventArgs(2, "Lack of Choice(s)"));
-                }
-
             }
-            else if (GlobalVariables.mode == "Encryptor")
+
+
+            else if (GlobalVariables.Mode == "Encryptor")
             {
 
-                if (GlobalVariables.encode && GlobalVariables.isfile)
+                if (encode && isfile)
                 {
-                    GlobalVariables.defaultname = "";
-                    //form1.Invoke(new Action(() => form1.Outputfile_any()));
+                    GlobalVariables.Defaultname = "";
+                    var args = new SaveExtractedFileEventArgs();
+                    RequestExtractedSave?.Invoke(this, args);
+                    var filePath = args.WaitForPath();
                     try
                     {
-                        if (GlobalVariables.outputnameandroute != null)
+                        if (filePath != null)
                         {
-                            FileEnc.EncryptFile(GlobalVariables.route_secret, GlobalVariables.outputnameandroute, password);
+                            FileEnc.EncryptFile(selecte_secret, filePath, password);
                         }
-                        //form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- AS ONLY ENCRYPTOR: Encrypted File And Saved Successfully" + "\n", false)));
-                        //UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                        OnProgressChanged(new ProgressEventArgs(1, "AS ONLY ENCRYPTOR: Encrypted File And Saved Successfully"));
 
                     }
                     catch (Exception ex)
                     {
-                        //form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "Error" + ex.Message + "\n", true)));
-                        //UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
+                        OnProgressChanged(new ProgressEventArgs(2, ex.Message));
                     }
                 }
-                else if (GlobalVariables.decode && GlobalVariables.isfile)
+                else if (decode && isfile)
                 {
-                    GlobalVariables.defaultname = "";
-                    //form1.Invoke(new Action(() => form1.Outputfile_any()));
+                    GlobalVariables.Defaultname = "";
+                    var args = new SaveExtractedFileEventArgs();
+                    RequestExtractedSave?.Invoke(this, args);
+                    var filePath = args.WaitForPath();
                     try
                     {
-                        if (GlobalVariables.outputnameandroute != null)
+                        if (filePath != null)
                         {
-                            FileEnc.DecryptFile(GlobalVariables.route_secret, GlobalVariables.outputnameandroute, password);
+                            FileEnc.DecryptFile(selecte_secret, filePath, password);
                         }
-                        //form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- AS ONLY ENCRYPTOR: Decrypted File And Saved Successfully" + "\n", false)));
-                        //UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
+                        OnProgressChanged(new ProgressEventArgs(1, "AS ONLY ENCRYPTOR: Decrypted File And Saved Successfully"));
                     }
                     catch (Exception ex)
                     {
-                        //form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "Error" + ex.Message + "\n", true)));
-                        //UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
+                        OnProgressChanged(new ProgressEventArgs(2, ex.Message));
                     }
 
                 }
 
-                else if (GlobalVariables.encode && GlobalVariables.isstring)
+                else if (encode && isstring)
                 {
-                    byte[] plain_bin = Convert.FromBase64String(BytesStringThings.StringtoBase64(GlobalVariables.stringinfo));
-
-                    byte[] salt, nonce, tag;
-                    //         
-                    byte[] encryptedData = Aes_ChaCha_Encryptor.Encrypt(plain_bin, password, out salt, out nonce, out tag);
-                    //form1.Invoke(new Action(() => form1.outputstr = (Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData)))));
-                    //form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- AS ONLY ENCRYPTOR: Encrypted String Successfully" + "\n", false)));
-                    // UpdateUI(() => richTextBoxLog.ScrollToCaret());
+                    byte[] plain_bin = Convert.FromBase64String(BytesStringThings.StringtoBase64(stringinfo));
+                    byte[] encryptedData = Aes_ChaCha_Encryptor.Encrypt(plain_bin, password, out byte[] salt, out byte[] nonce, out byte[] tag);
+                    string output = (Convert.ToBase64String(BytesStringThings.CombineBytes(salt, nonce, tag, encryptedData)));
+                    OnProgressChanged(new ProgressEventArgs(3, output));
 
                 }
 
-                else if (GlobalVariables.decode && GlobalVariables.isstring)
+                else if (decode && isstring)
                 {
                     try
                     {
-                        string result = System.Text.Encoding.UTF8.GetString(Aes_ChaCha_Decryptor.Decrypt(Convert.FromBase64String(GlobalVariables.stringinfo), password));
-                        //form1.Invoke(new Action(() => form1.outputstr = result));
-                        //form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "--- AS ONLY ENCRYPTOR: Decrypted String Successfully" + "\n", false)));
-                        // UpdateUI(() => richTextBoxLog.ScrollToCaret());
-
+                        string output = System.Text.Encoding.UTF8.GetString(Aes_ChaCha_Decryptor.Decrypt(Convert.FromBase64String(stringinfo), password));
+                        OnProgressChanged(new ProgressEventArgs(3, output));
                     }
                     catch (Exception ex)
                     {
-                        //form1.Invoke(new Action(() => form1.BoldToLog(DateTime.Now.ToString() + "Error" + ex.Message + "\n", true)));
-                        //UpdateUI(() => richTextBoxLog.ScrollToCaret());
-                        //form1.Invoke(new Action(() => form1.ShowMessageOnUIThread(ex.Message, "Error")));
-
+                        OnProgressChanged(new ProgressEventArgs(2, ex.Message));
                     }
                 }
-
 
             }
-
-            GlobalVariables.stringinfo = "";
 
             GC.Collect(2, GCCollectionMode.Forced);
             GC.WaitForPendingFinalizers();

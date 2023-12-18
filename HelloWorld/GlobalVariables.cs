@@ -9,49 +9,114 @@ namespace HideSloth
 {
     public static class GlobalVariables
     {
-        public static bool check_result;
+        private static string _mode = "Normal";
+        private static bool _enableencrypt = true;
+        private static bool _disablencrypt = false;
+        private static string? _Algor = "Linear";
+        private static int _iteration = 100000;
+        private static bool _CustIter = false;
+        private static string _Hash = "SHA256";
+        private static bool _CustHash = false;
+        private static readonly byte[] _separator = Encoding.UTF8.GetBytes("|");
+        private static string _defaultname = "";
+        private static bool _sparse_decode = false;
+        private static string _outputformat = ".png";//bulk process
+        private static bool _copymeta = false;//for loaded container
+        private static bool _keepformat = false;
+        private static bool _copyotherfilemeta = false;//for other files and directories
+        private static int _smallstandard = 1;//ignore image capacity
+        private static string _encalg = "AES";
+        private static bool _ignoreextracterror = false;
 
-        public static string mode = "Normal";
+        public static string Mode
+        {
+            get { return _mode; }
+            set { _mode = value; }
+        }
+        public static bool Enableencrypt
+        {
+            get { return _enableencrypt; }
+            set { _enableencrypt = value; }
+        }
+        public static bool Disablencrypt
+        {
+            get { return _disablencrypt; }
+            set { _disablencrypt = value; }
+        }
+        public static string Algor
+        {
+            get { return _Algor; }
+            set { _Algor = value; }
+        }
+        public static int Iteration
+        {
+            get { return _iteration; }
+            set { _iteration = value; }
+        }
+        public static bool CustIter
+        {
+            get { return _CustIter; }
+            set { _CustIter = value; }
+        }
+        public static string Hash
+        {
+            get { return _Hash; }
+            set { _Hash = value; }
+        }
+        public static bool CustHash
+        {
+            get { return _CustHash; }
+            set { _CustHash = value; }
+        }
+        public static byte[] Separator
+        {
+            get { return _separator; }
+        }
+        public static string Defaultname
+        {
+            get { return _defaultname; }
+            set { _defaultname = value; }
+        }
+        public static bool Sparse_decode
+        {
+            get { return _sparse_decode; }
+            set { _sparse_decode = value; }
+        }
+        public static string Outputformat
+        {
+            get { return _outputformat; }
+            set { _outputformat = value; }
+        }
+        public static bool Copymeta
+        {
+            get { return _copymeta; }
+            set { _copymeta = value; }
+        }
+        public static bool Keepformat
+        {
+            get { return _keepformat; }
+            set { _keepformat = value; }
+        }
+        public static bool Copyotherfilemeta
+        {
+            get { return _copyotherfilemeta; }
+            set { _copyotherfilemeta = value; }
+        }
+        public static int Smallstandard
+        {
+            get { return _smallstandard; }
+            set { _smallstandard = value; }
+        }
+        public static string Encalg
+        {
+            get { return _encalg; }
+            set { _encalg = value; }
+        }
+        public static bool Ignoreextracterror
+        {
+            get { return _ignoreextracterror; }
+            set { _ignoreextracterror = value; }
+        }
 
-        public static bool encode;
-        public static bool decode;
-        public static bool enableencrypt = true;
-        public static bool disablencrypt = false;
-        public static bool isfile;
-        public static bool isstring;
-
-        public static string? route_container ="";
-        public static List<string> route_containers = [];
-        public static string? multipal_route;
-        public static string? password;
-        public static string? route_secret;
-        public static string? output_route;
-        public static string? outputname;
-        public static string? outputnameandroute = "";
-        public static string? Algor = "Linear";
-
-        public static int iteration = 100000;
-        public static bool CustIter = false;
-        public static string Hash = "SHA256";
-        public static bool CustHash = false;
-
-        public static byte[] separator = Encoding.UTF8.GetBytes("|");
-
-        public static string defaultname = "";
-
-        public static bool sparse_decode = false;
-
-        public static string outputformat = ".png";//bulk process
-
-        public static bool copymeta = false;//for loaded container
-        public static bool keepformat = false;
-        public static bool copyotherfilemeta = false;//for other files and directories
-        public static int smallstandard = 1;//ignore image capacity
-        public static string encalg = "AES";
-        public static bool ignoreextracterror = false;
-
-        public static string audioorimage = "image";
-
-        public static string stringinfo = "";
     }
 }

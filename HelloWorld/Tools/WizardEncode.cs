@@ -50,41 +50,6 @@ namespace HideSloth.Tools
         }
 
 
-
-
-        /*
-        public static void GetDirectories(string sourceDir, List<string> directories, int depth)
-        {
-            if (depth == 0)
-            {
-                return;
-            }
-
-            try
-            {
-                // 添加当前目录
-                directories.Add(sourceDir);
-
-                // 获取所有子目录
-                string[] subDirs = Directory.GetDirectories(sourceDir);
-                foreach (string dir in subDirs)
-                {
-                    // 递归调用
-                    GetDirectories(dir, directories, depth - 1);
-                }
-            }
-            catch (UnauthorizedAccessException e)
-            {
-                Console.WriteLine("没有权限访问目录: " + sourceDir);
-                Console.WriteLine(e.Message);
-            }
-            catch (DirectoryNotFoundException e)
-            {
-                Console.WriteLine("目录不存在: " + sourceDir);
-                Console.WriteLine(e.Message);
-            }
-        }
-        */
         public static void CopyDirectoryStructure(string sourceDir, string destinationDir, List<string> createdDirectories, int maxDepth, int currentDepth = 0)
         {
             if (currentDepth > maxDepth)
@@ -124,7 +89,7 @@ namespace HideSloth.Tools
                     {
                         string aa = (output_route + @"\\" + Path.GetDirectoryName(individualroutecontainer));
                         Directory.CreateDirectory(aa);
-                        if (GlobalVariables.copyotherfilemeta)
+                        if (GlobalVariables.Copyotherfilemeta)
                         {
                             DirectoryInfo sourceDirectoryInfo = new DirectoryInfo(Path.GetDirectoryName(individualroutecontainer));
                             DirectoryInfo targetDirectoryInfo = new DirectoryInfo(aa);
@@ -193,11 +158,11 @@ namespace HideSloth.Tools
                             currentpostion += buf;
                         //if (BitConverter.IsLittleEndian)
                         //Array.Reverse(intBytes0); 确保字节顺序正确
-                        //byte[] intBytes = intBytes0.Concat(GlobalVariables.separator).ToArray();
+                        //byte[] intBytes = intBytes0.Concat(GlobalVariables.Separator).ToArray();
 
 
                         byte[] stringBytes = BitConverter.GetBytes(fileSiz);
-                        //byte[] stringBytes = stringBytes0.Concat(GlobalVariables.separator).ToArray();
+                        //byte[] stringBytes = stringBytes0.Concat(GlobalVariables.Separator).ToArray();
 
 
                         byte[] fullbuffer = new byte[intBytes.Length + stringBytes.Length + buffer.Length];
@@ -208,7 +173,7 @@ namespace HideSloth.Tools
                         Buffer.BlockCopy(buffer, 0, fullbuffer, intBytes.Length + stringBytes.Length, buffer.Length);
 
 
-                        if (GlobalVariables.enableencrypt)
+                        if (GlobalVariables.Enableencrypt)
                         {
                                 fullbuffer = Aes_ChaCha_Encryptor.Encrypt(fullbuffer, pwd, out byte[] salt, out byte[] nonce, out byte[] tag);
                                 fullbuffer = BytesStringThings.CombineBytes(salt, nonce, tag, fullbuffer);
@@ -224,22 +189,22 @@ namespace HideSloth.Tools
                                 dirrela = Path.GetDirectoryName(container_list[cycle]) + @"\\";
 
                             }
-                            if (GlobalVariables.keepformat)
+                            if (GlobalVariables.Keepformat)
                             {
                                 onlyname = Path.GetFileName(container_list[cycle]);
                             }
                             else
                             {
-                                onlyname = Path.GetFileNameWithoutExtension(container_list[cycle]) + GlobalVariables.outputformat;
+                                onlyname = Path.GetFileNameWithoutExtension(container_list[cycle]) + GlobalVariables.Outputformat;
 
                             }
 
-                            result.Save((output_route + @"\\" + dirrela + onlyname), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                            result.Save((output_route + @"\\" + dirrela + onlyname), Support_Converter.SaveFormatImage(GlobalVariables.Outputformat));
                             loaded.Dispose();
 
                             result.Dispose();
                             updateStatus?.Invoke($"Saved: {Path.Combine(output_route, container_list[cycle])}" + ",Number: " + (cycle + 1).ToString() + ".");
-                            if (GlobalVariables.copymeta)
+                            if (GlobalVariables.Copymeta)
                             {
                                 File.SetCreationTime((output_route + @"\\" + dirrela + onlyname), File.GetCreationTime(Path.Combine(containers_route, container_list[cycle])));
                                 File.SetLastAccessTime((output_route + @"\\" + dirrela + onlyname), File.GetLastAccessTime(Path.Combine(containers_route, container_list[cycle])));
@@ -259,23 +224,23 @@ namespace HideSloth.Tools
                                 dirrela = Path.GetDirectoryName(container_list[cycle]) + @"\\";
 
                             }
-                            if (GlobalVariables.keepformat)
+                            if (GlobalVariables.Keepformat)
                             {
                                 onlyname = Path.GetFileName(container_list[cycle]);
                             }
                             else
                             {
-                                onlyname = Path.GetFileNameWithoutExtension(container_list[cycle]) + GlobalVariables.outputformat;
+                                onlyname = Path.GetFileNameWithoutExtension(container_list[cycle]) + GlobalVariables.Outputformat;
 
                             }
 
 
-                            result.Save((output_route + @"\\" + dirrela + onlyname), Support_Converter.SaveFormatImage(GlobalVariables.outputformat));
+                            result.Save((output_route + @"\\" + dirrela + onlyname), Support_Converter.SaveFormatImage(GlobalVariables.Outputformat));
 
                             loaded.Dispose();
 
                             result.Dispose();
-                            if (GlobalVariables.copymeta)
+                            if (GlobalVariables.Copymeta)
                             {
                                 File.SetCreationTime((output_route + @"\\" + dirrela + onlyname), File.GetCreationTime(Path.Combine(containers_route, container_list[cycle])));
                                 File.SetLastAccessTime((output_route + @"\\" + dirrela + onlyname), File.GetLastAccessTime(Path.Combine(containers_route, container_list[cycle])));
@@ -331,7 +296,7 @@ namespace HideSloth.Tools
 
                             // 复制文件
                             File.Copy(filePath, destFile, overwrite: true);
-                            if (GlobalVariables.copyotherfilemeta)
+                            if (GlobalVariables.Copyotherfilemeta)
                             {
                                 File.SetCreationTime(Path.GetFullPath(destFile), File.GetCreationTime(filePath));
                                 File.SetLastAccessTime(Path.GetFullPath(destFile), File.GetLastAccessTime(filePath));
@@ -367,7 +332,7 @@ namespace HideSloth.Tools
 
                             // 复制文件
                             File.Copy(filePath, Path.GetFullPath(fileoutputroute), overwrite: false);
-                            if (GlobalVariables.copyotherfilemeta)
+                            if (GlobalVariables.Copyotherfilemeta)
                             {
                                 File.SetCreationTime(Path.GetFullPath(fileoutputroute), File.GetCreationTime(filePath));
                                 File.SetLastAccessTime(Path.GetFullPath(fileoutputroute), File.GetLastAccessTime(filePath));
@@ -394,13 +359,9 @@ namespace HideSloth.Tools
                         }
                         string fileoutputroute = output_route + relativeroute;
 
-                        // 构造目标文件的完整路径
-                        //string destFile = Path.Combine(output_route, fileName);
-                        // updateStatus?.Invoke(fileName+"    "+destFile);
-
                         // 复制文件
                         File.Copy(filePath, Path.GetFullPath(fileoutputroute), overwrite: false);
-                        if (GlobalVariables.copyotherfilemeta)
+                        if (GlobalVariables.Copyotherfilemeta)
                         {
                             File.SetCreationTime(Path.GetFullPath(fileoutputroute), File.GetCreationTime(filePath));
                             File.SetLastAccessTime(Path.GetFullPath(fileoutputroute), File.GetLastAccessTime(filePath));
@@ -493,47 +454,12 @@ namespace HideSloth.Tools
         {
             List<ImageInfo> list = new List<ImageInfo>();
             smallimages = [];
-            if (Form_EncodeWizard.searchdeep)
-            {
-                foreach (string fileName in Allfile)
-                {
-                    if (IsImageFile(fileName))
-                    {
-                        using (Image img = Image.FromFile(fileName))
-                        {
-                            string dimensions = "";
-                            if (GlobalVariables.Algor == "Linear")
-                            {
-                                dimensions = Math.Round(img.Width * img.Height / 1024 * 0.97).ToString() + " KB";
-
-                            }
-                            if (GlobalVariables.Algor == "LSB")
-                            {
-                                dimensions = Math.Round(img.Width * img.Height * 3 / 8 * 0.89 / 1024 / 1.34).ToString() + " KB";
-                                //MessageBox.Show("No code!!!!");
-
-                            }
-                            if (Int32.Parse(dimensions.Substring(0, dimensions.Length - 3)) <= GlobalVariables.smallstandard)
-                            {
-                                smallimages.Add(RemoveFirstFolderFromPath(GetRelativePath(folderPath, fileName)));
-                            }
-                            else
-                            {
-                                list.Add(new ImageInfo
-                                {
-                                    FileName = RemoveFirstFolderFromPath(GetRelativePath(folderPath, fileName)),
-                                    Dimensions = dimensions
-                                });
-                            }
-                        }
-                    }
-                }
-
-            }
-            else
+            if (!Form_EncodeWizard.searchdeep)
             {
                 string[] fileEntries = Directory.GetFiles(folderPath).OrderBy(path => Path.GetFileName(path)).ToArray();
-                foreach (string fileName in fileEntries)
+                Allfile = new List<string>(fileEntries);
+            }
+            foreach (string fileName in Allfile)
                 {
                     if (IsImageFile(fileName))
                     {
@@ -551,8 +477,7 @@ namespace HideSloth.Tools
                                 //MessageBox.Show("No code!!!!");
 
                             }
-
-                            if (Int32.Parse(dimensions.Substring(0, dimensions.Length - 3)) <= 1)
+                            if (Int32.Parse(dimensions.Substring(0, dimensions.Length - 3)) <= GlobalVariables.Smallstandard)
                             {
                                 smallimages.Add(RemoveFirstFolderFromPath(GetRelativePath(folderPath, fileName)));
                             }
@@ -567,7 +492,8 @@ namespace HideSloth.Tools
                         }
                     }
                 }
-            }
+
+            
             return list;
         }
         public static bool IsImageFile(string fileName)

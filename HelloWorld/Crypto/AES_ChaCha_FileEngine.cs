@@ -20,7 +20,7 @@ namespace HideSloth.Crypto
 
         public static void EncryptFile(string inputFilePath, string outputFilePath, string password)
         {
-            int Iterations = GlobalVariables.iteration;
+            int Iterations = GlobalVariables.Iteration;
             string HashAlg = GlobalVariables.Hash;
 
             // 生成 salt
@@ -31,11 +31,11 @@ namespace HideSloth.Crypto
             byte[] key = keyDerivationFunction.GetBytes(KeySize);
             AesGcm? Enc_Obj = null; // 使用可空类型，因为 AesGcm 是一个引用类型
             ChaCha20Poly1305? Enc_obj2 = null;
-            if (GlobalVariables.encalg == "AES")
+            if (GlobalVariables.Encalg == "AES")
             {
                 Enc_Obj = new AesGcm(key, TagSize);
             }
-            else if (GlobalVariables.encalg == "ChaCha")
+            else if (GlobalVariables.Encalg == "ChaCha")
             {
                 Enc_obj2 = new ChaCha20Poly1305(key);
             }
@@ -55,11 +55,11 @@ namespace HideSloth.Crypto
                 byte[] tag = new byte[TagSize];
 
                 // 加密数据块
-                if (GlobalVariables.encalg == "AES")
+                if (GlobalVariables.Encalg == "AES")
                 {
                     Enc_Obj.Encrypt(nonce, buffer.AsSpan(0, bytesRead), encryptedData, tag);
                 }
-                else if (GlobalVariables.encalg == "ChaCha")
+                else if (GlobalVariables.Encalg == "ChaCha")
                 {
                     Enc_obj2.Encrypt(nonce, buffer.AsSpan(0, bytesRead), encryptedData, tag);
 
@@ -72,7 +72,7 @@ namespace HideSloth.Crypto
         }
         public static void DecryptFile(string inputFilePath, string outputFilePath, string password)
         {
-            int Iterations = GlobalVariables.iteration;
+            int Iterations = GlobalVariables.Iteration;
             string HashAlg = GlobalVariables.Hash;
 
             using var inputFileStream = new FileStream(inputFilePath, FileMode.Open);
@@ -88,11 +88,11 @@ namespace HideSloth.Crypto
 
             AesGcm? Dec_Obj = null; // 使用可空类型，因为 AesGcm 是一个引用类型
             ChaCha20Poly1305? Dec_obj2 = null;
-            if (GlobalVariables.encalg == "AES")
+            if (GlobalVariables.Encalg == "AES")
             {
                 Dec_Obj = new AesGcm(key, TagSize);
             }
-            else if (GlobalVariables.encalg == "ChaCha")
+            else if (GlobalVariables.Encalg == "ChaCha")
             {
                 Dec_obj2 = new ChaCha20Poly1305(key);
             }
@@ -118,11 +118,11 @@ namespace HideSloth.Crypto
                 byte[] decryptedData = new byte[encryptedDataSize];
 
                 // 解密数据块
-                if (GlobalVariables.encalg == "AES")
+                if (GlobalVariables.Encalg == "AES")
                 {
                     Dec_Obj.Decrypt(nonce, encryptedData, tag, decryptedData);
                 }
-                else if (GlobalVariables.encalg == "ChaCha")
+                else if (GlobalVariables.Encalg == "ChaCha")
                 {
                     Dec_obj2.Decrypt(nonce, encryptedData, tag, decryptedData);
                 }
