@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Reflection.Emit;
+using static HideSloth.GlobalVariables;
 
 namespace HideSloth
 {
@@ -53,7 +54,7 @@ namespace HideSloth
                 {
                     try
                     {
-                        if (ismult)//if it is mulitpla embed, choose output route first
+                        if (ismult)//if it is mulitpla Encode, choose output route first
                         {
                             var argss = new RouteOutputRequestEventArgs();
                             RequestRouteSave?.Invoke(this, argss);
@@ -88,16 +89,10 @@ namespace HideSloth
                             {
                                 Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(single_container);
                                 Bitmap? result = null;
-                                OnProgressChanged(new ProgressEventArgs(0, "Start to embed"));
+                                OnProgressChanged(new ProgressEventArgs(0, "Start to Encode"));
 
-                                if (GlobalVariables.Algor == "LSB")
-                                {
-                                    result = LSB_Image.embed(Convert.ToBase64String(secretData), loaded);
-                                }
-                                else if (GlobalVariables.Algor == "Linear")
-                                {
-                                    result = Core_Linear_Image.EncodeFileLinear(loaded, secretData);
-                                }
+                                var stegoAlg = AlgorithmImageFactory.CreateAlgorithm(GlobalVariables.Algor);
+                                result = stegoAlg.Encode(loaded, secretData);
 
                                 if (ismult == false)//single file process request name now
                                 {
@@ -132,7 +127,7 @@ namespace HideSloth
                                     RequestFileSave?.Invoke(this, args);
                                     currentName = args.WaitForPath();
 
-                                    OnProgressChanged(new ProgressEventArgs(0, "Start to embed"));
+                                    OnProgressChanged(new ProgressEventArgs(0, "Start to Encode"));
 
                                     Audio_LSB.Encode_Audio(single_container, currentName, secretData);
 
@@ -169,14 +164,8 @@ namespace HideSloth
                         {
                             Bitmap unloading = new Bitmap(Containers[0]);
 
-                            if (GlobalVariables.Algor == "LSB")
-                            {
-                                extracted_result = Convert.FromBase64String(LSB_Image.extract(unloading));
-                            }
-                            else if (GlobalVariables.Algor == "Linear")
-                            {
-                                extracted_result = Core_Linear_Image.DecodeFileFromImage(unloading);
-                            }
+                            var stegoAlg = AlgorithmImageFactory.CreateAlgorithm(GlobalVariables.Algor);
+                            extracted_result = stegoAlg.Decode(unloading);
                             unloading.Dispose();
 
                         }

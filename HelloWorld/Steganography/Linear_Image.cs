@@ -4,10 +4,11 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static HideSloth.GlobalVariables;
 
 namespace HideSloth.Steganography
 {
-    public static class Core_Linear_Image
+    public class Linear_Image : ImageAlgorithm
     {
         public static int DecodePixel(Color pixel)
         {
@@ -39,7 +40,7 @@ namespace HideSloth.Steganography
             return Color.FromArgb(red, green, blue);
         }
 
-        public static byte[] DecodeFileFromImage(Bitmap img)
+        public byte[] Decode(Bitmap img)
         {
             // 锁定位图的整个区域
             Rectangle rect = new Rectangle(0, 0, img.Width, img.Height);
@@ -121,7 +122,7 @@ namespace HideSloth.Steganography
             int value = blueValue | greenValue << 3 | redValue << 6;
             return value;
         }
-        public static Bitmap EncodeFileLinear(Bitmap img, byte[] file)
+        public Bitmap Encode(Bitmap img, byte[] data)
         {
             // 锁定位图的整个区域
             Rectangle rect = new Rectangle(0, 0, img.Width, img.Height);
@@ -140,9 +141,9 @@ namespace HideSloth.Steganography
             int c = 0;
             int maxLinear = img.Width * img.Height;
 
-            if (file.Length < maxLinear)
+            if (data.Length < maxLinear)
             {
-                string binaryString = Convert.ToString(file.Length, 2).PadLeft(32, '0'); // 转换为二进制字符串，左侧填充零以达到 32 位
+                string binaryString = Convert.ToString(data.Length, 2).PadLeft(32, '0'); // 转换为二进制字符串，左侧填充零以达到 32 位
 
                 char[] binaryCharArray = binaryString.ToCharArray(); // 将二进制字符串转换为字符数组
 
@@ -161,11 +162,11 @@ namespace HideSloth.Steganography
                 EncodePixelToArray(rgbValues, point1, value1, img.Width, bmpData.Stride);
                 c++;
                 */
-                // Write file
-                for (int i = 0; i < file.Length; i++)
+                // Write data
+                for (int i = 0; i < data.Length; i++)
                 {
                     Point point = LinearIndexToPoint(c, img.Width, img.Height);
-                    EncodePixelToArray(rgbValues, point, file[i], img.Width, bmpData.Stride);
+                    EncodePixelToArray(rgbValues, point, data[i], img.Width, bmpData.Stride);
                     c++;
                 }
             }

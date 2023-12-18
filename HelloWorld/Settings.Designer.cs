@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             groupBox5 = new GroupBox();
-            Radio_Linear_PB = new RadioButton();
-            Radio_LSB_PB = new RadioButton();
+            label4 = new Label();
+            combo_imgalg = new ComboBox();
             button1 = new Button();
             button2 = new Button();
             groupBox1 = new GroupBox();
@@ -65,8 +65,8 @@
             // 
             // groupBox5
             // 
-            groupBox5.Controls.Add(Radio_Linear_PB);
-            groupBox5.Controls.Add(Radio_LSB_PB);
+            groupBox5.Controls.Add(label4);
+            groupBox5.Controls.Add(combo_imgalg);
             groupBox5.Location = new Point(12, 171);
             groupBox5.Name = "groupBox5";
             groupBox5.Size = new Size(274, 83);
@@ -74,28 +74,23 @@
             groupBox5.TabStop = false;
             groupBox5.Text = "Algorithm";
             // 
-            // Radio_Linear_PB
+            // label4
             // 
-            Radio_Linear_PB.AutoSize = true;
-            Radio_Linear_PB.Checked = true;
-            Radio_Linear_PB.Location = new Point(26, 49);
-            Radio_Linear_PB.Name = "Radio_Linear_PB";
-            Radio_Linear_PB.Size = new Size(218, 21);
-            Radio_Linear_PB.TabIndex = 1;
-            Radio_Linear_PB.TabStop = true;
-            Radio_Linear_PB.Text = "PNG/BMP - Linear (For large file)";
-            Radio_Linear_PB.UseVisualStyleBackColor = true;
+            label4.AutoSize = true;
+            label4.Location = new Point(26, 25);
+            label4.Name = "label4";
+            label4.Size = new Size(45, 17);
+            label4.TabIndex = 1;
+            label4.Text = "Image";
             // 
-            // Radio_LSB_PB
+            // combo_imgalg
             // 
-            Radio_LSB_PB.AutoSize = true;
-            Radio_LSB_PB.Location = new Point(26, 22);
-            Radio_LSB_PB.Name = "Radio_LSB_PB";
-            Radio_LSB_PB.Size = new Size(184, 21);
-            Radio_LSB_PB.TabIndex = 0;
-            Radio_LSB_PB.Text = "PNG/BMP - Traditional LSB";
-            Radio_LSB_PB.UseVisualStyleBackColor = true;
-            Radio_LSB_PB.CheckedChanged += Radio_LSB_PB_CheckedChanged;
+            combo_imgalg.DropDownStyle = ComboBoxStyle.DropDownList;
+            combo_imgalg.FormattingEnabled = true;
+            combo_imgalg.Location = new Point(79, 22);
+            combo_imgalg.Name = "combo_imgalg";
+            combo_imgalg.Size = new Size(173, 25);
+            combo_imgalg.TabIndex = 0;
             // 
             // button1
             // 
@@ -390,8 +385,6 @@
         #endregion
 
         private GroupBox groupBox5;
-        private RadioButton Radio_Linear_PB;
-        private RadioButton Radio_LSB_PB;
         private Button button1;
         private Button button2;
         private GroupBox groupBox1;
@@ -416,5 +409,7 @@
         private Label label2;
         private ComboBox combo_encalg;
         private CheckBox check_errorignore;
+        private Label label4;
+        private ComboBox combo_imgalg;
     }
 }

@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static HideSloth.GlobalVariables;
 
 
 namespace HideSloth.Tools
@@ -120,8 +121,6 @@ namespace HideSloth.Tools
                 long currentpostion = 0;
                 while (true)
                 {
-
-                    // 读取指定数量的字节
                     try
                     {
                         token.ThrowIfCancellationRequested();
@@ -179,9 +178,8 @@ namespace HideSloth.Tools
                                 fullbuffer = BytesStringThings.CombineBytes(salt, nonce, tag, fullbuffer);
                          }
                         Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(Path.Combine(containers_route, container_list[cycle]));
-                        if (GlobalVariables.Algor == "LSB")
-                        {
-                            Bitmap result = LSB_Image.embed(Convert.ToBase64String(fullbuffer), loaded);
+                            var stegoAlg = AlgorithmImageFactory.CreateAlgorithm(GlobalVariables.Algor);
+                            Bitmap result = stegoAlg.Encode(loaded, fullbuffer);
                             string dirrela = "";
                             string onlyname = "";
                             if (Path.GetDirectoryName(container_list[cycle]) != "")
@@ -212,44 +210,7 @@ namespace HideSloth.Tools
 
                             }
 
-                        }
-                        else if (GlobalVariables.Algor == "Linear")
-                        {
-                            Bitmap result = Core_Linear_Image.EncodeFileLinear(loaded, fullbuffer);
-
-                            string dirrela = "";
-                            string onlyname = "";
-                            if (Path.GetDirectoryName(container_list[cycle]) != "")
-                            {
-                                dirrela = Path.GetDirectoryName(container_list[cycle]) + @"\\";
-
-                            }
-                            if (GlobalVariables.Keepformat)
-                            {
-                                onlyname = Path.GetFileName(container_list[cycle]);
-                            }
-                            else
-                            {
-                                onlyname = Path.GetFileNameWithoutExtension(container_list[cycle]) + GlobalVariables.Outputformat;
-
-                            }
-
-
-                            result.Save((output_route + @"\\" + dirrela + onlyname), Support_Converter.SaveFormatImage(GlobalVariables.Outputformat));
-
-                            loaded.Dispose();
-
-                            result.Dispose();
-                            if (GlobalVariables.Copymeta)
-                            {
-                                File.SetCreationTime((output_route + @"\\" + dirrela + onlyname), File.GetCreationTime(Path.Combine(containers_route, container_list[cycle])));
-                                File.SetLastAccessTime((output_route + @"\\" + dirrela + onlyname), File.GetLastAccessTime(Path.Combine(containers_route, container_list[cycle])));
-                                File.SetLastWriteTime((output_route + @"\\" + dirrela + onlyname), File.GetLastWriteTime(Path.Combine(containers_route, container_list[cycle])));
-
-                            }
-                            updateStatus?.Invoke($"Saved: {Path.Combine(output_route, container_list[cycle])}" + ",Number: " + (cycle + 1).ToString() + ".");
-                        }
-
+                        
                         }
                         
                         catch (Exception ex)

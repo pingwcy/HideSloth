@@ -402,7 +402,7 @@ namespace HideSloth.Tools
             {
                 if (Radio_normalw.Checked && Radio_onetomany.Checked && ifok)
                 {
-                    richTextBox1.AppendText("Completed task to split and embed one large secret file: \n" + largonesecret + "\nTo containers: \n" + containers + "\nAnd output to:\n" + routeofoutput);
+                    richTextBox1.AppendText("Completed task to split and Encode one large secret file: \n" + largonesecret + "\nTo containers: \n" + containers + "\nAnd output to:\n" + routeofoutput);
                     SwitchTab(7);
                 }
             }

@@ -36,6 +36,7 @@ namespace HideSloth
         public Settings()
         {
             InitializeComponent();
+            combo_imgalg.DataSource = GlobalVariables.listofsupportimagealg;
             if (GlobalVariables.Mode == "Normal")
             {
                 Radio_Normal.Checked = true;
@@ -45,13 +46,12 @@ namespace HideSloth
                 Radio_Encryptor.Checked = true;
             }
 
-            if (GlobalVariables.Algor == "LSB")
+            foreach (string i in GlobalVariables.listofsupportimagealg)
             {
-                Radio_LSB_PB.Checked = true;
-            }
-            if (GlobalVariables.Algor == "Linear")
-            {
-                Radio_Linear_PB.Checked = true;
+                if (GlobalVariables.Algor == i)
+                {
+                    combo_imgalg.SelectedItem = i;
+                }
             }
 
             if (GlobalVariables.Enableencrypt == true)
@@ -111,15 +111,7 @@ namespace HideSloth
 
             }
 
-            if (Radio_LSB_PB.Checked)
-            {
-                GlobalVariables.Algor = "LSB";
-            }
-            if (Radio_Linear_PB.Checked)
-            {
-                GlobalVariables.Algor = "Linear";
-            }
-
+            GlobalVariables.Algor = combo_imgalg.SelectedItem.ToString();
 
             if (Radio_enableenc.Checked)
             {
@@ -200,16 +192,14 @@ namespace HideSloth
 
         private void Radio_Encryptor_CheckedChanged(object sender, EventArgs e)
         {
-            Radio_Linear_PB.Enabled = false;
-            Radio_LSB_PB.Enabled = false;
+            combo_imgalg.Enabled = false;
             Radio_disableenc.Enabled = false;
             Radio_enableenc.Checked = true;
         }
 
         private void Radio_Normal_CheckedChanged(object sender, EventArgs e)
         {
-            Radio_Linear_PB.Enabled = true;
-            Radio_LSB_PB.Enabled = true;
+            combo_imgalg.Enabled = true;
             Radio_disableenc.Enabled = true;
 
         }

@@ -8,6 +8,7 @@ using HideSloth.Steganography;
 using System.Diagnostics;
 using HideSloth.Crypto;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using static HideSloth.GlobalVariables;
 
 namespace HideSloth.Tools
 {
@@ -167,8 +168,9 @@ namespace HideSloth.Tools
                     {
                         var data = new byte[size];
                         rng.GetBytes(data);
+                        var stegoAlg = AlgorithmImageFactory.CreateAlgorithm(GlobalVariables.Algor);
                         Stopwatch stopwatch1 = Stopwatch.StartNew();
-                        LSB_Image.embed(Convert.ToBase64String(data), virtualBitmap);
+                        stegoAlg.Encode(virtualBitmap, data);
                         stopwatch1.Stop();
                         time1.Add(stopwatch1.Elapsed.TotalSeconds);
 
@@ -185,8 +187,9 @@ namespace HideSloth.Tools
                     {
                         var data = new byte[size];
                         rng.GetBytes(data);
+                        var stegoAlg = AlgorithmImageFactory.CreateAlgorithm(GlobalVariables.Algor);
                         Stopwatch stopwatch2 = Stopwatch.StartNew();
-                        Core_Linear_Image.EncodeFileLinear(virtualBitmap, data);
+                        stegoAlg.Encode(virtualBitmap, data);
                         stopwatch2.Stop();
                         time2.Add(stopwatch2.Elapsed.TotalSeconds);
 

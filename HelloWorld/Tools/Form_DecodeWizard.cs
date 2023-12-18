@@ -218,7 +218,7 @@ namespace HideSloth.Tools
                 }
                 else if (tabControl1.SelectedIndex == 5 && ifok == true)
                 {
-                    richTextBox2.AppendText("Completed task extract one large secret file from: \n" + loadedcontainers + "\nTo New Route: \n" + outputname);
+                    richTextBox2.AppendText("Completed task Decode one large secret file from: \n" + loadedcontainers + "\nTo New Route: \n" + outputname);
 
                     button_next.Text = "Finnish";
                     SwitchTab(6);

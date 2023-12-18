@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using System.IO;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Security.Cryptography.Xml;
+using static HideSloth.GlobalVariables;
 
 namespace HideSloth.Steganography
 {
-    class LSB_Image
+    class LSB_Image : ImageAlgorithm
     {
         public enum State
         {
@@ -17,8 +18,9 @@ namespace HideSloth.Steganography
             Filling_With_Zeros
         };
 
-        public static Bitmap embed(string text, Bitmap bmp)
+        public Bitmap Encode( Bitmap bmp, byte[] data1)
         {
+            string data = Convert.ToBase64String(data1);
             // initially, we'll be hiding characters in the image
             State state = State.Hiding;
 
@@ -68,20 +70,20 @@ namespace HideSloth.Steganography
                                     bmp.SetPixel(j, i, Color.FromArgb(R, G, B));
                                 }
 
-                                // return the bitmap with the text hidden in
+                                // return the bitmap with the data hidden in
                                 return bmp;
                             }
 
                             // check if all characters has been hidden
-                            if (charIndex >= text.Length)
+                            if (charIndex >= data.Length)
                             {
-                                // start adding zeros to mark the end of the text
+                                // start adding zeros to mark the end of the data
                                 state = State.Filling_With_Zeros;
                             }
                             else
                             {
                                 // move to the next character and process again
-                                charValue = text[charIndex++];
+                                charValue = data[charIndex++];
                             }
                         }
 
@@ -143,12 +145,12 @@ namespace HideSloth.Steganography
             return bmp;
         }
 
-        public static string extract(Bitmap bmp)
+        public byte[] Decode(Bitmap bmp)
         {
             int colorUnitIndex = 0;
             int charValue = 0;
 
-            // holds the text that will be extracted from the image
+            // holds the data that will be extracted from the image
             StringBuilder extractedTextBuilder = new StringBuilder();
 
             // pass through the rows
@@ -189,7 +191,7 @@ namespace HideSloth.Steganography
                         colorUnitIndex++;
 
                         // if 8 bits has been added,
-                        // then add the current character to the result text
+                        // then add the current character to the result data
                         if (colorUnitIndex % 8 == 0)
                         {
                             // reverse? of course, since each time the process occurs
@@ -199,23 +201,23 @@ namespace HideSloth.Steganography
                             // can only be 0 if it is the stop character (the 8 zeros)
                             if (charValue == 0)
                             {
-                                return extractedTextBuilder.ToString();
+                                return Convert.FromBase64String(extractedTextBuilder.ToString());
 
                             }
 
                             // convert the character value from int to char
                             char c = (char)charValue;
 
-                            // add the current character to the result text
+                            // add the current character to the result data
                             extractedTextBuilder.Append(c);
 
                         }
                     }
                 }
             }
-            string extractedText = extractedTextBuilder.ToString();
+            byte[] extractedContent = Convert.FromBase64String(extractedTextBuilder.ToString());
 
-            return extractedText;
+            return extractedContent;
         }
 
         public static int reverseBits(int n)

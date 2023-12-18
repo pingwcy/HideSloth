@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HideSloth.Steganography;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -27,7 +28,35 @@ namespace HideSloth
         private static int _smallstandard = 1;//ignore image capacity
         private static string _encalg = "AES";
         private static bool _ignoreextracterror = false;
+        private static List<string> _listofsupportimagealg = new List<string> { "LSB", "Linear" };
 
+        public interface ImageAlgorithm
+        {
+            Bitmap Encode(Bitmap img, byte[] data);
+            byte[] Decode(Bitmap img);
+            // 其他方法定义...
+        }
+        public static class AlgorithmImageFactory
+        {
+            public static ImageAlgorithm CreateAlgorithm(string name)
+            {
+                switch (name)
+                {
+                    case "Linear":
+                        return new Linear_Image();
+                    case "LSB":
+                        return new LSB_Image();
+                    // 可以添加更多算法
+                    default:
+                        throw new ArgumentException("Invalid algorithm name");
+                }
+            }
+        }
+
+        public static List<string> listofsupportimagealg
+        {
+            get { return _listofsupportimagealg; }
+        }
         public static string Mode
         {
             get { return _mode; }

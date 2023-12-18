@@ -154,8 +154,8 @@ namespace HideSloth
             else if (e.Progress == 3)//Transform Output string
             {
                 Input_PlainText.Text = e.Message;
-                BoldToLog(DateTime.Now.ToString() + "--- " + "Success to extract string\n", false);
-                ShowMessageOnUIThread("Success to extract string! ", "Success");
+                BoldToLog(DateTime.Now.ToString() + "--- " + "Success to Decode string\n", false);
+                ShowMessageOnUIThread("Success to Decode string! ", "Success");
             }
         }
 
