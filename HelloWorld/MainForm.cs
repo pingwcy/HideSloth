@@ -265,14 +265,14 @@ namespace HideSloth
         {
             InitializeComponent();
 
-            //UpdateUIControlEvent += MainForm_UpdateUIControlEvent;
             logic = new Logic();
-            logic.ProgressChanged += Logic_ProgressChanged;
-            logic.RequestFileSave += Logic_RequestFileSave;
-            logic.RequestRouteSave += Logic_RequestRouteSave;
-            logic.RequestExtractedSave += Logic_RequestExtractedSave;
             _eventAggregator = eventAggregator;
-            _eventAggregator.Subscribe<SettingUpdateUIEventArgs>(Settings_UpdateGUIMainform);
+            _eventAggregator.Subscribe<SettingUpdateUIEventArgs>(Settings_UpdateGUIMainform);//gui update
+            _eventAggregator.Subscribe<ProgressEventArgs>(Logic_ProgressChanged);//log console updatte
+            _eventAggregator.Subscribe<RouteOutputRequestEventArgs>(Logic_RequestRouteSave);
+            _eventAggregator.Subscribe<FileSaveRequestEventArgs>(Logic_RequestFileSave);
+            _eventAggregator.Subscribe<SaveExtractedFileEventArgs>(Logic_RequestExtractedSave);
+
             //form2.SettingUpdateUI += Settings_UpdateGUIMainform;
             /*
             CultureInfo currentUICulture = CultureInfo.CurrentUICulture;
@@ -380,7 +380,6 @@ namespace HideSloth
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                //openFileDialog.Filter = "文本文件 (*.txt)|*.txt|所有文件 (*.*)|*.*";
                 openFileDialog.Title = "Choose a container";
                 openFileDialog.Multiselect = true;
 
@@ -402,7 +401,6 @@ namespace HideSloth
                     {
                         Containers.Clear();
                         string selecte_containerroute = openFileDialog.FileName;
-                        //GlobalVariables.route_container = selecte_containerroute;
                         Containers.Add(selecte_containerroute);
                         Label_RouteofContainer.Text = selecte_containerroute;
                         richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Container's Name and Route Selected: " + selecte_containerroute + "\n");
@@ -522,7 +520,6 @@ namespace HideSloth
             {
                form2 = new Settings(SimpleEventAggregator.Instance); // 直接使用类级别的成员变量，不需要重新声明
                form2.FormClosed += (s, args) => this.form2 = null; // 当Form2关闭时，将类级别的引用设置为null
-               //form2.SettingUpdateUI += Settings_UpdateGUIMainform;
                form2.Show();
                 richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Loaded Advanced Settings Form\n");
 
@@ -560,14 +557,12 @@ namespace HideSloth
         private void bulkEmbeddingWizardToolStripMenuItem_Click(object sender, EventArgs e)
         {
             WizardEncode = new Form_EncodeWizard();
-            //WizardEncode.SettingUpdateUI3 += Settings_UpdateGUIMainform;
             WizardEncode.Show();
         }
 
         private void batchExtractionWizardToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            WizardDecode = new Form_DecodeWizard(SimpleEventAggregator.Instance);
-            //WizardDecode.SettingUpdateUI2 += Settings_UpdateGUIMainform;
+            WizardDecode = new Form_DecodeWizard();
             WizardDecode.Show();
         }
 

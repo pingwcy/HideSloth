@@ -15,6 +15,7 @@ namespace HideSloth
     public interface IEventAggregator
     {
         void Subscribe<TEvent>(Action<TEvent> action);
+        void Subscribe<TEvent>(EventHandler<TEvent> eventHandler) where TEvent : EventArgs;
         void Publish<TEvent>(TEvent eventToPublish);
     }
     public class SimpleEventAggregator : IEventAggregator
@@ -22,28 +23,43 @@ namespace HideSloth
         private static readonly SimpleEventAggregator _instance = new SimpleEventAggregator();
         private readonly Dictionary<Type, List<Delegate>> _subscribers = new();
 
-        // 私有构造函数，确保外部无法实例化
         private SimpleEventAggregator() { }
 
-        // 提供一个公共静态方法访问实例
         public static SimpleEventAggregator Instance => _instance;
 
         public void Subscribe<TEvent>(Action<TEvent> action)
         {
-            if (!_subscribers.ContainsKey(typeof(TEvent)))
-            {
-                _subscribers[typeof(TEvent)] = new List<Delegate>();
-            }
-            _subscribers[typeof(TEvent)].Add(action);
+            SubscribeInternal(action);
         }
 
+        public void Subscribe<TEvent>(EventHandler<TEvent> eventHandler) where TEvent : EventArgs
+        {
+            SubscribeInternal(eventHandler);
+        }
+
+        private void SubscribeInternal(Delegate del)
+        {
+            Type eventType = del.GetType().GetGenericArguments()[0];
+            if (!_subscribers.ContainsKey(eventType))
+            {
+                _subscribers[eventType] = new List<Delegate>();
+            }
+            _subscribers[eventType].Add(del);
+        }
         public void Publish<TEvent>(TEvent eventToPublish)
         {
             if (_subscribers.ContainsKey(typeof(TEvent)))
             {
-                foreach (var action in _subscribers[typeof(TEvent)])
+                foreach (var subscriber in _subscribers[typeof(TEvent)])
                 {
-                    ((Action<TEvent>)action)(eventToPublish);
+                    if (subscriber is Action<TEvent> action)
+                    {
+                        action(eventToPublish);
+                    }
+                    else if (subscriber is EventHandler<TEvent> eventHandler)
+                    {
+                        eventHandler(this, eventToPublish);
+                    }
                 }
             }
         }

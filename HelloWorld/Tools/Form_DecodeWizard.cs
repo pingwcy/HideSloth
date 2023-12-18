@@ -43,7 +43,7 @@ namespace HideSloth.Tools
             }
         }
 
-        public Form_DecodeWizard(IEventAggregator eventAggregator)
+        public Form_DecodeWizard()
         {
 
             InitializeComponent();
@@ -284,8 +284,6 @@ namespace HideSloth.Tools
                 }
 
             }
-
-
 
 
         }

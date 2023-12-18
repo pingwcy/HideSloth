@@ -29,13 +29,15 @@ namespace HideSloth
 
     public class Logic
     {
-        public event EventHandler<ProgressEventArgs>? ProgressChanged;
-        public event EventHandler<FileSaveRequestEventArgs>? RequestFileSave;
-        public event EventHandler<RouteOutputRequestEventArgs>? RequestRouteSave;
-        public event EventHandler<SaveExtractedFileEventArgs>? RequestExtractedSave;
+        private readonly IEventAggregator ProgressChanged = SimpleEventAggregator.Instance;
+        //public event EventHandler<ProgressEventArgs>? ProgressChanged;
+
+        //public event EventHandler<FileSaveRequestEventArgs>? RequestFileSave;
+        //public event EventHandler<RouteOutputRequestEventArgs>? RequestRouteSave;
+        //public event EventHandler<SaveExtractedFileEventArgs>? RequestExtractedSave;
         protected virtual void OnProgressChanged(ProgressEventArgs e)
         {
-            ProgressChanged?.Invoke(this, e);
+            ProgressChanged.Publish(e);
         }
         public async Task CallMethodAsync(bool ismult, string selecte_secret, bool audiochecked,string password,string stringinfo, List<string> Containers, bool encode, bool decode, bool isfile, bool isstring)
         {
@@ -57,7 +59,7 @@ namespace HideSloth
                         if (ismult)//if it is mulitpla Encode, choose output route first
                         {
                             var argss = new RouteOutputRequestEventArgs();
-                            RequestRouteSave?.Invoke(this, argss);
+                            ProgressChanged.Publish(argss);
                             multipalPath = argss.WaitForPath();
                         }
                         byte[] secretData = new byte[0];
@@ -97,7 +99,7 @@ namespace HideSloth
                                 if (ismult == false)//single file process request name now
                                 {
                                     var args = new FileSaveRequestEventArgs();
-                                    RequestFileSave?.Invoke(this, args);
+                                    ProgressChanged.Publish(args);
                                     currentName = args.WaitForPath();
 
                                     result?.Save(currentName, Support_Converter.SaveFormatImage(GlobalVariables.Outputformat));
@@ -124,7 +126,7 @@ namespace HideSloth
                                 if (ismult == false)
                                 {
                                     var args = new FileSaveRequestEventArgs();
-                                    RequestFileSave?.Invoke(this, args);
+                                    ProgressChanged.Publish(args);
                                     currentName = args.WaitForPath();
 
                                     OnProgressChanged(new ProgressEventArgs(0, "Start to Encode"));
@@ -185,7 +187,7 @@ namespace HideSloth
                             int nameserperatorindex = BytesStringThings.FindSeparatorIndex(extracted_result, GlobalVariables.Separator);
                             GlobalVariables.Defaultname = BytesStringThings.ExtractFileName(extracted_result, nameserperatorindex);
                             var args = new SaveExtractedFileEventArgs();
-                            RequestExtractedSave?.Invoke(this, args);
+                            ProgressChanged.Publish(args);
                             var filePath = args.WaitForPath();
                             extracted_result = BytesStringThings.ExtractFileContent(extracted_result, nameserperatorindex);
                             if (filePath != null)
@@ -217,7 +219,7 @@ namespace HideSloth
                 {
                     GlobalVariables.Defaultname = "";
                     var args = new SaveExtractedFileEventArgs();
-                    RequestExtractedSave?.Invoke(this, args);
+                    ProgressChanged.Publish(args);
                     var filePath = args.WaitForPath();
                     try
                     {
@@ -237,7 +239,7 @@ namespace HideSloth
                 {
                     GlobalVariables.Defaultname = "";
                     var args = new SaveExtractedFileEventArgs();
-                    RequestExtractedSave?.Invoke(this, args);
+                    ProgressChanged.Publish(args);
                     var filePath = args.WaitForPath();
                     try
                     {
