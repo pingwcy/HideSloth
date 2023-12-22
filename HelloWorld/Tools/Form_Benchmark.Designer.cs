@@ -169,7 +169,6 @@
             // 
             Combo_Alg.DropDownStyle = ComboBoxStyle.DropDownList;
             Combo_Alg.FormattingEnabled = true;
-            Combo_Alg.Items.AddRange(new object[] { "PNG/BMP: LSB", "PNG/BMP: Linear", "PNG/BMP: ALL" });
             Combo_Alg.Location = new Point(169, 28);
             Combo_Alg.Name = "Combo_Alg";
             Combo_Alg.Size = new Size(144, 25);

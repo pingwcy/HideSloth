@@ -75,9 +75,7 @@ namespace HideSloth.Tools
                         time2.Add(stopwatch2.Elapsed.TotalSeconds);
 
                     }
-#pragma warning disable CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
                     //testdata = null;
-#pragma warning restore CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
                     data = null;
                     GC.Collect();
                 }
@@ -108,9 +106,7 @@ namespace HideSloth.Tools
                         time4.Add(stopwatch4.Elapsed.TotalSeconds);
 
                     }
-#pragma warning disable CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
                     //testdata = null;
-#pragma warning restore CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。
                     data = null;
                     GC.Collect();
                 }
@@ -139,14 +135,15 @@ namespace HideSloth.Tools
 
 
 
-        public static List<List<double>> AlgBench(string alg, int size, int count)
+        public static Dictionary<string, List<double>> AlgBench(string alg, int size, int count)
         {
             List<double> time1 = new List<double>();
             List<double> time2 = new List<double>();
-            List<List<double>> time = new List<List<double>>();
+            //List<List<double>> time = new List<List<double>>();
+            Dictionary<string, List<double>> time = new Dictionary<string, List<double>>();
 
             double figuresize = 0;
-            if (alg == "PNG/BMP: LSB" || alg == "PNG/BMP: ALL")
+            if (alg == "PNG/BMP: LSB" || alg == "ALL")
             {
                 figuresize = size * 1.34 * 1.1 * 8 / 3;
 
@@ -160,7 +157,7 @@ namespace HideSloth.Tools
             Bitmap virtualBitmap = new Bitmap(lengthwith, lengthwith);
 
             //Start the test
-            if (alg == "PNG/BMP: LSB" || alg == "PNG/BMP: ALL")
+            if (alg == "PNG/BMP: LSB" || alg == "ALL")
             {
                 using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
                 {
@@ -168,7 +165,7 @@ namespace HideSloth.Tools
                     {
                         var data = new byte[size];
                         rng.GetBytes(data);
-                        var stegoAlg = AlgorithmImageFactory.CreateAlgorithm(GlobalVariables.Algor);
+                        var stegoAlg = AlgorithmImageFactory.CreateAlgorithm("PNG/BMP: LSB");
                         Stopwatch stopwatch1 = Stopwatch.StartNew();
                         stegoAlg.Encode(virtualBitmap, data);
                         stopwatch1.Stop();
@@ -176,10 +173,10 @@ namespace HideSloth.Tools
 
                     }
                 }
-
+                time.Add("PNG/BMP: LSB", time1);
 
             }
-            if (alg == "PNG/BMP: Linear" || alg == "PNG/BMP: ALL")
+            if (alg == "PNG/BMP: Linear" || alg == "ALL")
             {
                 using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
                 {
@@ -187,7 +184,7 @@ namespace HideSloth.Tools
                     {
                         var data = new byte[size];
                         rng.GetBytes(data);
-                        var stegoAlg = AlgorithmImageFactory.CreateAlgorithm(GlobalVariables.Algor);
+                        var stegoAlg = AlgorithmImageFactory.CreateAlgorithm("PNG/BMP: Linear");
                         Stopwatch stopwatch2 = Stopwatch.StartNew();
                         stegoAlg.Encode(virtualBitmap, data);
                         stopwatch2.Stop();
@@ -195,23 +192,11 @@ namespace HideSloth.Tools
 
                     }
                 }
+                time.Add("PNG/BMP: Linear", time2);
 
             }
 
-            virtualBitmap.Dispose();
-            if (alg == "PNG/BMP: ALL")
-            {
-                time.Add(time1);
-                time.Add(time2);
-            }
-            else if (alg == "PNG/BMP: LSB")
-            {
-                time.Add(time1);
-            }
-            else if (alg == "PNG/BMP: Linear")
-            {
-                time.Add(time2);
-            }
+            
             return time;
         }
     }

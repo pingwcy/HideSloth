@@ -1,6 +1,7 @@
 ﻿using HideSloth.Steganography;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -13,7 +14,7 @@ namespace HideSloth
         private static string _mode = "Normal";
         private static bool _enableencrypt = true;
         private static bool _disablencrypt = false;
-        private static string? _Algor = "Linear";
+        private static string? _Algor = "PNG/BMP: Linear";
         private static int _iteration = 100000;
         private static bool _CustIter = false;
         private static string _Hash = "SHA256";
@@ -28,7 +29,7 @@ namespace HideSloth
         private static int _smallstandard = 1;//ignore image capacity
         private static string _encalg = "AES";
         private static bool _ignoreextracterror = false;
-        private static List<string> _listofsupportimagealg = new List<string> { "LSB", "Linear" };
+        private static List<string> _listofsupportimagealg = new List<string> { "PNG/BMP: LSB", "PNG/BMP: Linear" };
 
         public interface ImageAlgorithm
         {
@@ -42,9 +43,9 @@ namespace HideSloth
             {
                 switch (name)
                 {
-                    case "Linear":
+                    case "PNG/BMP: Linear":
                         return new Linear_Image();
-                    case "LSB":
+                    case "PNG/BMP: LSB":
                         return new LSB_Image();
                     // 可以添加更多算法
                     default:
@@ -53,9 +54,9 @@ namespace HideSloth
             }
         }
 
-        public static List<string> listofsupportimagealg
+        public static ReadOnlyCollection<string> listofsupportimagealg
         {
-            get { return _listofsupportimagealg; }
+            get { return _listofsupportimagealg.AsReadOnly(); }
         }
         public static string Mode
         {

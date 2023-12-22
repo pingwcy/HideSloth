@@ -16,23 +16,25 @@ namespace HideSloth
 {
     public partial class Form_Benchmark : Form
     {
-        public void UpdateUI(Action updateAction)
+        private ListViewItem CreateListViewItem(string algName, List<double> resultList)
         {
-            if (InvokeRequired)
-            {
-                // 如果当前不在 UI 线程，则通过 Invoke 在 UI 线程上执行操作
-                Invoke(updateAction);
-            }
-            else
-            {
-                // 如果已经在 UI 线程，则直接执行操作
-                updateAction();
-            }
+            ListViewItem item = new ListViewItem(algName);
+            item.SubItems.Add(resultList.Average().ToString() + " s");
+            item.SubItems.Add(resultList.Max().ToString() + " s");
+            item.SubItems.Add(resultList.Min().ToString() + " s");
+            return item;
         }
 
         public Form_Benchmark()
         {
             InitializeComponent();
+            foreach (string i in GlobalVariables.listofsupportimagealg)
+            {
+                Combo_Alg.Items.Add(i);
+            }
+            //Combo_Alg.Items.Add("ALL");
+
+            //Combo_Alg.DataSource = Combo_Alg_List;
             Combo_Alg.SelectedItem = "PNG/BMP: Linear";
             Combo_buff.SelectedItem = "100KB";
             Combo_Cycle.SelectedItem = "1";
@@ -67,7 +69,7 @@ namespace HideSloth
             // 添加数据项和子项
             int size, count;
             string Alg = Combo_Alg.SelectedItem.ToString();
-            List<List<double>> time = new List<List<double>>();
+
 
             count = Int32.Parse(Combo_Cycle.SelectedItem.ToString());
 
@@ -99,52 +101,27 @@ namespace HideSloth
                     throw new ArgumentException("Invalid Input");
             }
 
-            time = await Task.Run(() => Benchmark.AlgBench(Alg, size, count));
+            Dictionary<string, List<double>> time = await Task.Run(() => Benchmark.AlgBench(Alg, size, count));
             //MessageBox.Show(Alg);
-            List<double> resultlist = new List<double>();
-            if (Alg == "PNG/BMP: LSB")
+            List<double> resultList = new List<double>();
+
+            foreach (string alg in GlobalVariables.listofsupportimagealg)
             {
-                resultlist = time[0];
-                ListViewItem item1 = new ListViewItem("LSB");
-                item1.SubItems.Add(resultlist.Average().ToString() + " s");
-                item1.SubItems.Add(resultlist.Max().ToString() + " s");
-                item1.SubItems.Add(resultlist.Min().ToString() + " s");
-
-                listBox1.Items.Add(item1);
-
+                if (Alg == alg)
+                {
+                    resultList = time[alg];
+                    ListViewItem item = CreateListViewItem(alg, resultList);
+                    listBox1.Items.Add(item);
+                }
+                /*
+                if (alg == Alg || Alg == "ALL")
+                {
+                    resultList = time[1];
+                    ListViewItem item = CreateListViewItem("PNG/BMP: Linear", resultList);
+                    listBox1.Items.Add(item);
+                }*/
             }
-            if (Alg == "PNG/BMP: Linear")
-            {
-                resultlist = time[0];
-                ListViewItem item2 = new ListViewItem("Linear");
-                item2.SubItems.Add(resultlist.Average().ToString() + " s");
-                item2.SubItems.Add(resultlist.Max().ToString() + " s");
-                item2.SubItems.Add(resultlist.Min().ToString() + " s");
 
-                listBox1.Items.Add(item2);
-
-            }
-            if (Alg == "PNG/BMP: ALL")
-            {
-                resultlist = time[0];
-                ListViewItem item1 = new ListViewItem("LSB");
-                item1.SubItems.Add(resultlist.Average().ToString() + " s");
-                item1.SubItems.Add(resultlist.Max().ToString() + " s");
-                item1.SubItems.Add(resultlist.Min().ToString() + " s");
-
-                listBox1.Items.Add(item1);
-
-
-                resultlist = time[1];
-                ListViewItem item2 = new ListViewItem("Linear");
-                item2.SubItems.Add(resultlist.Average().ToString() + " s");
-                item2.SubItems.Add(resultlist.Max().ToString() + " s");
-                item2.SubItems.Add(resultlist.Min().ToString() + " s");
-
-                listBox1.Items.Add(item2);
-
-
-            }
             // 确保列能够填充 ListView 控件的宽度
             listBox1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
             listBox1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);

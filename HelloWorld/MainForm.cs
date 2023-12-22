@@ -269,9 +269,9 @@ namespace HideSloth
             _eventAggregator = eventAggregator;
             _eventAggregator.Subscribe<SettingUpdateUIEventArgs>(Settings_UpdateGUIMainform);//gui update
             _eventAggregator.Subscribe<ProgressEventArgs>(Logic_ProgressChanged);//log console updatte
-            _eventAggregator.Subscribe<RouteOutputRequestEventArgs>(Logic_RequestRouteSave);
-            _eventAggregator.Subscribe<FileSaveRequestEventArgs>(Logic_RequestFileSave);
-            _eventAggregator.Subscribe<SaveExtractedFileEventArgs>(Logic_RequestExtractedSave);
+            _eventAggregator.Subscribe<RouteOutputRequestEventArgs>(Logic_RequestRouteSave);//Route
+            _eventAggregator.Subscribe<FileSaveRequestEventArgs>(Logic_RequestFileSave);//Loaded Container
+            _eventAggregator.Subscribe<SaveExtractedFileEventArgs>(Logic_RequestExtractedSave);//Out file
 
             //form2.SettingUpdateUI += Settings_UpdateGUIMainform;
             /*
