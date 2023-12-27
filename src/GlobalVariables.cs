@@ -14,10 +14,10 @@ namespace HideSloth
         private static string _mode = "Normal";
         private static bool _enableencrypt = true;
         private static bool _disablencrypt = false;
-        private static string? _Algor = "PNG/BMP: Linear";
+        private static string _Algor = "PNG/BMP: Linear";
         private static int _iteration = 100000;
         private static bool _CustIter = false;
-        private static string _Hash = "SHA256";
+        private static string? _Hash = "SHA256";
         private static bool _CustHash = false;
         private static readonly byte[] _separator = Encoding.UTF8.GetBytes("|");
         private static string _defaultname = "";
@@ -30,6 +30,7 @@ namespace HideSloth
         private static string _encalg = "AES";
         private static bool _ignoreextracterror = false;
         private static List<string> _listofsupportimagealg = new List<string> { "PNG/BMP: LSB", "PNG/BMP: Linear" };
+
 
         public interface ImageAlgorithm
         {
@@ -90,7 +91,7 @@ namespace HideSloth
         }
         public static string Hash
         {
-            get { return _Hash; }
+            get { return _Hash ?? ""; }
             set { _Hash = value; }
         }
         public static bool CustHash

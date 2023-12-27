@@ -5,40 +5,40 @@ namespace HideSloth.Tools
     public partial class Form_EncodeWizard : Form
     {
 
-        private Settings form2;
+        private Settings? form2;
         private bool ifok = false;
         private bool checkedcapacity = false;
         private int containercount = 0;
-        private string routesecretfiles, routeofoutput, pwd, largonesecret, containers;
-        double fileSizeInBytes, capacity;
-        private List<string> fileNamesList;
+        private string? routesecretfiles="", routeofoutput="", pwd="", largonesecret="", containers="";
+        double capacity;
+        private List<string> fileNamesList= new List<string>() {""};
         List<int> AssgCapacityList = new List<int>();
         CancellationTokenSource cts = new CancellationTokenSource();
         public static bool copynonimage = false;
         public static bool keepstrcuture = false;
         public static bool searchdeep = false;
-        public List<string> otherfile;
-        public List<string> wholestrcuture;
+        public List<string>? otherfile;
+        public List<string>? wholestrcuture;
         public int maxfloder;
         public List<string> ALLfilePaths = new List<string>();
-        public List<string> smallimage;
+        public List<string>? smallimage;
         private double CalculateTotalSizeFromList(List<ImageInfo> imageList)
         {
             double totalSize = 0;
             foreach (var image in imageList)
             {
                 containercount++;
-                totalSize += Convert.ToInt32(image.Dimensions.Remove(image.Dimensions.Length - 3));
+                totalSize += Convert.ToInt32(image?.Dimensions?.Remove(image.Dimensions.Length - 3));
             }
             return totalSize;
         }
-
+        /*
         private List<string> GetFileNamesFromImageList(List<ImageInfo> imageList)
         {
             List<string> fileNames = imageList.Select(image => image.FileName).ToList();
             return fileNames;
         }
-
+        */
         private void InitializeListView()
         {
             list_capacity.View = View.Details;
@@ -76,8 +76,6 @@ namespace HideSloth.Tools
 
         public Form_EncodeWizard()
         {
-            //form1 = mainForm; // 接收并存储对主窗体的引用
-
             InitializeComponent();
             InitializeListView();
             if (GlobalVariables.Mode == "Normal")
@@ -89,11 +87,12 @@ namespace HideSloth.Tools
                 Radio_Encryptorw.Checked = true;
             }
             button_pre.Enabled = false;
-            this.tabControl1.Selecting += new TabControlCancelEventHandler(this.tabControl1_Selecting);
+            this.tabControl1.Selecting += new TabControlCancelEventHandler(tabControl1_Selecting);
 
         }
-        private void tabControl1_Selecting(object sender, TabControlCancelEventArgs e)
+        private void tabControl1_Selecting(object? sender, TabControlCancelEventArgs e)
         {
+            _ = sender;
             e.Cancel = true;
         }
         private void SwitchTab(int tabIndex)
@@ -168,6 +167,7 @@ namespace HideSloth.Tools
                 if (Radio_Encryptorw.Checked)
                 {
                     SwitchTab(4);
+                    if (pwd == null || routesecretfiles == null || routeofoutput == null) { return; }
                     ifok = await Task.Run(() =>
                     {
                         // 假设Encryptor方法接受一个回调函数
@@ -246,7 +246,7 @@ namespace HideSloth.Tools
                         }
                         var list = await Task.Run(() => CheckCapacity(containers, ALLfilePaths, out smallimage));
                         otherfile = await Task.Run(() => WizardEncode.otherfiles(containers, ALLfilePaths));
-                        fileNamesList = list.Select(image => image.FileName).ToList();
+                        fileNamesList = list.Select(image => image.FileName??"").ToList();
 
                         foreach (var image in list)
                         {
@@ -270,14 +270,14 @@ namespace HideSloth.Tools
 
 
 
-                        FileInfo fileInfo = new FileInfo(largonesecret);
+                        FileInfo fileInfo = new FileInfo(largonesecret??"");
                         long fileSizeInBytes = fileInfo.Length;
                         long sum = fileSizeInBytes + 44 * containercount;
 
 
                         foreach (var image in list)
                         {
-                            double individualSize = Convert.ToDouble(image.Dimensions.Remove(image.Dimensions.Length - 3));
+                            double individualSize = Convert.ToDouble(image?.Dimensions?.Remove(image.Dimensions.Length - 3));
                             int calculatedValue = (int)Math.Ceiling(individualSize / (capacity) * fileSizeInBytes);
                             AssgCapacityList.Add(calculatedValue);
                         }
@@ -369,6 +369,8 @@ namespace HideSloth.Tools
                     {
                         ifok = await Task.Run(() =>
                         {
+                            if (pwd == null || containers == null || largonesecret == null|| routeofoutput==null|| fileNamesList==null|| otherfile==null|| smallimage==null) { return false; }
+
                             // 假设Encryptor方法接受一个回调函数
                             return WizardEncode.StegoLarge(pwd, AssgCapacityList, containers, largonesecret, routeofoutput, fileNamesList, otherfile, ALLfilePaths,smallimage,
                                 (message) => AppendTextToRichTextBox(message), cts.Token);
@@ -525,7 +527,7 @@ namespace HideSloth.Tools
 
         }
 
-        private void form2_Closed(object sender, EventArgs e)
+        private void form2_Closed(object? sender, EventArgs e)
         {
             if (GlobalVariables.Mode == "Normal")
             {

@@ -21,7 +21,6 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
-
   <ItemGroup>
     <None Remove="Properties\Idle.png" />
     <None Remove="Properties\Resource\Idle.png" />
@@ -30,6 +29,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
     <None Remove="Resources\about.jpg" />
     <None Remove="Resources\file.bmp" />
     <None Remove="Resources\file.png" />
+    <None Remove="Resources\logo.ico" />
     <None Remove="Resources\wizard.jpg" />
     <None Remove="Resources\wizard2.jpg" />
   </ItemGroup>
@@ -38,6 +38,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
     <EmbeddedResource Include="Resources\about.jpg" />
     <EmbeddedResource Include="Resources\file.png" />
     <EmbeddedResource Include="Resources\Idle.png" />
+    <EmbeddedResource Include="Resources\logo.ico" />
     <EmbeddedResource Include="Resources\Running.png" />
     <EmbeddedResource Include="Resources\file.bmp" />
     <EmbeddedResource Include="Resources\wizard.jpg" />

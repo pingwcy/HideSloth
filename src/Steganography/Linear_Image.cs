@@ -78,19 +78,12 @@ namespace HideSloth.Steganography
                     break; // 如果已读取32个字符，跳出循环
                 }
 
-                // 调试输出每个解码值
-                //Console.WriteLine($"Decoded char at {c}: '{currentChar}' (DecodedValue: {decodedValue})");
-                /*
-                if (currentChar == '#')
-                    break;
-                */
                 fileLengthStr += currentChar;
                 c++;
             } while (c < maxLinear); // 确保循环不超过图像像素总数
             string binaryString = new string(binaryCharArray); // 将字符数组转换为字符串
             int fileLength = Convert.ToInt32(binaryString, 2); // 将二进制字符串转换为整数
 
-            //int fileLength = Convert.ToInt32(fileLengthStr) ;
             byte[] fileData = new byte[fileLength];
 
             // 读取并解码文件数据
@@ -156,12 +149,6 @@ namespace HideSloth.Steganography
                     EncodePixelToArray(rgbValues, point, value, img.Width, bmpData.Stride);
                     c++;
                 }
-                /*
-                Point point1 = LinearIndexToPoint(c, img.Width, img.Height);
-                int value1 = Convert.ToInt32('#');
-                EncodePixelToArray(rgbValues, point1, value1, img.Width, bmpData.Stride);
-                c++;
-                */
                 // Write data
                 for (int i = 0; i < data.Length; i++)
                 {
@@ -191,7 +178,7 @@ namespace HideSloth.Steganography
             rgbValues[index + 2] = (byte)(rgbValues[index + 2] & 0xFC | redValue);
         }
 
-
+        /*
 
         public static Bitmap EncodeMsgLinearImage(string text, Bitmap img)
         {
@@ -231,19 +218,15 @@ namespace HideSloth.Steganography
                 if (value != 255)
                     text += Convert.ToChar(value);
             } while (value != 255);
-#pragma warning disable CS0168 // 声明了变量，但从未使用过
             try
             {
                 return text;
             }
             catch (Exception e)
             {
-#pragma warning disable CS8603 // 可能返回 null 引用。
                 return null;
-#pragma warning restore CS8603 // 可能返回 null 引用。
             }
-#pragma warning restore CS0168 // 声明了变量，但从未使用过
         }
-
+        */
     }
 }

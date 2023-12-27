@@ -17,10 +17,10 @@ namespace HideSloth.Tools
 
     public partial class Form_DecodeWizard : Form
     {
-        private Settings form2;
+        private Settings? form2;
         CancellationTokenSource cts = new CancellationTokenSource();
         public static bool issub = false;
-        private string loadedcontainers, outputroute, outputname, pwd;
+        private string? loadedcontainers, outputroute, outputname, pwd;
         private bool ifok = false;
         public static int searchdepth = 1;
         public void AppendTextToRichTextBox(string text)
@@ -59,7 +59,7 @@ namespace HideSloth.Tools
             this.tabControl1.Selecting += new TabControlCancelEventHandler(this.tabControl1_Selecting);
 
         }
-        private void tabControl1_Selecting(object sender, TabControlCancelEventArgs e)
+        private void tabControl1_Selecting(object? sender, TabControlCancelEventArgs e)
         {
             e.Cancel = true;
         }
@@ -195,12 +195,15 @@ namespace HideSloth.Tools
                     button4.Enabled = false;
                     try
                     {
-                        ifok = await Task.Run(() =>
+                        if (loadedcontainers != null && outputname != null)
                         {
-                            // 假设Encryptor方法接受一个回调函数
-                            return WizardDecode.StegoExtractLarge(pwd, loadedcontainers, outputname, searchdepth,
-                                (message) => AppendTextToRichTextBox(message),cts.Token);
-                        });
+                            ifok = await Task.Run(() =>
+                            {
+                                // 假设Encryptor方法接受一个回调函数
+                                return WizardDecode.StegoExtractLarge(pwd, loadedcontainers, outputname, searchdepth,
+                                    (message) => AppendTextToRichTextBox(message), cts.Token);
+                            });
+                        }
                         progressBar1.Style = ProgressBarStyle.Blocks;
                         button_next.Enabled = true;
                     }
@@ -260,12 +263,15 @@ namespace HideSloth.Tools
                     SwitchTab(5);
                     try
                     {
-                        ifok = await Task.Run(() =>
+                        if (loadedcontainers != null && outputroute != null)
                         {
-                            // 假设Encryptor方法接受一个回调函数
-                            return WizardDecode.Decryptor(pwd, loadedcontainers, outputroute,
-                                (message) => AppendTextToRichTextBox(message), cts.Token);
-                        });
+                            ifok = await Task.Run(() =>
+                            {
+                                // 假设Encryptor方法接受一个回调函数
+                                return WizardDecode.Decryptor(pwd, loadedcontainers, outputroute,
+                                    (message) => AppendTextToRichTextBox(message), cts.Token);
+                            });
+                        }
                         progressBar1.Style = ProgressBarStyle.Blocks;
                         button_next.Enabled = true;
 
@@ -397,7 +403,7 @@ namespace HideSloth.Tools
             form2.Show();
 
         }
-        private void form2_Closed(object sender, EventArgs e)
+        private void form2_Closed(object? sender, EventArgs e)
         {
             if (GlobalVariables.Mode=="Normal")
             {

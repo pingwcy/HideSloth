@@ -108,7 +108,7 @@ namespace HideSloth
                 GlobalVariables.Mode = "Encryptor";
             }
 
-            GlobalVariables.Algor = combo_imgalg.SelectedItem.ToString();
+            GlobalVariables.Algor = combo_imgalg?.SelectedItem?.ToString() ?? "";
 
             if (Radio_enableenc.Checked)
             {
@@ -120,18 +120,18 @@ namespace HideSloth
                 GlobalVariables.Disablencrypt = true;
                 GlobalVariables.Enableencrypt = false;
             }
-            GlobalVariables.Outputformat = combo_entension.SelectedItem.ToString();
+            GlobalVariables.Outputformat = combo_entension?.SelectedItem?.ToString() ?? "";
             GlobalVariables.Iteration = Int32.Parse(Text_PBKDF2Iter.Text);
-            GlobalVariables.Hash = (string)ComboBox_Hash.SelectedItem;
+            GlobalVariables.Hash = (string?)ComboBox_Hash?.SelectedItem ??"";
             GlobalVariables.Copymeta = check_meta.Checked;
             GlobalVariables.Copyotherfilemeta = check_copymetaother.Checked;
             GlobalVariables.Keepformat = check_keepformat.Checked;
             GlobalVariables.Smallstandard = (int)numericUpDown1.Value;
-            if (combo_encalg.SelectedItem.ToString() == "ChaCha20-Poly1305")
+            if (combo_encalg?.SelectedItem?.ToString() == "ChaCha20-Poly1305")
             {
                 GlobalVariables.Encalg = "ChaCha";
             }
-            else if (combo_encalg.SelectedItem.ToString() == "AES256-GCM")
+            else if (combo_encalg?.SelectedItem?.ToString() == "AES256-GCM")
             {
                 GlobalVariables.Encalg = "AES";
             }

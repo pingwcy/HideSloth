@@ -28,7 +28,7 @@ namespace HideSloth
                 if (args[i].StartsWith("-"))
                 {
                     string key = args[i];
-                    string value = null;
+                    string? value = null;
 
                     // 检查是否存在值，并且值不是以 "-" 开头的另一个参数
                     if (i + 1 < args.Length && !args[i + 1].StartsWith("-"))
@@ -37,7 +37,7 @@ namespace HideSloth
                         i++; // 跳过值
                     }
 
-                    parameters[key] = value;
+                    parameters[key] = value??"";
                 }
             }
             parameters.TryGetValue("-p", out string? pwd);

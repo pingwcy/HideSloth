@@ -55,11 +55,11 @@ namespace HideSloth.Crypto
                 byte[] tag = new byte[TagSize];
 
                 // 加密数据块
-                if (GlobalVariables.Encalg == "AES")
+                if (GlobalVariables.Encalg == "AES" && Enc_Obj != null)
                 {
                     Enc_Obj.Encrypt(nonce, buffer.AsSpan(0, bytesRead), encryptedData, tag);
                 }
-                else if (GlobalVariables.Encalg == "ChaCha")
+                else if (GlobalVariables.Encalg == "ChaCha" && Enc_obj2 != null)
                 {
                     Enc_obj2.Encrypt(nonce, buffer.AsSpan(0, bytesRead), encryptedData, tag);
 
@@ -118,11 +118,11 @@ namespace HideSloth.Crypto
                 byte[] decryptedData = new byte[encryptedDataSize];
 
                 // 解密数据块
-                if (GlobalVariables.Encalg == "AES")
+                if (GlobalVariables.Encalg == "AES" && Dec_Obj != null)
                 {
                     Dec_Obj.Decrypt(nonce, encryptedData, tag, decryptedData);
                 }
-                else if (GlobalVariables.Encalg == "ChaCha")
+                else if (GlobalVariables.Encalg == "ChaCha" && Dec_obj2 != null)
                 {
                     Dec_obj2.Decrypt(nonce, encryptedData, tag, decryptedData);
                 }

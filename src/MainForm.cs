@@ -23,10 +23,10 @@ namespace HideSloth
     public partial class MainForm : Form
     {
         private List<string> Containers = new List<string>();
-        private Settings form2;
-        private Form_Benchmark formBenchmark;
-        private Form_EncodeWizard WizardEncode;
-        private Form_DecodeWizard WizardDecode;
+        private Settings? form2;
+        private Form_Benchmark? formBenchmark;
+        private Form_EncodeWizard? WizardEncode;
+        private Form_DecodeWizard? WizardDecode;
         private readonly Logic logic;
         string selecte_secret = "";
         private readonly IEventAggregator _eventAggregator;
@@ -121,7 +121,7 @@ namespace HideSloth
             helpToolStripMenuItem.Text = Properties.Resources.HelpMenu;
             // 更新其他 UI 元素...
         }
-        private void Logic_ProgressChanged(object sender, ProgressEventArgs e)
+        private void Logic_ProgressChanged(object? sender, ProgressEventArgs e)
         {
             if (InvokeRequired)
             {
@@ -155,7 +155,7 @@ namespace HideSloth
         }
 
 
-        private void Logic_RequestFileSave(object sender, FileSaveRequestEventArgs e)
+        private void Logic_RequestFileSave(object? sender, FileSaveRequestEventArgs e)
         {
             if (InvokeRequired)
             {
@@ -176,7 +176,7 @@ namespace HideSloth
             }
         }
 
-        private void Logic_RequestRouteSave(object sender, RouteOutputRequestEventArgs e)
+        private void Logic_RequestRouteSave(object? sender, RouteOutputRequestEventArgs e)
         {
             if (InvokeRequired)
             {
@@ -197,7 +197,7 @@ namespace HideSloth
             }
         }
 
-        private void Logic_RequestExtractedSave(object sender, SaveExtractedFileEventArgs e)
+        private void Logic_RequestExtractedSave(object? sender, SaveExtractedFileEventArgs e)
         {
             if (InvokeRequired)
             {

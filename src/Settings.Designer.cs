@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Settings));
             groupBox5 = new GroupBox();
             label4 = new Label();
             combo_imgalg = new ComboBox();
@@ -365,6 +366,7 @@
             Controls.Add(button2);
             Controls.Add(button1);
             Controls.Add(groupBox5);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Settings";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Advanced Settings";

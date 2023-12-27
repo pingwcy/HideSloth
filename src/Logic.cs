@@ -14,17 +14,10 @@ using static HideSloth.GlobalVariables;
 
 namespace HideSloth
 {
-    public class ProgressEventArgs : EventArgs
+    public class ProgressEventArgs(int progress, string message) : EventArgs
     {
-        public int Progress { get; set; }
-        public string Message { get; set; }
-
-
-        public ProgressEventArgs(int progress, string message)
-        {
-            Progress = progress;
-            Message = message;
-        }
+        public int Progress { get; set; } = progress;
+        public string Message { get; set; } = message;
     }
 
     public class Logic

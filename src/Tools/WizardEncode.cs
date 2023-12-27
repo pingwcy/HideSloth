@@ -15,7 +15,7 @@ namespace HideSloth.Tools
 {
     public class WizardEncode
     {
-        public List<string> otherfileslists;
+        public List<string>? otherfileslists;
 
         public static void GetFilePaths(string directory, List<string> filePaths, int depth)
         {
@@ -92,7 +92,7 @@ namespace HideSloth.Tools
                         Directory.CreateDirectory(aa);
                         if (GlobalVariables.Copyotherfilemeta)
                         {
-                            DirectoryInfo sourceDirectoryInfo = new DirectoryInfo(Path.GetDirectoryName(individualroutecontainer));
+                            DirectoryInfo sourceDirectoryInfo = new DirectoryInfo(Path.GetDirectoryName(individualroutecontainer)??"");
                             DirectoryInfo targetDirectoryInfo = new DirectoryInfo(aa);
 
                             DateTime creationTime = sourceDirectoryInfo.CreationTime;
@@ -206,7 +206,7 @@ namespace HideSloth.Tools
                         
                         }
                         
-                        catch (Exception ex)
+                        catch 
                         {
                             return false;
                         }

@@ -39,9 +39,7 @@ namespace HideSloth
                         return titleAttribute.Title;
                     }
                 }
-#pragma warning disable CS8603 // 可能返回 null 引用。
-                return System.IO.Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
-#pragma warning restore CS8603 // 可能返回 null 引用。
+                return System.IO.Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly()!.Location);
             }
         }
 
@@ -49,9 +47,8 @@ namespace HideSloth
         {
             get
             {
-#pragma warning disable CS8602 // 解引用可能出现空引用。
-                return Assembly.GetExecutingAssembly().GetName().Version.ToString();
-#pragma warning restore CS8602 // 解引用可能出现空引用。
+                return Assembly.GetExecutingAssembly().GetName().Version!.ToString();
+
             }
         }
 

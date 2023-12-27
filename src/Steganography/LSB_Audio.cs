@@ -59,7 +59,7 @@ namespace HideSloth.Steganography
         {
             FileStream fsr = new FileStream(oldpath, FileMode.Open, FileAccess.Read);
             BinaryReader r = new BinaryReader(fsr);
-            FileStream fsw = null;
+            FileStream fsw;
             try
             {
                 fsw = new FileStream(path, FileMode.CreateNew);
@@ -136,7 +136,7 @@ namespace HideSloth.Steganography
                     }
                 }
             }
-            catch (Exception e)
+            catch 
             {
                 throw;
             }

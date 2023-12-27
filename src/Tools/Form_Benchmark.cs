@@ -68,12 +68,12 @@ namespace HideSloth
             progressBar1.Style = ProgressBarStyle.Marquee;
             // 添加数据项和子项
             int size, count;
-            string Alg = Combo_Alg.SelectedItem.ToString();
+            string? Alg = Combo_Alg?.SelectedItem?.ToString();
 
+            count = Int32.Parse(Combo_Cycle?.SelectedItem?.ToString()??"1");
+            if (Alg == null ) { Alg = ""; }
 
-            count = Int32.Parse(Combo_Cycle.SelectedItem.ToString());
-
-            switch (Combo_buff.SelectedItem.ToString())
+            switch (Combo_buff?.SelectedItem?.ToString())
             {
                 case "100KB":
                     size = 100 * 1024;
@@ -138,12 +138,13 @@ namespace HideSloth
             progressBar1.Style = ProgressBarStyle.Marquee;
             // 添加数据项和子项
             int size, count;
-            string Alg = combo_encalg.SelectedItem.ToString();
+            string? Alg = combo_encalg?.SelectedItem?.ToString();
             List<List<double>> time = new List<List<double>>();
 
-            count = Int32.Parse(combo_enccycle.SelectedItem.ToString());
+            count = Int32.Parse(combo_enccycle?.SelectedItem?.ToString()??"1");
+            if (Alg == null) { Alg = ""; }
 
-            switch (combo_encbuff.SelectedItem.ToString())
+            switch (combo_encbuff?.SelectedItem?.ToString())
             {
                 case "100 KB":
                     size = 100 * 1024;
@@ -259,9 +260,9 @@ namespace HideSloth
 
         private void button_kdf_Click(object sender, EventArgs e)
         {
-            if (combo_kdf.SelectedItem.ToString() == "PBKDF2")
+            if (combo_kdf?.SelectedItem?.ToString() == "PBKDF2")
             {
-                List < List<double> > time = Benchmark.KDFBench("PBKDF2", Int32.Parse(combo_iter.Text.ToString()),combo_sha.SelectedItem.ToString());
+                List < List<double> > time = Benchmark.KDFBench("PBKDF2", Int32.Parse(combo_iter.Text.ToString()),combo_sha?.SelectedItem?.ToString()?? "SHA256");
                 List<double>  resultlist = time[0];
                 ListViewItem item1 = new ListViewItem("PBKDF2");
                 item1.SubItems.Add(( resultlist.Average() *1000 ).ToString() + " ms");

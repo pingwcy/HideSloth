@@ -19,7 +19,6 @@ namespace HideSloth
         {
             return false;
         }
-        //public static List<> 
     }
     class Support_Converter
     {
