@@ -29,7 +29,7 @@ namespace HideSloth
 
     public class Logic
     {
-        private readonly IEventAggregator ProgressChanged = SimpleEventAggregator.Instance;
+        private readonly SimpleEventAggregator ProgressChanged = SimpleEventAggregator.Instance;
         //public event EventHandler<ProgressEventArgs>? ProgressChanged;
 
         //public event EventHandler<FileSaveRequestEventArgs>? RequestFileSave;
@@ -199,7 +199,7 @@ namespace HideSloth
                         }
                         if (isstring)
                         {
-                            string extracted_string = System.Text.Encoding.UTF8.GetString(extracted_result);
+                            string extracted_string = extracted_result != null ? System.Text.Encoding.UTF8.GetString(extracted_result) : "null_value";
                             OnProgressChanged(new ProgressEventArgs(3, extracted_string));
 
                         }

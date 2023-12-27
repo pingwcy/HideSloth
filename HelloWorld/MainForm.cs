@@ -55,12 +55,6 @@ namespace HideSloth
             set { check_multi.Visible = value; }
         }
 
-        public bool is_Mult
-        {
-            get { return check_multi.Checked; }
-            set { check_multi.Checked = value; }
-        }
-
 
         public bool ContainerLabel2_Nousage
         {
