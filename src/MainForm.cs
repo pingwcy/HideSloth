@@ -23,13 +23,11 @@ namespace HideSloth
 
     public partial class MainForm : Form
     {
-        private List<string> Containers = new List<string>();
         private Settings? form2;
         private Form_Benchmark? formBenchmark;
         private Form_EncodeWizard? WizardEncode;
         private Form_DecodeWizard? WizardDecode;
         private readonly Logic logic;
-        string selecte_secret = "";
         private readonly IEventAggregator _eventAggregator;
 
         public bool PasswordBOX
@@ -356,13 +354,14 @@ namespace HideSloth
         {
             action.Enabled = false;
             pictureBox1.Image = Resources.Running;
-
+            string selecte_secret = ReadUI(() => Label_RouteofSecret.Text);
             bool encode = ReadUI(() => Radio_Encode.Checked);
             bool decode = ReadUI(() => Radio_Decode.Checked);
             bool isfile = ReadUI(() => Radio_File.Checked);
             bool isstring = ReadUI(() => Radio_String.Checked);
             string password = ReadUI(() => Textbox_Password.Text);
             string stringinfo = ReadUI(() => Input_PlainText.Text);
+            List<string> Containers = ReadUI(() => Label_RouteofContainer.Text.Split("; ").ToList());
             UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Process Started\n"));
             UpdateUI(() => richTextBoxLog.ScrollToCaret());
             await logic.CallMethodAsync(check_multi.Checked, selecte_secret, check_audio.Checked, password, stringinfo, Containers,encode,decode,isfile,isstring);
@@ -380,13 +379,7 @@ namespace HideSloth
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    string[] selectedFiles = openFileDialog.FileNames;
-                    Containers.Clear();
-                    foreach (string i in selectedFiles)
-                    {
-                        Containers.Add(i);
-                    }
-                    Label_RouteofContainer.Text = String.Join("; ", selectedFiles);
+                    Label_RouteofContainer.Text = String.Join("; ", openFileDialog.FileNames.ToList());
                     richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- MulitpalContainer's Name and Route Selected: " + Label_RouteofContainer.Text + "\n");
                 }
             }
@@ -402,9 +395,8 @@ namespace HideSloth
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    selecte_secret = openFileDialog.FileName;
-                    Label_RouteofSecret.Text = selecte_secret;
-                    richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Input Secret File's Name and Route Selected: " + selecte_secret + "\n");
+                    Label_RouteofSecret.Text = openFileDialog.FileName;
+                    richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Input Secret File's Name and Route Selected: " + Label_RouteofSecret.Text + "\n");
                 }
             }
         }
@@ -420,10 +412,10 @@ namespace HideSloth
         private void Button_CheckCapacity_Click(object sender, EventArgs e)
         {
             string outputcapacity = "";
-            string containfile = Label_RouteofContainer.Text;
-            bool containsSlash = containfile.Contains(@"\");
+            bool containsSlash = Label_RouteofContainer.Text.Contains(@"\");
             if (containsSlash == true )
             {
+                List<string> Containers = Label_RouteofContainer.Text.Split("; ").ToList();
                 try
                 {
                     outputcapacity = Logic.CheckCapacity(Containers, Label_RouteofSecret.Text, check_multi.Checked);
