@@ -233,5 +233,9 @@ namespace HideSloth.Steganography
 
             return result;
         }
+        public double CheckSize(Image img)
+        {
+            return Math.Round(img.Width * img.Height * 3 / 8 * 0.89 / 1024 / 1.34); 
+        }
     }
 }

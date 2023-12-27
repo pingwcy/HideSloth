@@ -12,7 +12,7 @@ namespace HideSloth.Tools
         private string? routesecretfiles="", routeofoutput="", pwd="", largonesecret="", containers="";
         double capacity;
         private List<string> fileNamesList= new List<string>() {""};
-        List<int> AssgCapacityList = new List<int>();
+        List<int> AssgCapacityList = [];
         CancellationTokenSource cts = new CancellationTokenSource();
         public static bool copynonimage = false;
         public static bool keepstrcuture = false;

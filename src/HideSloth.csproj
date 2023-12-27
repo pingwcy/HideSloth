@@ -11,15 +11,19 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
     <Copyright>Copyright © 2023 SLOTH. All rights reserved.</Copyright>
     <AssemblyVersion>1.1.0.0</AssemblyVersion>
     <StartupObject></StartupObject>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <WarningLevel>3</WarningLevel>
+    <WarningLevel>9999</WarningLevel>
+    <NoWarn></NoWarn>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <WarningLevel>3</WarningLevel>
+    <WarningLevel>9999</WarningLevel>
+    <NoWarn></NoWarn>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Properties\Idle.png" />

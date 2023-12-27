@@ -277,6 +277,39 @@ namespace HideSloth
             GC.WaitForPendingFinalizers();
             return true;
         }
+        public static string CheckCapacity(List<string> Containers, string secretfile, bool check_multi)
+        {
+            string outputcapacity = "";
+
+            var stegoAlg = AlgorithmImageFactory.CreateAlgorithm(GlobalVariables.Algor);
+            List<double> imagesizes = new List<double>();
+            foreach (string single in Containers)
+            {
+                Image img = Image.FromFile(single);
+                imagesizes.Add(stegoAlg.CheckSize(img));
+                img.Dispose();
+            }
+            if (check_multi && Containers != null)
+            {
+                outputcapacity = "The smallest container's capacity is: " + (imagesizes.Min().ToString()) + " KB;";
+            }
+            else if (check_multi != true && Containers != null)
+            {
+                outputcapacity = "The container's capacity is: " + (imagesizes.Min().ToString()) + " KB;";
+            }
+            imagesizes.Clear();
+
+            bool secretSlah = secretfile.Contains(@"\");
+            if (secretSlah == true)
+            {
+                FileInfo fileInfo = new FileInfo(secretfile);
+
+                // 获取文件大小
+                long fileSizeInBytes = fileInfo.Length;
+                outputcapacity += " The secret file's size is " + fileSizeInBytes / 1024 + " KB.";
+            }
+            return outputcapacity;
+        }
     }
     public class FileSaveRequestEventArgs : EventArgs
     {

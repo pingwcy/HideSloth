@@ -36,6 +36,8 @@ namespace HideSloth
         {
             Bitmap Encode(Bitmap img, byte[] data);
             byte[] Decode(Bitmap img);
+
+            double CheckSize(Image img);
             // 其他方法定义...
         }
         public static class AlgorithmImageFactory

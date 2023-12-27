@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Benchmark));
             tabControl1 = new TabControl();
             Tab_Ste = new TabPage();
             listBox1 = new ListView();
@@ -402,6 +403,7 @@
             ClientSize = new Size(434, 422);
             Controls.Add(progressBar1);
             Controls.Add(tabControl1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Form_Benchmark";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Benchmark";

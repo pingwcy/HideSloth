@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_DecodeWizard));
             pictureBox1 = new PictureBox();
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
@@ -114,10 +115,10 @@
             tabPage1.Controls.Add(groupBox2);
             tabPage1.Controls.Add(groupBox1);
             tabPage1.Controls.Add(label1);
-            tabPage1.Location = new Point(4, 19);
+            tabPage1.Location = new Point(4, 5);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(549, 375);
+            tabPage1.Size = new Size(549, 389);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "tabPage1";
             // 
@@ -209,10 +210,10 @@
             tabPage2.Controls.Add(button1);
             tabPage2.Controls.Add(text_loaded);
             tabPage2.Controls.Add(label2);
-            tabPage2.Location = new Point(4, 19);
+            tabPage2.Location = new Point(4, 5);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(549, 375);
+            tabPage2.Size = new Size(549, 389);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
             // 
@@ -278,10 +279,10 @@
             tabPage3.Controls.Add(button2);
             tabPage3.Controls.Add(text_outroute);
             tabPage3.Controls.Add(label3);
-            tabPage3.Location = new Point(4, 19);
+            tabPage3.Location = new Point(4, 5);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(549, 375);
+            tabPage3.Size = new Size(549, 389);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "tabPage3";
             // 
@@ -510,6 +511,7 @@
             Controls.Add(button4);
             Controls.Add(tabControl1);
             Controls.Add(pictureBox1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Form_DecodeWizard";
             StartPosition = FormStartPosition.CenterParent;
             Text = "DecodeWizard";

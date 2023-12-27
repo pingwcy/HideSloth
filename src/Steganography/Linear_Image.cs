@@ -178,6 +178,11 @@ namespace HideSloth.Steganography
             rgbValues[index + 2] = (byte)(rgbValues[index + 2] & 0xFC | redValue);
         }
 
+
+        public double CheckSize(Image img)
+        {
+            return Math.Round(img.Width * img.Height / 1024 * 0.97);
+        }
         /*
 
         public static Bitmap EncodeMsgLinearImage(string text, Bitmap img)

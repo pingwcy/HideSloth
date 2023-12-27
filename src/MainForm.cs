@@ -16,6 +16,7 @@ using System.Diagnostics;
 using System;
 using System.Linq;
 using System.Globalization;
+using static HideSloth.GlobalVariables;
 
 namespace HideSloth
 {
@@ -379,28 +380,14 @@ namespace HideSloth
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    if (check_multi.Checked)
+                    string[] selectedFiles = openFileDialog.FileNames;
+                    Containers.Clear();
+                    foreach (string i in selectedFiles)
                     {
-                        string[] selectedFiles = openFileDialog.FileNames;
-                        Containers.Clear();
-                        foreach (string i in selectedFiles)
-                        {
-                            Containers.Add(i);
-                        }
-                        Label_RouteofContainer.Text = String.Join("; ", selectedFiles);
-                        richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- MulitpalContainer's Name and Route Selected: " + Label_RouteofContainer.Text + "\n");
-
+                        Containers.Add(i);
                     }
-                    else
-                    {
-                        Containers.Clear();
-                        string selecte_containerroute = openFileDialog.FileName;
-                        Containers.Add(selecte_containerroute);
-                        Label_RouteofContainer.Text = selecte_containerroute;
-                        richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Container's Name and Route Selected: " + selecte_containerroute + "\n");
-
-                    }
-
+                    Label_RouteofContainer.Text = String.Join("; ", selectedFiles);
+                    richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- MulitpalContainer's Name and Route Selected: " + Label_RouteofContainer.Text + "\n");
                 }
             }
 
@@ -439,69 +426,13 @@ namespace HideSloth
             {
                 try
                 {
-                    if (check_multi.Checked && Containers != null)
-                    {
-                        List<double> imagesizes = new List<double>();
-                        foreach (string single in Containers)
-                        {
-                            Image img = Image.FromFile(single);
-                            double singlesize = 0.0;
-                            // 获取分辨率
-                            if (GlobalVariables.Algor == "LSB")
-                            {
-                                singlesize = Math.Round(img.Width * img.Height * 3 / 8 * 0.89 / 1024 / 1.34);
-                                imagesizes.Add(singlesize);
-                            }
-                            else if (GlobalVariables.Algor == "Linear")
-                            {
-                                singlesize = Math.Round(img.Width * img.Height / 1024 * 0.97);
-                                imagesizes.Add(singlesize);
-
-                            }
-
-                            img.Dispose();
-
-                        }
-                        outputcapacity = "The smallest container's capacity is: " + (imagesizes.Min().ToString()) + " KB;";
-                        imagesizes.Clear();
-
-                    }
-                    else if (check_multi.Checked != true)
-                    {
-                        Image image = Image.FromFile(Label_RouteofContainer.Text);
-                        double size = 0.0;
-                        // 获取分辨率
-                        if (GlobalVariables.Algor == "LSB")
-                        {
-                            size = Math.Round(image.Width * image.Height * 3 / 8 * 0.89 / 1024 / 1.34);
-                        }
-                        else if (GlobalVariables.Algor == "Linear")
-                        {
-                            size = Math.Round(image.Width * image.Height / 1024 * 0.97);
-                        }
-
-                        image.Dispose();
-                        outputcapacity = "The container's capacity is: " + (size) + " KB;";
-                    }
+                    outputcapacity = Logic.CheckCapacity(Containers, Label_RouteofSecret.Text, check_multi.Checked);
                 }
                 catch (Exception ex)
                 {
-
                     ShowMessageOnUIThread(ex.Message, "Error");
-
                 }
             }
-            string secretfile = Label_RouteofSecret.Text;
-            bool secretSlah = secretfile.Contains(@"\");
-            if (secretSlah == true)
-            {
-                FileInfo fileInfo = new FileInfo(Label_RouteofSecret.Text);
-
-                // 获取文件大小
-                long fileSizeInBytes = fileInfo.Length;
-                outputcapacity += " The secret file's size is " + fileSizeInBytes / 1024 + " KB.";
-            }
-
             Label_Capacity.Text = outputcapacity;
 
         }

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_EncodeWizard));
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
             label1 = new Label();
@@ -677,6 +678,7 @@
             Controls.Add(button_next);
             Controls.Add(button_pre);
             Controls.Add(tabControl1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Form_EncodeWizard";
             StartPosition = FormStartPosition.CenterParent;
             Text = "EncodeWizard";
