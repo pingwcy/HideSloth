@@ -96,12 +96,12 @@ namespace HideSloth.Tools
         public static bool IsToosmall(Bitmap img)
         {
             string size = "";
-            if (GlobalVariables.Algor == "Linear")
+            if (GlobalVariables.Algor == "PNG/BMP: Linear")
             {
                 size = Math.Round(img.Width * img.Height / 1024 * 0.97).ToString();
 
             }
-            if (GlobalVariables.Algor == "LSB")
+            if (GlobalVariables.Algor == "PNG/BMP: LSB")
             {
                 size = Math.Round(img.Width * img.Height * 3 / 8 * 0.89 / 1024 / 1.34).ToString();
             }
