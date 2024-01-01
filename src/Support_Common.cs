@@ -22,19 +22,21 @@ namespace HideSloth
     }
     class Support_Converter
     {
-        public static Image ConvertOthersToPngInMemory(string jpgFilePath)
+        public static Bitmap ConvertOthersToPngInMemory(string jpgFilePath)
         {
             using (Image jpgImage = Image.FromFile(jpgFilePath))
             {
-                using (MemoryStream ms = new MemoryStream())
+                // 创建一个与原始图像尺寸相同的空白Bitmap对象
+                Bitmap pngBitmap = new Bitmap(jpgImage.Width, jpgImage.Height);
+
+                // 使用Graphics对象将JPG图像绘制到Bitmap中
+                using (Graphics g = Graphics.FromImage(pngBitmap))
                 {
-                    // 将JPG图像保存到内存流中，格式为PNG
-                    jpgImage.Save(ms, ImageFormat.Png);
-
-                    ms.Position = 0;
-
-                    return new Bitmap(ms);
+                    g.DrawImage(jpgImage, new Rectangle(0, 0, jpgImage.Width, jpgImage.Height));
                 }
+
+                // 此时pngBitmap是一个包含原始JPG图像的PNG格式的Bitmap
+                return pngBitmap;
             }
         }
         public static HashAlgorithmName StringToHashAlgorithmName(string hashAlgorithm)
