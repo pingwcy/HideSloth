@@ -29,13 +29,13 @@ namespace HideSloth
         private static int _smallstandard = 1;//ignore image capacity
         private static string _encalg = "AES";
         private static bool _ignoreextracterror = false;
-        private static List<string> _listofsupportimagealg = new List<string> { "PNG/BMP: LSB", "PNG/BMP: Linear" };
-
+        private static List<string> _listofsupportimagealg = new List<string> { "PNG/BMP: LSB", "PNG/BMP: Linear","PNG/BMP: Random LSB" };
+        private static bool _rand = false;
 
         public interface ImageAlgorithm
         {
-            Bitmap Encode(Bitmap img, byte[] data);
-            byte[] Decode(Bitmap img);
+            Bitmap Encode(Bitmap img, byte[] data, string pwd);
+            byte[] Decode(Bitmap img, string pwd);
 
             double CheckSize(Image img);
             // 其他方法定义...
@@ -50,7 +50,8 @@ namespace HideSloth
                         return new Linear_Image();
                     case "PNG/BMP: LSB":
                         return new LSB_Image();
-                    // 可以添加更多算法
+                    case "PNG/BMP: Random LSB":
+                        return new LSBRND_Image();
                     default:
                         throw new ArgumentException("Invalid algorithm name");
                 }

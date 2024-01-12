@@ -10,15 +10,6 @@ namespace HideSloth.Steganography
 {
     public class Linear_Image : ImageAlgorithm
     {
-        public static int DecodePixel(Color pixel)
-        {
-            int red = pixel.R & 3;
-            int green = pixel.G & 7;
-            int blue = pixel.B & 7;
-            int value = blue | green << 3 | red << 6;
-            return value;
-        }
-
         private static Point LinearIndexToPoint(int index, int width, int height)
         {
             if (index < 0)
@@ -27,20 +18,8 @@ namespace HideSloth.Steganography
             }
             return new Point(index % width, (int)Math.Floor((double)(index / width)));
         }
-        public static Color EncodePixel(Color pixel, int value)
-        {
-            int blueValue = value & 7;
-            int greenValue = value >> 3 & 7;
-            int redValue = value >> 6 & 3;
 
-            int red = pixel.R & 0xFC | redValue;
-            int green = pixel.G & 0xF8 | greenValue;
-            int blue = pixel.B & 0xF8 | blueValue;
-
-            return Color.FromArgb(red, green, blue);
-        }
-
-        public byte[] Decode(Bitmap img)
+        public byte[] Decode(Bitmap img, string pwd)
         {
             // 锁定位图的整个区域
             Rectangle rect = new Rectangle(0, 0, img.Width, img.Height);
@@ -63,8 +42,6 @@ namespace HideSloth.Steganography
 
             char[] binaryCharArray = new char[32]; // 用于存储二进制表示的字符数组
             int count = 0; // 用于计数已读取的字符数
-
-
 
             do
             {
@@ -115,7 +92,7 @@ namespace HideSloth.Steganography
             int value = blueValue | greenValue << 3 | redValue << 6;
             return value;
         }
-        public Bitmap Encode(Bitmap img, byte[] data)
+        public Bitmap Encode(Bitmap img, byte[] data, string pwd)
         {
             // 锁定位图的整个区域
             Rectangle rect = new Rectangle(0, 0, img.Width, img.Height);
@@ -183,55 +160,5 @@ namespace HideSloth.Steganography
         {
             return Math.Round(img.Width * img.Height / 1024 * 0.97);
         }
-        /*
-
-        public static Bitmap EncodeMsgLinearImage(string text, Bitmap img)
-        {
-            int maxLinear = img.Width * img.Height;
-            int c = 0;
-            if (text.Length < maxLinear)
-            {
-                for (int i = 0; i < text.Length; i++)
-                {
-                    Point point = LinearIndexToPoint(i, img.Width, img.Height);
-                    Color pixel = img.GetPixel(point.X, point.Y);
-                    char letter = text[i];
-                    int value = Convert.ToInt32(letter);
-                    Color n = EncodePixel(pixel, value);
-                    img.SetPixel(point.X, point.Y, n);
-                    c = i;
-                }
-                //Null value placed at the end to indicate end of text - or using 255 for better hiding
-                c++;
-                Point pointEnd = LinearIndexToPoint(c, img.Width, img.Height);
-                Color pixelEnd = img.GetPixel(pointEnd.X, pointEnd.Y);
-                img.SetPixel(pointEnd.X, pointEnd.Y, EncodePixel(pixelEnd, 0));
-            }
-            return img;
-        }
-        public static string DecodeMsgLinearImage(Bitmap img)
-        {
-            string text = string.Empty;
-            int value = 0;
-            int i = 0;
-            do
-            {
-                Point point = LinearIndexToPoint(i, img.Width, img.Height);
-                Color pixel = img.GetPixel(point.X, point.Y);
-                value = DecodePixel(pixel);
-                i++;
-                if (value != 255)
-                    text += Convert.ToChar(value);
-            } while (value != 255);
-            try
-            {
-                return text;
-            }
-            catch (Exception e)
-            {
-                return null;
-            }
-        }
-        */
     }
 }
