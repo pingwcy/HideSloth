@@ -52,6 +52,9 @@ namespace HideSloth
                         return new LSB_Image();
                     case "PNG/BMP: Random LSB":
                         return new LSBRND_Image();
+                    case "SUNIWARD":
+                        //return new SUNIWARD_Image();
+
                     default:
                         throw new ArgumentException("Invalid algorithm name");
                 }

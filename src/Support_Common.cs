@@ -49,6 +49,14 @@ namespace HideSloth
                     return HashAlgorithmName.SHA384;
                 case "SHA512":
                     return HashAlgorithmName.SHA512;
+                /*
+                case "SHA3_256":
+                    return HashAlgorithmName.SHA3_256;
+                case "SHA3_384":
+                    return HashAlgorithmName.SHA3_384;
+                case "SHA3_512":
+                    return HashAlgorithmName.SHA3_512;
+                */
                 default:
                     throw new ArgumentException("Invalid Input");
             }
