@@ -87,7 +87,7 @@ namespace HideSloth
                                 OnProgressChanged(new ProgressEventArgs(0, "Start to Encode"));
 
                                 var stegoAlg = AlgorithmImageFactory.CreateAlgorithm(GlobalVariables.Algor);
-                                result = stegoAlg.Encode(loaded, secretData);
+                                result = stegoAlg.Encode(loaded, secretData,password);
 
                                 if (ismult == false)//single file process request name now
                                 {
@@ -160,7 +160,7 @@ namespace HideSloth
                             Bitmap unloading = new Bitmap(Containers[0]);
 
                             var stegoAlg = AlgorithmImageFactory.CreateAlgorithm(GlobalVariables.Algor);
-                            extracted_result = stegoAlg.Decode(unloading);
+                            extracted_result = stegoAlg.Decode(unloading,password);
                             unloading.Dispose();
 
                         }

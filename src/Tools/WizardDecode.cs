@@ -96,15 +96,8 @@ namespace HideSloth.Tools
         public static bool IsToosmall(Bitmap img)
         {
             string size = "";
-            if (GlobalVariables.Algor == "PNG/BMP: Linear")
-            {
-                size = Math.Round(img.Width * img.Height / 1024 * 0.97).ToString();
-
-            }
-            if (GlobalVariables.Algor == "PNG/BMP: LSB")
-            {
-                size = Math.Round(img.Width * img.Height * 3 / 8 * 0.89 / 1024 / 1.34).ToString();
-            }
+            var stegoAlg = AlgorithmImageFactory.CreateAlgorithm(GlobalVariables.Algor);
+            size = stegoAlg.CheckSize(img).ToString();
             if (Int32.Parse(size) <= GlobalVariables.Smallstandard)
             {
                 return false;
@@ -139,7 +132,7 @@ namespace HideSloth.Tools
                         {
                             token.ThrowIfCancellationRequested();
                             var stegoAlg = AlgorithmImageFactory.CreateAlgorithm(GlobalVariables.Algor);
-                            byte[] decrypted_content = stegoAlg.Decode(unloading);
+                            byte[] decrypted_content = stegoAlg.Decode(unloading,pwd);
 
                             if (GlobalVariables.Enableencrypt)
                             {

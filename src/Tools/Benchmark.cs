@@ -167,7 +167,7 @@ namespace HideSloth.Tools
                         rng.GetBytes(data);
                         var stegoAlg = AlgorithmImageFactory.CreateAlgorithm("PNG/BMP: LSB");
                         Stopwatch stopwatch1 = Stopwatch.StartNew();
-                        stegoAlg.Encode(virtualBitmap, data);
+                        stegoAlg.Encode(virtualBitmap, data,"123");
                         stopwatch1.Stop();
                         time1.Add(stopwatch1.Elapsed.TotalSeconds);
 
@@ -186,7 +186,7 @@ namespace HideSloth.Tools
                         rng.GetBytes(data);
                         var stegoAlg = AlgorithmImageFactory.CreateAlgorithm("PNG/BMP: Linear");
                         Stopwatch stopwatch2 = Stopwatch.StartNew();
-                        stegoAlg.Encode(virtualBitmap, data);
+                        stegoAlg.Encode(virtualBitmap, data, "123");
                         stopwatch2.Stop();
                         time2.Add(stopwatch2.Elapsed.TotalSeconds);
 

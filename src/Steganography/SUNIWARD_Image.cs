@@ -37,29 +37,24 @@ namespace HideSloth.Steganography
             }
             return floatArray;
         }
-        public static int[,] BitmapToIntArray(Bitmap bitmap)
         {
-            int width = bitmap.Width;
-            int height = bitmap.Height;
-            int[,] result = new int[width, height];
-
-            for (int x = 0; x < width; x++)
             {
+                int width = bitmap.Width;
+                int height = bitmap.Height;
+
                 for (int y = 0; y < height; y++)
                 {
-                    Color pixelColor = bitmap.GetPixel(x, y);
-                    int argb = pixelColor.ToArgb();
-                    result[x, y] = argb;
-                }
+                    for (int x = 0; x < width; x++)
+                    {
+        {
             }
+        }
 
             return result;
         }
         public Bitmap Encode(Bitmap image, byte[] data, string pwd)
         {
-            int[,] I = BitmapToIntArray(image);
             int n_channels = 3;
-            if (image.PixelFormat == PixelFormat.Format8bppIndexed)
             {
                 n_channels = 1;
                 image = image.Clone(new Rectangle(0, 0, image.Width,   image.Height), PixelFormat.Format24bppRgb);
@@ -67,7 +62,6 @@ namespace HideSloth.Steganography
             int password_seed = 0;
 
             int m = 1;
-            foreach (int i in new int[] { image.Width, image.Height })
             {
                 m *= i;
             }
@@ -88,7 +82,6 @@ namespace HideSloth.Steganography
             {
                 (double[,], double[,]) costs = CostFn(I);
 
-                I = Hide(msg_bits[c], I, DoubletoFloat(costs.Item1), DoubletoFloat(costs.Item2), password_seed);
             }
 
             return image;
@@ -96,7 +89,6 @@ namespace HideSloth.Steganography
 
         public byte[] Decode(Bitmap image, string pwd)
         {
-            int[,] I = BitmapToIntArray(image);
 
             int n_channels = 3;
             if (image.PixelFormat == PixelFormat.Format8bppIndexed)
@@ -109,7 +101,6 @@ namespace HideSloth.Steganography
             List<byte> ciphertext = new List<byte>();
             for (int c = 0; c < n_channels; c++)
             {
-                ciphertext.AddRange(Unhide(I, password_seed));
             }
             return ciphertext.ToArray();
         }
@@ -289,7 +280,6 @@ namespace HideSloth.Steganography
             return data;
         }
 
-        public static (double[,], double[,]) CostFn(int[,] I)
         {
             int k = I.GetLength(0);
             int l = I.GetLength(1);
@@ -319,7 +309,6 @@ namespace HideSloth.Steganography
             double[,] rho = new double[k, l];
             for (int i = 0; i < 3; i++)
             {
-                double[,] coverPadded = PadArray(I, padSize);
                 double[,] R0 = Convolve2D(coverPadded, F[i]);
                 double[,] X = Convolve2D((Abs(R0)), Rot90(Abs(F[i]), 2));
                 if (F[0].GetLength(0) % 2 == 0)
@@ -348,7 +337,6 @@ namespace HideSloth.Steganography
                     {
                         rhoP1[i, j] = INF;
                     }
-                    if (I[i, j] == 255)
                     {
                         rhoP1[i, j] = INF;
                     }
@@ -360,7 +348,6 @@ namespace HideSloth.Steganography
                     {
                         rhoM1[i, j] = INF;
                     }
-                    if (I[i, j] == 0)
                     {
                         rhoM1[i, j] = INF;
                     }
@@ -384,7 +371,6 @@ namespace HideSloth.Steganography
             return result;
         }
 
-        private static double[,] PadArray(int[,] array, int padSize)
         {
             int m = array.GetLength(0);
             int n = array.GetLength(1);

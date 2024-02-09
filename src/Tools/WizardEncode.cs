@@ -92,7 +92,7 @@ namespace HideSloth.Tools
                         Directory.CreateDirectory(aa);
                         if (GlobalVariables.Copyotherfilemeta)
                         {
-                            DirectoryInfo sourceDirectoryInfo = new DirectoryInfo(Path.GetDirectoryName(individualroutecontainer)??"");
+                            DirectoryInfo sourceDirectoryInfo = new DirectoryInfo(Path.GetDirectoryName(individualroutecontainer) ?? "");
                             DirectoryInfo targetDirectoryInfo = new DirectoryInfo(aa);
 
                             DateTime creationTime = sourceDirectoryInfo.CreationTime;
@@ -138,7 +138,7 @@ namespace HideSloth.Tools
                     }
 
                     buffer = reader.ReadBytes(Convert.ToInt32(bufflist[cycle]));
-                    
+
                     if (IsImageFile(Path.Combine(containers_route, container_list[cycle])))
                     {
 
@@ -146,33 +146,33 @@ namespace HideSloth.Tools
                         {
                             //cycle number
                             long buf = buffer.Length;
-                        byte[] intBytes = BitConverter.GetBytes(currentpostion);
+                            byte[] intBytes = BitConverter.GetBytes(currentpostion);
                             currentpostion += buf;
-                        //if (BitConverter.IsLittleEndian)
-                        //Array.Reverse(intBytes0); 确保字节顺序正确
-                        //byte[] intBytes = intBytes0.Concat(GlobalVariables.Separator).ToArray();
+                            //if (BitConverter.IsLittleEndian)
+                            //Array.Reverse(intBytes0); 确保字节顺序正确
+                            //byte[] intBytes = intBytes0.Concat(GlobalVariables.Separator).ToArray();
 
 
-                        byte[] stringBytes = BitConverter.GetBytes(fileSiz);
-                        //byte[] stringBytes = stringBytes0.Concat(GlobalVariables.Separator).ToArray();
+                            byte[] stringBytes = BitConverter.GetBytes(fileSiz);
+                            //byte[] stringBytes = stringBytes0.Concat(GlobalVariables.Separator).ToArray();
 
 
-                        byte[] fullbuffer = new byte[intBytes.Length + stringBytes.Length + buffer.Length];
+                            byte[] fullbuffer = new byte[intBytes.Length + stringBytes.Length + buffer.Length];
 
 
-                        Buffer.BlockCopy(intBytes, 0, fullbuffer, 0, intBytes.Length);
-                        Buffer.BlockCopy(stringBytes, 0, fullbuffer, intBytes.Length, stringBytes.Length);
-                        Buffer.BlockCopy(buffer, 0, fullbuffer, intBytes.Length + stringBytes.Length, buffer.Length);
+                            Buffer.BlockCopy(intBytes, 0, fullbuffer, 0, intBytes.Length);
+                            Buffer.BlockCopy(stringBytes, 0, fullbuffer, intBytes.Length, stringBytes.Length);
+                            Buffer.BlockCopy(buffer, 0, fullbuffer, intBytes.Length + stringBytes.Length, buffer.Length);
 
 
-                        if (GlobalVariables.Enableencrypt)
-                        {
+                            if (GlobalVariables.Enableencrypt)
+                            {
                                 fullbuffer = Aes_ChaCha_Encryptor.Encrypt(fullbuffer, pwd, out byte[] salt, out byte[] nonce, out byte[] tag);
                                 fullbuffer = BytesStringThings.CombineBytes(salt, nonce, tag, fullbuffer);
-                         }
-                        Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(Path.Combine(containers_route, container_list[cycle]));
+                            }
+                            Bitmap loaded = (Bitmap)Support_Converter.ConvertOthersToPngInMemory(Path.Combine(containers_route, container_list[cycle]));
                             var stegoAlg = AlgorithmImageFactory.CreateAlgorithm(GlobalVariables.Algor);
-                            Bitmap result = stegoAlg.Encode(loaded, fullbuffer);
+                            Bitmap result = stegoAlg.Encode(loaded, fullbuffer, pwd);
                             string dirrela = "";
                             string onlyname = "";
                             if (Path.GetDirectoryName(container_list[cycle]) != "")
@@ -203,14 +203,14 @@ namespace HideSloth.Tools
 
                             }
 
-                        
+
                         }
-                        
-                        catch 
+
+                        catch
                         {
                             return false;
                         }
-                        
+
                         if (buffer.Length < bufflist[cycle] || fs.Position >= fs.Length)
                         {
                             break;
@@ -253,7 +253,7 @@ namespace HideSloth.Tools
 
                         }
                     }
-                   // updateStatus?.Invoke($"Copy Finnished");
+                    // updateStatus?.Invoke($"Copy Finnished");
 
                 }
                 else if (Form_EncodeWizard.copynonimage == true && Form_EncodeWizard.keepstrcuture == true)
@@ -296,7 +296,7 @@ namespace HideSloth.Tools
                 {
                     foreach (string smallroute in smallimagelist)
                     {
-                        string filePath = Path.GetFullPath(containers_route +@"\\"+ smallroute);
+                        string filePath = Path.GetFullPath(containers_route + @"\\" + smallroute);
                         string relativeroute = RemoveFirstFolderFromPath(GetRelativePath(containers_route, filePath));
                         if (relativeroute != "")
                         {
@@ -405,40 +405,31 @@ namespace HideSloth.Tools
                 Allfile = new List<string>(fileEntries);
             }
             foreach (string fileName in Allfile)
+            {
+                if (IsImageFile(fileName))
                 {
-                    if (IsImageFile(fileName))
+                    using (Image img = Image.FromFile(fileName))
                     {
-                        using (Image img = Image.FromFile(fileName))
+                        string dimensions = "";
+                        var stegoAlg = AlgorithmImageFactory.CreateAlgorithm(GlobalVariables.Algor);
+                        dimensions = stegoAlg.CheckSize(img).ToString() + " KB"; ;
+                        if (Int32.Parse(dimensions.Substring(0, dimensions.Length - 3)) <= GlobalVariables.Smallstandard)
                         {
-                            string dimensions = "";
-                            if (GlobalVariables.Algor == "PNG/BMP: Linear")
+                            smallimages.Add(RemoveFirstFolderFromPath(GetRelativePath(folderPath, fileName)));
+                        }
+                        else
+                        {
+                            list.Add(new ImageInfo
                             {
-                                dimensions = Math.Round(img.Width * img.Height / 1024 * 0.97).ToString() + " KB";
-
-                            }
-                            if (GlobalVariables.Algor == "PNG/BMP: LSB")
-                            {
-                                dimensions = Math.Round(img.Width * img.Height * 3 / 8 * 0.89 / 1024 / 1.34).ToString() + " KB";
-                                //MessageBox.Show("No code!!!!");
-
-                            }
-                            if (Int32.Parse(dimensions.Substring(0, dimensions.Length - 3)) <= GlobalVariables.Smallstandard)
-                            {
-                                smallimages.Add(RemoveFirstFolderFromPath(GetRelativePath(folderPath, fileName)));
-                            }
-                            else
-                            {
-                                list.Add(new ImageInfo
-                                {
-                                    FileName = RemoveFirstFolderFromPath(GetRelativePath(folderPath, fileName)),
-                                    Dimensions = dimensions
-                                });
-                            }
+                                FileName = RemoveFirstFolderFromPath(GetRelativePath(folderPath, fileName)),
+                                Dimensions = dimensions
+                            });
                         }
                     }
                 }
+            }
 
-            
+
             return list;
         }
         public static bool IsImageFile(string fileName)

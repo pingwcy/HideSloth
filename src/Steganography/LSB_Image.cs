@@ -18,7 +18,7 @@ namespace HideSloth.Steganography
             Filling_With_Zeros
         };
 
-        public Bitmap Encode( Bitmap bmp, byte[] data1)
+        public Bitmap Encode( Bitmap bmp, byte[] data1, string pwd)
         {
             string data = Convert.ToBase64String(data1);
             // initially, we'll be hiding characters in the image
@@ -145,7 +145,7 @@ namespace HideSloth.Steganography
             return bmp;
         }
 
-        public byte[] Decode(Bitmap bmp)
+        public byte[] Decode(Bitmap bmp, string pwd)
         {
             int colorUnitIndex = 0;
             int charValue = 0;
