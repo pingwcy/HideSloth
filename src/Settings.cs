@@ -90,6 +90,7 @@ namespace HideSloth
                 combo_encalg.SelectedItem = "AES256-GCM";
             }
             check_errorignore.Checked = GlobalVariables.Ignoreextracterror;
+            combo_kdf.SelectedItem = GlobalVariables.KDF;
         }
 
         private void Radio_LSB_PB_CheckedChanged(object sender, EventArgs e)
@@ -136,7 +137,12 @@ namespace HideSloth
                 GlobalVariables.Encalg = "AES";
             }
             GlobalVariables.Ignoreextracterror = check_errorignore.Checked;
+            if (combo_kdf?.SelectedItem?.ToString() != null) 
+            {
+                GlobalVariables.KDF = combo_kdf.SelectedItem.ToString();
+            }
             SubmitSettingsChangedUI(new SettingUpdateUIEventArgs(Radio_enableenc.Checked, Radio_Normal.Checked));
+
             this.Close();
         }
 

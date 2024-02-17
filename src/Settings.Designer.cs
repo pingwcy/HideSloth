@@ -56,24 +56,28 @@
             label3 = new Label();
             numericUpDown1 = new NumericUpDown();
             label2 = new Label();
+            groupBox6 = new GroupBox();
+            combo_kdf = new ComboBox();
+            label5 = new Label();
             groupBox5.SuspendLayout();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox3.SuspendLayout();
             groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
+            groupBox6.SuspendLayout();
             SuspendLayout();
             // 
             // groupBox5
             // 
             groupBox5.Controls.Add(label4);
             groupBox5.Controls.Add(combo_imgalg);
-            groupBox5.Location = new Point(12, 171);
+            groupBox5.Location = new Point(12, 164);
             groupBox5.Name = "groupBox5";
-            groupBox5.Size = new Size(274, 83);
+            groupBox5.Size = new Size(274, 59);
             groupBox5.TabIndex = 36;
             groupBox5.TabStop = false;
-            groupBox5.Text = "Algorithm";
+            groupBox5.Text = "Steganography Algorithm";
             // 
             // label4
             // 
@@ -95,7 +99,7 @@
             // 
             // button1
             // 
-            button1.Location = new Point(91, 499);
+            button1.Location = new Point(91, 524);
             button1.Name = "button1";
             button1.Size = new Size(165, 42);
             button1.TabIndex = 37;
@@ -105,7 +109,7 @@
             // 
             // button2
             // 
-            button2.Location = new Point(348, 499);
+            button2.Location = new Point(348, 524);
             button2.Name = "button2";
             button2.Size = new Size(165, 42);
             button2.TabIndex = 38;
@@ -124,7 +128,7 @@
             groupBox1.Controls.Add(Radio_enableenc);
             groupBox1.Location = new Point(301, 12);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(267, 242);
+            groupBox1.Size = new Size(267, 285);
             groupBox1.TabIndex = 39;
             groupBox1.TabStop = false;
             groupBox1.Text = "Encryption";
@@ -145,7 +149,7 @@
             ComboBox_Hash.Enabled = false;
             ComboBox_Hash.FormattingEnabled = true;
             ComboBox_Hash.Items.AddRange(new object[] { "SHA256", "SHA384", "SHA512" });
-            ComboBox_Hash.Location = new Point(47, 148);
+            ComboBox_Hash.Location = new Point(47, 181);
             ComboBox_Hash.Name = "ComboBox_Hash";
             ComboBox_Hash.Size = new Size(121, 25);
             ComboBox_Hash.TabIndex = 5;
@@ -153,7 +157,7 @@
             // Check_CustHash
             // 
             Check_CustHash.AutoSize = true;
-            Check_CustHash.Location = new Point(25, 122);
+            Check_CustHash.Location = new Point(25, 147);
             Check_CustHash.Name = "Check_CustHash";
             Check_CustHash.Size = new Size(169, 21);
             Check_CustHash.TabIndex = 4;
@@ -164,7 +168,7 @@
             // Text_PBKDF2Iter
             // 
             Text_PBKDF2Iter.Enabled = false;
-            Text_PBKDF2Iter.Location = new Point(47, 90);
+            Text_PBKDF2Iter.Location = new Point(47, 97);
             Text_PBKDF2Iter.Name = "Text_PBKDF2Iter";
             Text_PBKDF2Iter.Size = new Size(121, 23);
             Text_PBKDF2Iter.TabIndex = 3;
@@ -172,7 +176,7 @@
             // Check_CustIter
             // 
             Check_CustIter.AutoSize = true;
-            Check_CustIter.Location = new Point(25, 64);
+            Check_CustIter.Location = new Point(25, 70);
             Check_CustIter.Name = "Check_CustIter";
             Check_CustIter.Size = new Size(195, 21);
             Check_CustIter.TabIndex = 2;
@@ -183,7 +187,7 @@
             // Radio_disableenc
             // 
             Radio_disableenc.AutoSize = true;
-            Radio_disableenc.Location = new Point(25, 197);
+            Radio_disableenc.Location = new Point(25, 228);
             Radio_disableenc.Name = "Radio_disableenc";
             Radio_disableenc.Size = new Size(77, 21);
             Radio_disableenc.TabIndex = 1;
@@ -245,7 +249,7 @@
             groupBox3.Controls.Add(check_meta);
             groupBox3.Controls.Add(combo_entension);
             groupBox3.Controls.Add(label1);
-            groupBox3.Location = new Point(12, 270);
+            groupBox3.Location = new Point(12, 303);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(556, 109);
             groupBox3.TabIndex = 41;
@@ -309,7 +313,7 @@
             groupBox4.Controls.Add(label3);
             groupBox4.Controls.Add(numericUpDown1);
             groupBox4.Controls.Add(label2);
-            groupBox4.Location = new Point(12, 393);
+            groupBox4.Location = new Point(12, 418);
             groupBox4.Name = "groupBox4";
             groupBox4.Size = new Size(555, 100);
             groupBox4.TabIndex = 42;
@@ -354,11 +358,42 @@
             label2.TabIndex = 0;
             label2.Text = "Ignore Images with Capacity Not Higher Than ";
             // 
+            // groupBox6
+            // 
+            groupBox6.Controls.Add(combo_kdf);
+            groupBox6.Controls.Add(label5);
+            groupBox6.Location = new Point(12, 234);
+            groupBox6.Name = "groupBox6";
+            groupBox6.Size = new Size(274, 63);
+            groupBox6.TabIndex = 43;
+            groupBox6.TabStop = false;
+            groupBox6.Text = "Encryption Key Derivation";
+            // 
+            // combo_kdf
+            // 
+            combo_kdf.DropDownStyle = ComboBoxStyle.DropDownList;
+            combo_kdf.FormattingEnabled = true;
+            combo_kdf.Items.AddRange(new object[] { "Password Based", "RSA Based" });
+            combo_kdf.Location = new Point(79, 26);
+            combo_kdf.Name = "combo_kdf";
+            combo_kdf.Size = new Size(173, 25);
+            combo_kdf.TabIndex = 1;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(6, 30);
+            label5.Name = "label5";
+            label5.Size = new Size(65, 17);
+            label5.TabIndex = 0;
+            label5.Text = "Algorithm";
+            // 
             // Settings
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(590, 553);
+            ClientSize = new Size(590, 578);
+            Controls.Add(groupBox6);
             Controls.Add(groupBox4);
             Controls.Add(groupBox3);
             Controls.Add(groupBox2);
@@ -381,6 +416,8 @@
             groupBox4.ResumeLayout(false);
             groupBox4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
+            groupBox6.ResumeLayout(false);
+            groupBox6.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -413,5 +450,8 @@
         private CheckBox check_errorignore;
         private Label label4;
         private ComboBox combo_imgalg;
+        private GroupBox groupBox6;
+        private ComboBox combo_kdf;
+        private Label label5;
     }
 }

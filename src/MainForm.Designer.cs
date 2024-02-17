@@ -68,11 +68,14 @@ namespace HideSloth
             languagesToolStripMenuItem = new ToolStripMenuItem();
             englishUSToolStripMenuItem = new ToolStripMenuItem();
             chineseSingaporeToolStripMenuItem = new ToolStripMenuItem();
+            loadRSAKeyPairToolStripMenuItem = new ToolStripMenuItem();
             toolsTToolStripMenuItem = new ToolStripMenuItem();
             benchmarkToolStripMenuItem1 = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
             bulkEmbeddingWizardToolStripMenuItem = new ToolStripMenuItem();
             batchExtractionWizardToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator3 = new ToolStripSeparator();
+            generateRSAKeyPairToolStripMenuItem = new ToolStripMenuItem();
             helpToolStripMenuItem = new ToolStripMenuItem();
             userManualToolStripMenuItem = new ToolStripMenuItem();
             aboutToolStripMenuItem = new ToolStripMenuItem();
@@ -81,6 +84,9 @@ namespace HideSloth
             Label_RouteofSecret = new TextBox();
             check_multi = new CheckBox();
             check_audio = new CheckBox();
+            toolStripSeparator4 = new ToolStripSeparator();
+            toolStripSeparator5 = new ToolStripSeparator();
+            quickLoadFromCurrentFolderToolStripMenuItem = new ToolStripMenuItem();
             groupBox1.SuspendLayout();
             groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
@@ -282,7 +288,7 @@ namespace HideSloth
             // 
             // optionsToolStripMenuItem
             // 
-            optionsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { advancedSettingsToolStripMenuItem, languagesToolStripMenuItem });
+            optionsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { advancedSettingsToolStripMenuItem, toolStripSeparator4, languagesToolStripMenuItem, toolStripSeparator5, loadRSAKeyPairToolStripMenuItem, quickLoadFromCurrentFolderToolStripMenuItem });
             optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             resources.ApplyResources(optionsToolStripMenuItem, "optionsToolStripMenuItem");
             // 
@@ -310,9 +316,15 @@ namespace HideSloth
             resources.ApplyResources(chineseSingaporeToolStripMenuItem, "chineseSingaporeToolStripMenuItem");
             chineseSingaporeToolStripMenuItem.Click += chineseSingaporeToolStripMenuItem_Click;
             // 
+            // loadRSAKeyPairToolStripMenuItem
+            // 
+            loadRSAKeyPairToolStripMenuItem.Name = "loadRSAKeyPairToolStripMenuItem";
+            resources.ApplyResources(loadRSAKeyPairToolStripMenuItem, "loadRSAKeyPairToolStripMenuItem");
+            loadRSAKeyPairToolStripMenuItem.Click += loadRSAKeyPairToolStripMenuItem_Click;
+            // 
             // toolsTToolStripMenuItem
             // 
-            toolsTToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { benchmarkToolStripMenuItem1, toolStripSeparator1, bulkEmbeddingWizardToolStripMenuItem, batchExtractionWizardToolStripMenuItem });
+            toolsTToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { benchmarkToolStripMenuItem1, toolStripSeparator1, bulkEmbeddingWizardToolStripMenuItem, batchExtractionWizardToolStripMenuItem, toolStripSeparator3, generateRSAKeyPairToolStripMenuItem });
             toolsTToolStripMenuItem.Name = "toolsTToolStripMenuItem";
             resources.ApplyResources(toolsTToolStripMenuItem, "toolsTToolStripMenuItem");
             // 
@@ -338,6 +350,17 @@ namespace HideSloth
             batchExtractionWizardToolStripMenuItem.Name = "batchExtractionWizardToolStripMenuItem";
             resources.ApplyResources(batchExtractionWizardToolStripMenuItem, "batchExtractionWizardToolStripMenuItem");
             batchExtractionWizardToolStripMenuItem.Click += batchExtractionWizardToolStripMenuItem_Click;
+            // 
+            // toolStripSeparator3
+            // 
+            toolStripSeparator3.Name = "toolStripSeparator3";
+            resources.ApplyResources(toolStripSeparator3, "toolStripSeparator3");
+            // 
+            // generateRSAKeyPairToolStripMenuItem
+            // 
+            generateRSAKeyPairToolStripMenuItem.Name = "generateRSAKeyPairToolStripMenuItem";
+            resources.ApplyResources(generateRSAKeyPairToolStripMenuItem, "generateRSAKeyPairToolStripMenuItem");
+            generateRSAKeyPairToolStripMenuItem.Click += generateRSAKeyPairToolStripMenuItem_Click;
             // 
             // helpToolStripMenuItem
             // 
@@ -382,6 +405,22 @@ namespace HideSloth
             resources.ApplyResources(check_audio, "check_audio");
             check_audio.Name = "check_audio";
             check_audio.UseVisualStyleBackColor = true;
+            // 
+            // toolStripSeparator4
+            // 
+            toolStripSeparator4.Name = "toolStripSeparator4";
+            resources.ApplyResources(toolStripSeparator4, "toolStripSeparator4");
+            // 
+            // toolStripSeparator5
+            // 
+            toolStripSeparator5.Name = "toolStripSeparator5";
+            resources.ApplyResources(toolStripSeparator5, "toolStripSeparator5");
+            // 
+            // quickLoadFromCurrentFolderToolStripMenuItem
+            // 
+            quickLoadFromCurrentFolderToolStripMenuItem.Name = "quickLoadFromCurrentFolderToolStripMenuItem";
+            resources.ApplyResources(quickLoadFromCurrentFolderToolStripMenuItem, "quickLoadFromCurrentFolderToolStripMenuItem");
+            quickLoadFromCurrentFolderToolStripMenuItem.Click += quickLoadFromCurrentFolderToolStripMenuItem_Click;
             // 
             // MainForm
             // 
@@ -480,5 +519,11 @@ namespace HideSloth
         private ToolStripMenuItem chineseSingaporeToolStripMenuItem;
         private ToolStripMenuItem englishUSToolStripMenuItem;
         private CheckBox check_audio;
+        private ToolStripMenuItem loadRSAKeyPairToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator3;
+        private ToolStripMenuItem generateRSAKeyPairToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator4;
+        private ToolStripSeparator toolStripSeparator5;
+        private ToolStripMenuItem quickLoadFromCurrentFolderToolStripMenuItem;
     }
 }

@@ -29,7 +29,8 @@ namespace HideSloth
         private Form_DecodeWizard? WizardDecode;
         private readonly Logic logic;
         private readonly IEventAggregator _eventAggregator;
-
+        private Form_RSAGen? form_gen;
+        private Form_loadpair? form_loadpair;
         public bool PasswordBOX
         {
             get { return Textbox_Password.Enabled; }
@@ -129,19 +130,19 @@ namespace HideSloth
             }
             if (e.Progress == 0) // Normal New Progess
             {
-                richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- "+e.Message+"\n");
+                richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- " + e.Message + "\n");
                 richTextBoxLog.ScrollToCaret();
             }
             else if (e.Progress == 1) // Bold Finnished Signal
             {
-                BoldToLog(DateTime.Now.ToString() + "--- " + e.Message+"\n", false);
+                BoldToLog(DateTime.Now.ToString() + "--- " + e.Message + "\n", false);
                 richTextBoxLog.ScrollToCaret();
                 ShowMessageOnUIThread(e.Message, "Success");
 
             }
             else if (e.Progress == 2)//Error
             {
-                BoldToLog(DateTime.Now.ToString() + "--- " + e.Message+"\n", true);
+                BoldToLog(DateTime.Now.ToString() + "--- " + e.Message + "\n", true);
                 richTextBoxLog.ScrollToCaret();
                 ShowMessageOnUIThread(e.Message, "Error");
             }
@@ -219,7 +220,7 @@ namespace HideSloth
             }
         }
 
-        private void Settings_UpdateGUIMainform (SettingUpdateUIEventArgs e)
+        private void Settings_UpdateGUIMainform(SettingUpdateUIEventArgs e)
         {
             if (InvokeRequired)
             {
@@ -364,7 +365,7 @@ namespace HideSloth
             List<string> Containers = ReadUI(() => Label_RouteofContainer.Text.Split("; ").ToList());
             UpdateUI(() => richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Process Started\n"));
             UpdateUI(() => richTextBoxLog.ScrollToCaret());
-            await logic.CallMethodAsync(check_multi.Checked, selecte_secret, check_audio.Checked, password, stringinfo, Containers,encode,decode,isfile,isstring);
+            await logic.CallMethodAsync(check_multi.Checked, selecte_secret, check_audio.Checked, password, stringinfo, Containers, encode, decode, isfile, isstring);
             pictureBox1.Image = Resources.Idle;
             action.Enabled = true;
 
@@ -413,7 +414,7 @@ namespace HideSloth
         {
             string outputcapacity = "";
             bool containsSlash = Label_RouteofContainer.Text.Contains(@"\");
-            if (containsSlash == true )
+            if (containsSlash == true)
             {
                 List<string> Containers = Label_RouteofContainer.Text.Split("; ").ToList();
                 try
@@ -432,12 +433,12 @@ namespace HideSloth
 
         private void Button_Advanced_Click(object sender, EventArgs e)
         {
-            
+
             if (form2 == null || form2.IsDisposed)
             {
-               form2 = new Settings(SimpleEventAggregator.Instance); // 直接使用类级别的成员变量，不需要重新声明
-               form2.FormClosed += (s, args) => this.form2 = null; // 当Form2关闭时，将类级别的引用设置为null
-               form2.Show();
+                form2 = new Settings(SimpleEventAggregator.Instance); // 直接使用类级别的成员变量，不需要重新声明
+                form2.FormClosed += (s, args) => this.form2 = null; // 当Form2关闭时，将类级别的引用设置为null
+                form2.Show();
                 richTextBoxLog.AppendText(DateTime.Now.ToString() + "--- Loaded Advanced Settings Form\n");
 
             }
@@ -446,7 +447,7 @@ namespace HideSloth
                 form2.Show();
                 form2.BringToFront(); // 如果Form2已经存在，将其带到前台
             }
-            
+
         }
 
 
@@ -551,6 +552,49 @@ namespace HideSloth
             UpdateUIForCulture();
             this.Invalidate();
             this.Update();
+
+        }
+
+        private void generateRSAKeyPairToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            form_gen = new Form_RSAGen();
+            form_gen.ShowDialog();
+
+        }
+
+        private void loadRSAKeyPairToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            form_loadpair = new Form_loadpair();
+            form_loadpair.ShowDialog();
+        }
+
+        private void quickLoadFromCurrentFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int nofile = 0;
+            try 
+            {
+                GlobalVariables.privatekeyenced = File.ReadAllText("privateKey.pem");
+            }
+            catch
+            {
+                nofile++;
+            }
+            try
+            {
+                GlobalVariables.pubkey = File.ReadAllText("publicKey.pem");
+            }
+            catch
+            {
+                nofile++;
+            }
+            if (nofile > 1)
+            {
+                MessageBox.Show("At least load one key", "Error");
+            }
+            else
+            {
+                MessageBox.Show("Suceess to Load Key(s)", "Success");
+            }
 
         }
     }

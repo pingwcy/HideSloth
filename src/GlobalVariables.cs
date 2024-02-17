@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -29,9 +30,13 @@ namespace HideSloth
         private static int _smallstandard = 1;//ignore image capacity
         private static string _encalg = "AES";
         private static bool _ignoreextracterror = false;
-        private static List<string> _listofsupportimagealg = new List<string> { "PNG/BMP: LSB", "PNG/BMP: Linear","PNG/BMP: Random LSB" };
+        private static List<string> _listofsupportimagealg = new List<string> { "PNG/BMP: LSB", "PNG/BMP: Linear", "PNG/BMP: Random LSB" };
         private static bool _rand = false;
-
+        private static string _kdf = "Password Based";
+        private static string _pubkey = "";
+        private static string _privatekeyenced = "";
+        private static bool _waitencmaster = false;
+        private static int _rsasize = 2048;
         public interface ImageAlgorithm
         {
             Bitmap Encode(Bitmap img, byte[] data, string pwd);
@@ -53,7 +58,7 @@ namespace HideSloth
                     case "PNG/BMP: Random LSB":
                         return new LSBRND_Image();
                     case "SUNIWARD":
-                        //return new SUNIWARD_Image();
+                    //return new SUNIWARD_Image();
 
                     default:
                         throw new ArgumentException("Invalid algorithm name");
@@ -154,6 +159,30 @@ namespace HideSloth
             get { return _ignoreextracterror; }
             set { _ignoreextracterror = value; }
         }
-
+        public static string KDF
+        {
+            get { return _kdf; }
+            set { _kdf = value; }
+        }
+        public static string pubkey
+        {
+            get { return _pubkey; }
+            set { _pubkey = value; }
+        }
+        public static string privatekeyenced
+        {
+            get { return _privatekeyenced; }
+            set { _privatekeyenced = value; }
+        }
+        public static bool waitencmaster
+        {
+            get { return _waitencmaster; }
+            set { _waitencmaster = value; }
+        }
+        public static int rsasize
+        {
+            get { return _rsasize; }
+            set { _rsasize = value; }
+        }
     }
 }

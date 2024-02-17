@@ -199,6 +199,7 @@ namespace HideSloth
                     }
                     catch (Exception ex)
                     {
+                        ;
                         OnProgressChanged(new ProgressEventArgs(2, ex.Message));
                     }
                 }
