@@ -36,12 +36,12 @@
             button2 = new Button();
             groupBox1 = new GroupBox();
             combo_encalg = new ComboBox();
+            Radio_disableenc = new RadioButton();
+            Radio_enableenc = new RadioButton();
             ComboBox_Hash = new ComboBox();
             Check_CustHash = new CheckBox();
             Text_PBKDF2Iter = new TextBox();
             Check_CustIter = new CheckBox();
-            Radio_disableenc = new RadioButton();
-            Radio_enableenc = new RadioButton();
             groupBox2 = new GroupBox();
             Radio_Encryptor = new RadioButton();
             Radio_Normal = new RadioButton();
@@ -72,7 +72,7 @@
             // 
             groupBox5.Controls.Add(label4);
             groupBox5.Controls.Add(combo_imgalg);
-            groupBox5.Location = new Point(12, 164);
+            groupBox5.Location = new Point(12, 196);
             groupBox5.Name = "groupBox5";
             groupBox5.Size = new Size(274, 59);
             groupBox5.TabIndex = 36;
@@ -120,15 +120,11 @@
             // groupBox1
             // 
             groupBox1.Controls.Add(combo_encalg);
-            groupBox1.Controls.Add(ComboBox_Hash);
-            groupBox1.Controls.Add(Check_CustHash);
-            groupBox1.Controls.Add(Text_PBKDF2Iter);
-            groupBox1.Controls.Add(Check_CustIter);
             groupBox1.Controls.Add(Radio_disableenc);
             groupBox1.Controls.Add(Radio_enableenc);
             groupBox1.Location = new Point(301, 12);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(267, 285);
+            groupBox1.Size = new Size(267, 102);
             groupBox1.TabIndex = 39;
             groupBox1.TabStop = false;
             groupBox1.Text = "Encryption";
@@ -143,51 +139,10 @@
             combo_encalg.Size = new Size(147, 25);
             combo_encalg.TabIndex = 6;
             // 
-            // ComboBox_Hash
-            // 
-            ComboBox_Hash.DropDownStyle = ComboBoxStyle.DropDownList;
-            ComboBox_Hash.Enabled = false;
-            ComboBox_Hash.FormattingEnabled = true;
-            ComboBox_Hash.Items.AddRange(new object[] { "SHA256", "SHA384", "SHA512" });
-            ComboBox_Hash.Location = new Point(47, 181);
-            ComboBox_Hash.Name = "ComboBox_Hash";
-            ComboBox_Hash.Size = new Size(121, 25);
-            ComboBox_Hash.TabIndex = 5;
-            // 
-            // Check_CustHash
-            // 
-            Check_CustHash.AutoSize = true;
-            Check_CustHash.Location = new Point(25, 147);
-            Check_CustHash.Name = "Check_CustHash";
-            Check_CustHash.Size = new Size(169, 21);
-            Check_CustHash.TabIndex = 4;
-            Check_CustHash.Text = "Customize PBKDF2 Hash";
-            Check_CustHash.UseVisualStyleBackColor = true;
-            Check_CustHash.CheckedChanged += checkBox2_CheckedChanged;
-            // 
-            // Text_PBKDF2Iter
-            // 
-            Text_PBKDF2Iter.Enabled = false;
-            Text_PBKDF2Iter.Location = new Point(47, 97);
-            Text_PBKDF2Iter.Name = "Text_PBKDF2Iter";
-            Text_PBKDF2Iter.Size = new Size(121, 23);
-            Text_PBKDF2Iter.TabIndex = 3;
-            // 
-            // Check_CustIter
-            // 
-            Check_CustIter.AutoSize = true;
-            Check_CustIter.Location = new Point(25, 70);
-            Check_CustIter.Name = "Check_CustIter";
-            Check_CustIter.Size = new Size(195, 21);
-            Check_CustIter.TabIndex = 2;
-            Check_CustIter.Text = "Customize PBKDF2 Iterations";
-            Check_CustIter.UseVisualStyleBackColor = true;
-            Check_CustIter.CheckedChanged += checkBox1_CheckedChanged;
-            // 
             // Radio_disableenc
             // 
             Radio_disableenc.AutoSize = true;
-            Radio_disableenc.Location = new Point(25, 228);
+            Radio_disableenc.Location = new Point(25, 66);
             Radio_disableenc.Name = "Radio_disableenc";
             Radio_disableenc.Size = new Size(77, 21);
             Radio_disableenc.TabIndex = 1;
@@ -207,6 +162,47 @@
             Radio_enableenc.Text = "Enabled";
             Radio_enableenc.UseVisualStyleBackColor = true;
             Radio_enableenc.CheckedChanged += Radio_enableenc_CheckedChanged;
+            // 
+            // ComboBox_Hash
+            // 
+            ComboBox_Hash.DropDownStyle = ComboBoxStyle.DropDownList;
+            ComboBox_Hash.Enabled = false;
+            ComboBox_Hash.FormattingEnabled = true;
+            ComboBox_Hash.Items.AddRange(new object[] { "SHA256", "SHA384", "SHA512" });
+            ComboBox_Hash.Location = new Point(47, 141);
+            ComboBox_Hash.Name = "ComboBox_Hash";
+            ComboBox_Hash.Size = new Size(121, 25);
+            ComboBox_Hash.TabIndex = 5;
+            // 
+            // Check_CustHash
+            // 
+            Check_CustHash.AutoSize = true;
+            Check_CustHash.Location = new Point(25, 121);
+            Check_CustHash.Name = "Check_CustHash";
+            Check_CustHash.Size = new Size(169, 21);
+            Check_CustHash.TabIndex = 4;
+            Check_CustHash.Text = "Customize PBKDF2 Hash";
+            Check_CustHash.UseVisualStyleBackColor = true;
+            Check_CustHash.CheckedChanged += checkBox2_CheckedChanged;
+            // 
+            // Text_PBKDF2Iter
+            // 
+            Text_PBKDF2Iter.Enabled = false;
+            Text_PBKDF2Iter.Location = new Point(47, 92);
+            Text_PBKDF2Iter.Name = "Text_PBKDF2Iter";
+            Text_PBKDF2Iter.Size = new Size(121, 23);
+            Text_PBKDF2Iter.TabIndex = 3;
+            // 
+            // Check_CustIter
+            // 
+            Check_CustIter.AutoSize = true;
+            Check_CustIter.Location = new Point(25, 65);
+            Check_CustIter.Name = "Check_CustIter";
+            Check_CustIter.Size = new Size(195, 21);
+            Check_CustIter.TabIndex = 2;
+            Check_CustIter.Text = "Customize PBKDF2 Iterations";
+            Check_CustIter.UseVisualStyleBackColor = true;
+            Check_CustIter.CheckedChanged += checkBox1_CheckedChanged;
             // 
             // groupBox2
             // 
@@ -361,10 +357,14 @@
             // groupBox6
             // 
             groupBox6.Controls.Add(combo_kdf);
+            groupBox6.Controls.Add(ComboBox_Hash);
+            groupBox6.Controls.Add(Text_PBKDF2Iter);
             groupBox6.Controls.Add(label5);
-            groupBox6.Location = new Point(12, 234);
+            groupBox6.Controls.Add(Check_CustHash);
+            groupBox6.Controls.Add(Check_CustIter);
+            groupBox6.Location = new Point(301, 121);
             groupBox6.Name = "groupBox6";
-            groupBox6.Size = new Size(274, 63);
+            groupBox6.Size = new Size(267, 175);
             groupBox6.TabIndex = 43;
             groupBox6.TabStop = false;
             groupBox6.Text = "Encryption Key Derivation";
@@ -378,6 +378,7 @@
             combo_kdf.Name = "combo_kdf";
             combo_kdf.Size = new Size(173, 25);
             combo_kdf.TabIndex = 1;
+            combo_kdf.SelectedIndexChanged += combo_kdf_SelectedIndexChanged;
             // 
             // label5
             // 
@@ -392,7 +393,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(590, 578);
+            ClientSize = new Size(584, 578);
             Controls.Add(groupBox6);
             Controls.Add(groupBox4);
             Controls.Add(groupBox3);

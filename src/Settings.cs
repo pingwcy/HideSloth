@@ -123,7 +123,7 @@ namespace HideSloth
             }
             GlobalVariables.Outputformat = combo_entension?.SelectedItem?.ToString() ?? "";
             GlobalVariables.Iteration = Int32.Parse(Text_PBKDF2Iter.Text);
-            GlobalVariables.Hash = (string?)ComboBox_Hash?.SelectedItem ??"";
+            GlobalVariables.Hash = (string?)ComboBox_Hash?.SelectedItem ?? "";
             GlobalVariables.Copymeta = check_meta.Checked;
             GlobalVariables.Copyotherfilemeta = check_copymetaother.Checked;
             GlobalVariables.Keepformat = check_keepformat.Checked;
@@ -137,7 +137,7 @@ namespace HideSloth
                 GlobalVariables.Encalg = "AES";
             }
             GlobalVariables.Ignoreextracterror = check_errorignore.Checked;
-            if (combo_kdf?.SelectedItem?.ToString() != null) 
+            if (combo_kdf?.SelectedItem?.ToString() != null)
             {
                 GlobalVariables.KDF = combo_kdf.SelectedItem.ToString();
             }
@@ -216,17 +216,43 @@ namespace HideSloth
 
         private void Radio_disableenc_CheckedChanged(object sender, EventArgs e)
         {
-            combo_encalg.Enabled = false;
-            Check_CustIter.Enabled = false;
-            Check_CustHash.Enabled = false;
+            if (Radio_disableenc.Checked)
+            {
+                combo_encalg.Enabled = false;
+                Check_CustIter.Enabled = false;
+                Check_CustHash.Enabled = false;
+                combo_kdf.Enabled = false;
+            }
         }
 
         private void Radio_enableenc_CheckedChanged(object sender, EventArgs e)
         {
-            combo_encalg.Enabled = true;
-            Check_CustIter.Enabled = true;
-            Check_CustHash.Enabled = true;
+            if (Radio_enableenc.Checked)
+            {
+                combo_encalg.Enabled = true;
+                combo_kdf.Enabled = true;
+            }
+            if (Radio_enableenc.Checked && combo_kdf.SelectedIndex == 0)
+            {
+                Check_CustIter.Enabled = true;
+                Check_CustHash.Enabled = true;
+            }
 
+        }
+
+        private void combo_kdf_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (combo_kdf.SelectedIndex == 0)
+            {
+                Check_CustIter.Enabled = true;
+                Check_CustHash.Enabled = true;
+            }
+            else
+            {
+                Check_CustIter.Enabled = false;
+                Check_CustHash.Enabled = false;
+
+            }
         }
     }
     public class SettingUpdateUIEventArgs : EventArgs

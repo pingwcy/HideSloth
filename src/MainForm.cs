@@ -574,6 +574,12 @@ namespace HideSloth
             try 
             {
                 GlobalVariables.privatekeyenced = File.ReadAllText("privateKey.pem");
+                FileInfo fileInfo = new FileInfo("privateKey.pem");
+                if (fileInfo.Length > 2400) 
+                {
+                    GlobalVariables.rsasize = 4096;
+                }
+
             }
             catch
             {
@@ -582,6 +588,11 @@ namespace HideSloth
             try
             {
                 GlobalVariables.pubkey = File.ReadAllText("publicKey.pem");
+                FileInfo fileInfo = new FileInfo("publicKey.pem");
+                if (fileInfo.Length > 500) 
+                { 
+                    GlobalVariables.rsasize = 4096; 
+                }
             }
             catch
             {
