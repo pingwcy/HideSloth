@@ -814,13 +814,13 @@
     <value>Ctrl+A</value>
   </data>
   <data name="advancedSettingsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>262, 22</value>
+    <value>241, 22</value>
   </data>
   <data name="advancedSettingsToolStripMenuItem.Text" xml:space="preserve">
     <value>Advanced Settings</value>
   </data>
   <data name="toolStripSeparator4.Size" type="System.Drawing.Size, System.Drawing">
-    <value>259, 6</value>
+    <value>238, 6</value>
   </data>
   <data name="englishUSToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>193, 22</value>
@@ -838,25 +838,25 @@
     <value>Ctrl+L</value>
   </data>
   <data name="languagesToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>262, 22</value>
+    <value>241, 22</value>
   </data>
   <data name="languagesToolStripMenuItem.Text" xml:space="preserve">
     <value>Languages</value>
   </data>
   <data name="toolStripSeparator5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>259, 6</value>
+    <value>238, 6</value>
   </data>
   <data name="loadRSAKeyPairToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>262, 22</value>
+    <value>241, 22</value>
   </data>
   <data name="loadRSAKeyPairToolStripMenuItem.Text" xml:space="preserve">
     <value>Load RSA Key Pair</value>
   </data>
   <data name="quickLoadFromCurrentFolderToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>262, 22</value>
+    <value>241, 22</value>
   </data>
   <data name="quickLoadFromCurrentFolderToolStripMenuItem.Text" xml:space="preserve">
-    <value>Quick Load from Current Folder</value>
+    <value>Quick Load and change KDF</value>
   </data>
   <data name="optionsToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+A</value>
@@ -5575,6 +5575,12 @@
   <data name="&gt;&gt;advancedSettingsToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;toolStripSeparator4.Name" xml:space="preserve">
+    <value>toolStripSeparator4</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator4.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;languagesToolStripMenuItem.Name" xml:space="preserve">
     <value>languagesToolStripMenuItem</value>
   </data>
@@ -5593,10 +5599,22 @@
   <data name="&gt;&gt;chineseSingaporeToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;toolStripSeparator5.Name" xml:space="preserve">
+    <value>toolStripSeparator5</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator5.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;loadRSAKeyPairToolStripMenuItem.Name" xml:space="preserve">
     <value>loadRSAKeyPairToolStripMenuItem</value>
   </data>
   <data name="&gt;&gt;loadRSAKeyPairToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;quickLoadFromCurrentFolderToolStripMenuItem.Name" xml:space="preserve">
+    <value>quickLoadFromCurrentFolderToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;quickLoadFromCurrentFolderToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;toolsTToolStripMenuItem.Name" xml:space="preserve">
@@ -5657,24 +5675,6 @@
     <value>aboutToolStripMenuItem</value>
   </data>
   <data name="&gt;&gt;aboutToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator4.Name" xml:space="preserve">
-    <value>toolStripSeparator4</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator4.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator5.Name" xml:space="preserve">
-    <value>toolStripSeparator5</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator5.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;quickLoadFromCurrentFolderToolStripMenuItem.Name" xml:space="preserve">
-    <value>quickLoadFromCurrentFolderToolStripMenuItem</value>
-  </data>
-  <data name="&gt;&gt;quickLoadFromCurrentFolderToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">

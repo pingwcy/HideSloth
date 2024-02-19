@@ -148,7 +148,7 @@ namespace HideSloth.Tools
                 figuresize = size * 1.34 * 1.1 * 8 / 3;
 
             }
-            else if (alg == "PNG/BMP: Linear")
+            else if (alg == "PNG/BMP: Linear" || alg== "PNG/BMP: Random LSB")
             {
                 figuresize = size * 1.03;
             }
@@ -196,7 +196,26 @@ namespace HideSloth.Tools
 
             }
 
-            
+            if (alg == "PNG/BMP: Random LSB" || alg == "ALL")
+            {
+                using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+                {
+                    for (int i = 0; i < count; i++)
+                    {
+                        var data = new byte[size];
+                        rng.GetBytes(data);
+                        var stegoAlg = AlgorithmImageFactory.CreateAlgorithm("PNG/BMP: Random LSB");
+                        Stopwatch stopwatch2 = Stopwatch.StartNew();
+                        stegoAlg.Encode(virtualBitmap, data, "123");
+                        stopwatch2.Stop();
+                        time2.Add(stopwatch2.Elapsed.TotalSeconds);
+
+                    }
+                }
+                time.Add("PNG/BMP: Random LSB", time2);
+
+            }
+
             return time;
         }
     }

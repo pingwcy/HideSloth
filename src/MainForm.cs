@@ -17,6 +17,7 @@ using System;
 using System.Linq;
 using System.Globalization;
 using static HideSloth.GlobalVariables;
+using System.Security.Cryptography;
 
 namespace HideSloth
 {
@@ -571,15 +572,18 @@ namespace HideSloth
         private void quickLoadFromCurrentFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int nofile = 0;
-            try 
+            try
             {
                 GlobalVariables.privatekeyenced = File.ReadAllText("privateKey.pem");
                 FileInfo fileInfo = new FileInfo("privateKey.pem");
-                if (fileInfo.Length > 2400) 
+                if (fileInfo.Length > 2400)
                 {
                     GlobalVariables.rsasize = 4096;
                 }
-
+                else
+                {
+                    GlobalVariables.rsasize = 2048;
+                }
             }
             catch
             {
@@ -589,10 +593,15 @@ namespace HideSloth
             {
                 GlobalVariables.pubkey = File.ReadAllText("publicKey.pem");
                 FileInfo fileInfo = new FileInfo("publicKey.pem");
-                if (fileInfo.Length > 500) 
-                { 
-                    GlobalVariables.rsasize = 4096; 
+                if (fileInfo.Length > 500)
+                {
+                    GlobalVariables.rsasize = 4096;
                 }
+                else
+                {
+                    GlobalVariables.rsasize = 2048;
+                }
+
             }
             catch
             {
@@ -605,9 +614,11 @@ namespace HideSloth
             else
             {
                 MessageBox.Show("Suceess to Load Key(s)", "Success");
+                GlobalVariables.KDF = "RSA Based";
             }
 
         }
+
     }
 
 }

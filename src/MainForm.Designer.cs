@@ -65,10 +65,13 @@ namespace HideSloth
             exitToolStripMenuItem = new ToolStripMenuItem();
             optionsToolStripMenuItem = new ToolStripMenuItem();
             advancedSettingsToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator4 = new ToolStripSeparator();
             languagesToolStripMenuItem = new ToolStripMenuItem();
             englishUSToolStripMenuItem = new ToolStripMenuItem();
             chineseSingaporeToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator5 = new ToolStripSeparator();
             loadRSAKeyPairToolStripMenuItem = new ToolStripMenuItem();
+            quickLoadFromCurrentFolderToolStripMenuItem = new ToolStripMenuItem();
             toolsTToolStripMenuItem = new ToolStripMenuItem();
             benchmarkToolStripMenuItem1 = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
@@ -84,9 +87,6 @@ namespace HideSloth
             Label_RouteofSecret = new TextBox();
             check_multi = new CheckBox();
             check_audio = new CheckBox();
-            toolStripSeparator4 = new ToolStripSeparator();
-            toolStripSeparator5 = new ToolStripSeparator();
-            quickLoadFromCurrentFolderToolStripMenuItem = new ToolStripMenuItem();
             groupBox1.SuspendLayout();
             groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
@@ -298,6 +298,11 @@ namespace HideSloth
             resources.ApplyResources(advancedSettingsToolStripMenuItem, "advancedSettingsToolStripMenuItem");
             advancedSettingsToolStripMenuItem.Click += Button_Advanced_Click;
             // 
+            // toolStripSeparator4
+            // 
+            toolStripSeparator4.Name = "toolStripSeparator4";
+            resources.ApplyResources(toolStripSeparator4, "toolStripSeparator4");
+            // 
             // languagesToolStripMenuItem
             // 
             languagesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { englishUSToolStripMenuItem, chineseSingaporeToolStripMenuItem });
@@ -316,11 +321,22 @@ namespace HideSloth
             resources.ApplyResources(chineseSingaporeToolStripMenuItem, "chineseSingaporeToolStripMenuItem");
             chineseSingaporeToolStripMenuItem.Click += chineseSingaporeToolStripMenuItem_Click;
             // 
+            // toolStripSeparator5
+            // 
+            toolStripSeparator5.Name = "toolStripSeparator5";
+            resources.ApplyResources(toolStripSeparator5, "toolStripSeparator5");
+            // 
             // loadRSAKeyPairToolStripMenuItem
             // 
             loadRSAKeyPairToolStripMenuItem.Name = "loadRSAKeyPairToolStripMenuItem";
             resources.ApplyResources(loadRSAKeyPairToolStripMenuItem, "loadRSAKeyPairToolStripMenuItem");
             loadRSAKeyPairToolStripMenuItem.Click += loadRSAKeyPairToolStripMenuItem_Click;
+            // 
+            // quickLoadFromCurrentFolderToolStripMenuItem
+            // 
+            quickLoadFromCurrentFolderToolStripMenuItem.Name = "quickLoadFromCurrentFolderToolStripMenuItem";
+            resources.ApplyResources(quickLoadFromCurrentFolderToolStripMenuItem, "quickLoadFromCurrentFolderToolStripMenuItem");
+            quickLoadFromCurrentFolderToolStripMenuItem.Click += quickLoadFromCurrentFolderToolStripMenuItem_Click;
             // 
             // toolsTToolStripMenuItem
             // 
@@ -405,22 +421,6 @@ namespace HideSloth
             resources.ApplyResources(check_audio, "check_audio");
             check_audio.Name = "check_audio";
             check_audio.UseVisualStyleBackColor = true;
-            // 
-            // toolStripSeparator4
-            // 
-            toolStripSeparator4.Name = "toolStripSeparator4";
-            resources.ApplyResources(toolStripSeparator4, "toolStripSeparator4");
-            // 
-            // toolStripSeparator5
-            // 
-            toolStripSeparator5.Name = "toolStripSeparator5";
-            resources.ApplyResources(toolStripSeparator5, "toolStripSeparator5");
-            // 
-            // quickLoadFromCurrentFolderToolStripMenuItem
-            // 
-            quickLoadFromCurrentFolderToolStripMenuItem.Name = "quickLoadFromCurrentFolderToolStripMenuItem";
-            resources.ApplyResources(quickLoadFromCurrentFolderToolStripMenuItem, "quickLoadFromCurrentFolderToolStripMenuItem");
-            quickLoadFromCurrentFolderToolStripMenuItem.Click += quickLoadFromCurrentFolderToolStripMenuItem_Click;
             // 
             // MainForm
             // 
