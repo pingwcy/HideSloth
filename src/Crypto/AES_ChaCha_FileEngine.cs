@@ -82,8 +82,8 @@ namespace HideSloth.Crypto
                 }
                 // 将 nonce、加密数据和 tag 写入输出文件
                 outputFileStream.Write(nonce, 0, NonceSize);
-                outputFileStream.Write(encryptedData, 0, encryptedData.Length);
                 outputFileStream.Write(tag, 0, TagSize);
+                outputFileStream.Write(encryptedData, 0, encryptedData.Length);
             }
         }
         public static void DecryptFile(string inputFilePath, string outputFilePath, string password)
@@ -145,8 +145,8 @@ namespace HideSloth.Crypto
                 // 分离出加密数据和 tag
                 byte[] encryptedData = new byte[encryptedDataSize];
                 byte[] tag = new byte[tagSize];
-                Array.Copy(buffer, 0, encryptedData, 0, encryptedDataSize);
-                Array.Copy(buffer, encryptedDataSize, tag, 0, tagSize);
+                Array.Copy(buffer, 0, tag, 0, tagSize);
+                Array.Copy(buffer, tagSize, encryptedData, 0, encryptedDataSize);
 
                 byte[] decryptedData = new byte[encryptedDataSize];
 
