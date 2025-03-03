@@ -18,14 +18,14 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
     <WarningLevel>9999</WarningLevel>
     <NoWarn></NoWarn>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-    <DebugType>none</DebugType>
+    <DebugType>full</DebugType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <WarningLevel>9999</WarningLevel>
     <NoWarn></NoWarn>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-    <DebugType>none</DebugType>
+    <DebugType>full</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Properties\Idle.png" />

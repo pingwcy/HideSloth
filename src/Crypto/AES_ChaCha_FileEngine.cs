@@ -58,13 +58,14 @@ namespace HideSloth.Crypto
             using var inputFileStream = new FileStream(inputFilePath, FileMode.Open);
             using var outputFileStream = new FileStream(outputFilePath, FileMode.Create);
 
-            // 将 salt 写入输出文件
-            outputFileStream.Write(salt, 0, SaltSize);
 
             byte[] buffer = new byte[BlockSize];
             int bytesRead;
             while ((bytesRead = inputFileStream.Read(buffer, 0, BlockSize)) > 0)
             {
+                // 将 salt 写入输出文件
+                outputFileStream.Write(salt, 0, SaltSize);
+
                 // 为每个块生成新的随机 nonce
                 byte[] nonce = RandomNumberGenerator.GetBytes(NonceSize);
                 byte[] encryptedData = new byte[bytesRead];
@@ -94,47 +95,48 @@ namespace HideSloth.Crypto
             using var inputFileStream = new FileStream(inputFilePath, FileMode.Open);
             using var outputFileStream = new FileStream(outputFilePath, FileMode.Create);
 
-            int SaltSize = 16;
-            if (GlobalVariables.KDF != "Password Based")
-            {
-                SaltSize = GlobalVariables.rsasize / 8;
-            }
-
-            // 从输入文件读取 salt
-            byte[] salt = new byte[SaltSize];
-            inputFileStream.Read(salt, 0, SaltSize);
-            byte[] key = new byte[KeySize];
-            // 使用 PBKDF2 从密码生成密钥
-            if (GlobalVariables.KDF == "Password Based")
-            {
-                using var keyDerivationFunction = new Rfc2898DeriveBytes(password, salt, Iterations, (Support_Converter.StringToHashAlgorithmName(HashAlg)));
-                key = keyDerivationFunction.GetBytes(KeySize);
-            }
-            else
-            {
-                byte[] pri_key = Aes_ChaCha_Decryptor.getPrivateKey(Convert.FromBase64String(GlobalVariables.privatekeyenced), password);
-                RSA rSA = RSA.Create();
-                rSA.KeySize = GlobalVariables.rsasize;
-                rSA.ImportSubjectPublicKeyInfo(Convert.FromBase64String(GlobalVariables.pubkey), out _);
-                rSA.ImportPkcs8PrivateKey(pri_key, out _);
-                key = rSA.Decrypt(salt, RSAEncryptionPadding.Pkcs1);
-            }
-            AesGcm? Dec_Obj = null; // 使用可空类型，因为 AesGcm 是一个引用类型
-            ChaCha20Poly1305? Dec_obj2 = null;
-            if (GlobalVariables.Encalg == "AES")
-            {
-                Dec_Obj = new AesGcm(key, TagSize);
-            }
-            else if (GlobalVariables.Encalg == "ChaCha")
-            {
-                Dec_obj2 = new ChaCha20Poly1305(key);
-            }
-
-            byte[] buffer = new byte[BlockSize + TagSize];
-            byte[] nonce = new byte[NonceSize];
 
             while (inputFileStream.Position < inputFileStream.Length)
             {
+                int SaltSize = 16;
+                if (GlobalVariables.KDF != "Password Based")
+                {
+                    SaltSize = GlobalVariables.rsasize / 8;
+                }
+
+                // 从输入文件读取 salt
+                byte[] salt = new byte[SaltSize];
+                inputFileStream.Read(salt, 0, SaltSize);
+                byte[] key = new byte[KeySize];
+                // 使用 PBKDF2 从密码生成密钥
+                if (GlobalVariables.KDF == "Password Based")
+                {
+                    using var keyDerivationFunction = new Rfc2898DeriveBytes(password, salt, Iterations, (Support_Converter.StringToHashAlgorithmName(HashAlg)));
+                    key = keyDerivationFunction.GetBytes(KeySize);
+                }
+                else
+                {
+                    byte[] pri_key = Aes_ChaCha_Decryptor.getPrivateKey(Convert.FromBase64String(GlobalVariables.privatekeyenced), password);
+                    RSA rSA = RSA.Create();
+                    rSA.KeySize = GlobalVariables.rsasize;
+                    rSA.ImportSubjectPublicKeyInfo(Convert.FromBase64String(GlobalVariables.pubkey), out _);
+                    rSA.ImportPkcs8PrivateKey(pri_key, out _);
+                    key = rSA.Decrypt(salt, RSAEncryptionPadding.Pkcs1);
+                }
+                AesGcm? Dec_Obj = null; // 使用可空类型，因为 AesGcm 是一个引用类型
+                ChaCha20Poly1305? Dec_obj2 = null;
+                if (GlobalVariables.Encalg == "AES")
+                {
+                    Dec_Obj = new AesGcm(key, TagSize);
+                }
+                else if (GlobalVariables.Encalg == "ChaCha")
+                {
+                    Dec_obj2 = new ChaCha20Poly1305(key);
+                }
+
+                byte[] buffer = new byte[BlockSize + TagSize];
+                byte[] nonce = new byte[NonceSize];
+
                 // 读取 nonce
                 inputFileStream.Read(nonce, 0, NonceSize);
 
